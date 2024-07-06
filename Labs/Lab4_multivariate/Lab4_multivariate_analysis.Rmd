@@ -1,0 +1,271 @@
+---
+title: 'Lab 4:Multivariate Analysis'
+author: "Bios 221: Modern Statistics for Modern Biology"
+date: "10/7/2024"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+## Goal
+
+In this lab we will learn the basics of Multivariate Analysis and PCA using a few simple examples.
+
+Work through this lab by running all the R code to your computer and making sure 
+that you understand the input and the output. Make alterations where you seem
+fit. We encourage you to work through this lab with a partner. 
+
+```{r setup, warning=FALSE, message=FALSE, results='hide'}
+knitr::opts_chunk$set(echo = TRUE)
+pkgs_needed = c("tidyverse","GGally", "factoextra", "ade4")
+BiocManager::install(setdiff(pkgs_needed, installed.packages()))
+library("tidyverse")
+```
+
+## Obtain Data 
+
+In this lab we will be working with the following two simple datasets:
+
+```{r}
+turtles = read.table(url("https://web.stanford.edu/class/bios221/data/PaintedTurtles.txt"),
+                     header=TRUE)
+head(turtles)
+```
+
+```{r}
+download.file(url = "https://web.stanford.edu/class/bios221/data/athletes.RData",
+              destfile = "athletes.RData",mode = "wb")
+load("athletes.RData")
+athletes[1:3,]
+```
+
+Let's first get to know our data sets. 
+
+**Question 1**: How many athletes/turtles do you have in the data sets? 
+
+**Question 2**: What's the record distance in the longjump category? And which athlete (number) made this record?
+
+**Question 3**: What's the average time across all athletes for the 100m run?
+
+**Question 4**: Can you plot the histogram showing the distribution of the times for the 100m run?
+
+**Question 5**: How many athletes of those who run faster than the average in the 100m run, also run faster than the average in the 1500m distance? 
+
+```{r}
+# TODO
+```
+
+## Low dimensional data summaries and preparation
+
+It is instructive to first consider 2-dimensional summaries of the dataset: The function `ggpairs` of the GGally package gives a very nice summary of the features of the data set as well as on how they are correlated with each other. 
+
+```{r}
+library("GGally")
+ggpairs(turtles[,-1], axisLabels="none")
+```
+
+**Question 6**: What do you see on the diagonal? What do the stars indicate next to the correlation value?
+
+**Question 7**: Can you repeat this plot for the athletes data?
+
+**Question 8**: In the lecture, we have seen another way to investigate correlations in the data. Can you use the `pheatmap` function of the pheatmap package to illustrate the pairwise correlations of the features in the athletes data set. 
+
+```{r}
+# TODO
+```
+
+## Preprocessing the data
+
+In many cases, different variables are measured in different units and at different scales (usually measured with variance). To make the variables comparable, our first task in data analysis is to transform the data: Standardizing the data to a common standard deviation. This rescaling is done using the `scale` function which makes every column have a variance of 1 (and also mean 0).
+
+```{r turtlesDim12}
+scaledTurtles=data.frame(scale(turtles[,-1]),sex=turtles[,1])
+```
+
+**Question 1**: Can you compute the standard deviation and mean of each column in the `turtles` data frame? Can you do the same on the scaled dataset, i.e. on `scaledTurtles`? What was the mean of turtles' heights before standardizing?
+
+```{r}
+# TODO
+```
+
+We can visualize two columns/dimensions (for example height and width) of this scaled data using the ggplot package. 
+
+```{r turtlesDim}
+library("ggplot2")
+
+ggplot(scaledTurtles,aes(x=width,y=height, group =sex)) +
+  geom_point(aes(color=sex))
+```
+
+## Dimensionality reduction
+
+In this part, we will use geometrical projections of points in a higher dimensional space and project them down to lower dimensions. 
+
+The first example will be the projection of the points in a two-dimensional space (defined by weight and disc distance in the athlete data set) onto a 1-dimensional space. The 1-dimensional space in this case is defined by the weight-axis/x-axis.  
+
+But first we need to scale the athlete data set, in the same way as we did it with the turtles data set. 
+
+```{r}
+#Scaling 
+athletes = scale(athletes)
+n = nrow(athletes)
+athletes = data.frame(athletes)
+```
+
+```{r SimpleScatter}
+#Plotting the 2-dimensional points defined by weight(x-coordinate) and disc (y-coordinate)
+p = ggplot(athletes, aes(x = weight,y=  disc)) +
+  geom_point(size = 2, shape=21)
+
+#Here we are adding the projected points (red) & theprojection lines (dashed)
+p + geom_point(aes(y = rep(0, n)), colour="red") +
+  geom_segment(aes(xend = weight, yend = rep(0,n)), linetype = "dashed")
+```
+
+Now try to do the following:
+
+**Question 1**: Calculate the variance of the red points in the above
+figure (points are projected onto the weight-axis).
+
+**Question 2**: Make a similar plot showing projection lines onto the y 
+axis and show projected points in blue. What is the variance of the projected 
+points now?
+
+```{r}
+# TODO
+```
+
+## Summarize 2D-data by a line
+
+In the above example when projecting the 2-dimensional points to the weight-axis, we lost the disc information. In order to keep more information, we will now project the 2 dimensional points onto a line.  
+
+For this, we first compute a linear model to find the regression line using the `lm` function (linear model). We regress `disc` (y-axis) on `weight` (x-axis); The regression line is defined by two parameters: its slope and its intercept. The slope a is given by the second coefficient in the output of `lm` and its intercept b is the first coefficient:
+
+```{r Reg1}
+#computing the linear model 
+reg1 = lm(disc ~ weight,data = athletes)
+
+#extracting the intercept and slope values   
+a = reg1$coefficients[1] # Intercept
+b = reg1$coefficients[2] # slope
+
+#Plotting the points p (computed in the code section before) & the regression line 
+pline = p + geom_abline(intercept = a, slope = b, col = "blue", lwd = 1.5)
+
+#adding the projection lines (from the point to its fitted value)
+pline + geom_segment(aes(xend = weight, yend = reg1$fitted),
+                     colour = "red", arrow = arrow(length = unit(0.15,"cm")))
+```
+
+**Question 1**: Can you regress `weight` on `discs` and generate a similar plot?
+
+**Question 2**: Can you create a plot that shows all points, as well as both regression lines, i.e., a plot that show both the line you get from `lm(disc ~ weight)` and `lm(weight ~ disc)`?
+
+```{r}
+# TODO
+```
+
+## A line that minimizes distances in both directions
+
+Below we are plotting a line chosen to minimize the error in both the horizontal and vertical directions. This results in minimizing the diagonal projections onto the line.  
+
+Specifically, we compute a line that minimizes the sum of squares of the orthogonal (perpendicular) projections of data points onto it; we call this the principal component line (purple).
+
+```{r, include = FALSE}
+
+X = cbind(athletes$disc, athletes$weight)
+svda = svd(X)
+pc = X %*% svda$v[, 1] %*% t(svda$v[, 1])
+bp = svda$v[2, 1] / svda$v[1, 1]
+ap = mean(pc[, 2]) - bp * mean(pc[, 1])
+
+p + geom_segment(xend = pc[,1], yend = pc[,2]) + 
+  geom_abline(intercept = ap, slope = bp, col = "purple", lwd = 1.5) + 
+  coord_fixed()
+
+```
+
+Now let's see how we can use the learned on a higher-dimensional data set. 
+
+## Turtle PCA
+
+To start we will come back to the turtles data set. First, we need to make sure we understand the basic features of the data and preprocess it in a way that its in the correct "shape" for running the PCA analysis. 
+
+**Question 1:** Define a new variable, in which you exclude the sex column. What are the mean values and variance, of each of the 3 features: length, width and height. 
+
+**Question 2:** Scale the data. 
+
+**Question 3:** Explore the correlations between the 3 variables after scaling the data. What do you see? 
+
+```{r scale, include = FALSE}
+turtlesc = scale(turtles[, -1])
+```
+
+```{r PCAturtles}
+# TODO
+```
+
+We basically saw that all 3 variables are very strongly correlated. Because of the strong correlations, we would expect that the data matrix can be well approximated by a rank 1 matrix. Let's do the PCA:
+
+```{r}
+library("factoextra")
+
+pca1 = princomp(turtlesc)
+pca1
+```
+Usually not all PCs are informative. To investigate this, we have a look at the variance of the new Principal Component features; we are plotting the screeplot. The screeplot showing the eigenvalues for the standardized data: 
+
+```{r scree}
+#screeplot of the eigenvalues 
+fviz_eig(pca1, geom = "bar", width = 0.4)
+```
+
+Note: Here we see one very large component in this case and two very small ones. In this case the data are (almost) one dimensional.
+
+**Question 4**: What is the percentage of variance explained by the first PC? How can you obtain this value from the pca1 object? 
+
+**Question 5**: How many PCs are you using if you want to project the turtles data set? 
+
+```{r}
+# TODO
+```
+
+Now, lets plot the samples with their PC1 and PC2 coordinates, together with the variables. The representation of both, the samples and the variables is called a biplot.  
+
+```{r turtlesbiplot}
+fviz_pca_biplot(pca1, label = "var") 
+```
+
+**Question 6**: Can you extend this plotting code to color the female samples differently than the male samples? 
+
+**Question 7**: Did the males or female turtles tend to be larger?
+
+```{r}
+# TODO
+```
+
+## Back to the athletes
+
+Now let us try to run the PCA on a larger data set and interpret the corresponding scree plot. In this case we are using a different library, with a slightly different output of the PCA computation. But the principle is the same. 
+
+```{r}
+library("ade4")
+
+#if we are the dudi.pca function we dont need to scale the data
+pca.ath = dudi.pca(athletes, scannf = FALSE)
+pca.ath$eig
+```
+
+**Question 1:** Just like in the above turtle data set. Can you produce a scree plot? 
+
+**Question 2:** How many PCs are you using if you want to project the athletes data set? 
+
+**Question 3:** Can you plot the samples with their PC1 and PC2 coordinates, together with the variables in a biplot? 
+
+**Question 4:** Can you plot the numbers of the athletes onto the samples. What do you notice about the numbers?
+
+```{r}
+#TODO 
+```
+
