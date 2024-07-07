@@ -152,11 +152,35 @@ it contains R code.
 
 <br><br>
 
-# R Markdown and Quarto
 
+### Installing packages
+Please install these packages that you are going to need in the following days:<br>
+
+#### Lab 1 - intro to tidy R:<br>
+Install `Bioconductor`
+```{r, eval=F}
+if (!require("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+BiocManager::install(version = "3.19")
+
+```
+
+```{r, eval=F}
+pkgs_needed = c("dplyr", "ggplot2", "tidyverse", "DESeq2", "patchwork")
+
+letsinstall = setdiff(pkgs_needed, installed.packages()) 
+if (length(letsinstall) > 0) {
+  for (pkg in letsinstall) {
+    BiocManager::install(pkg, dependencies = TRUE)
+  }
+}
+```
+
+
+#### Lab 2 - Quarto:
 In the next days we are going to introduce you to literate programming with Quarto (and R Markdown). More about it in the Lab2_quarto
 
-### Getting Quarto 
+**Getting Quarto**<br>
 Recent versions of Rstudio come with Quarto incorporated. You can check this by going to the `new file` button (do you remember how to [create] a new file?); 
   
   + if you see `quarto document` as an option, it means Quarto is installed. <br>
@@ -174,33 +198,105 @@ Go to the website https://quarto.org/docs/get-started/ and download. Open and fo
 
 You can install the `quarto` package to later render the documents from the **R console**:
 ```{r, eval=FALSE}
-install.packages("quarto")
-quarto::quarto_render("hello.qmd")
+pkgs_needed = c("quarto", "ggplot2", "patchwork")
+
+letsinstall = setdiff(pkgs_needed, installed.packages()) 
+if (length(letsinstall) > 0) {
+  for (pkg in letsinstall) {
+    BiocManager::install(pkg, dependencies = TRUE)
+  }
+}
+#quarto::quarto_render("hello.qmd")
 ```
+<br>
 
-
-
-
-### Getting R Markdown
+**Getting R Markdown**<br>
 To work with R Markdown you need to install the appropriate packages to knit and render your documents. <br>
 From the R console do this:
 ```{r, eval=F}
 pkgs_needed = c("rmarkdown", "knitr", "magrittr", "stringi", "stringr")
 
-BiocManager::install(setdiff(pkgs_needed, installed.packages()), suppressUpdates = TRUE)
-
+letsinstall = setdiff(pkgs_needed, installed.packages()) 
+if (length(letsinstall) > 0) {
+  for (pkg in letsinstall) {
+    BiocManager::install(pkg, dependencies = TRUE)
+  }
+}
 ```
 
-<br><br>
-
-
-
-### Install packages
-
-[TODO] update here
+#### Lab 3 - ?:
+```{r}
+pkgs_needed = c("","","")
+letsinstall = setdiff(pkgs_needed, installed.packages()) 
+if (length(letsinstall) > 0) {
+  for (pkg in letsinstall) {
+    BiocManager::install(pkg, dependencies = TRUE)
+  }
+}
 ```
-muscData, scran, scuttle, scater
+
+#### Lab 4 - multivariate:
+```{r}
+pkgs_needed = c("tidyverse","GGally", "factoextra", "ade4")
+letsinstall = setdiff(pkgs_needed, installed.packages()) 
+if (length(letsinstall) > 0) {
+  for (pkg in letsinstall)
+    BiocManager::install(pkg, dependencies = TRUE)
+}
+```
+
+#### Lab 5 - clustering:
+```{r }
+pkgs_needed = c("tidyverse",
+  "dbscan", "GGally", "pheatmap",
+  "flowCore","flowViz","flowPeaks", "ggcyto"
+)
+letsinstall = setdiff(pkgs_needed, installed.packages()) 
+if (length(letsinstall) > 0) {
+  for (pkg in letsinstall)
+    BiocManager::install(pkg, dependencies = TRUE)
+}
+```
+
+#### Lab 6 - testing:
+```{r}
+pkgs_needed = c("dplyr","ggplot2", "DESeq2","pasilla","genefilter",
+                "pheatmap","readr","tibble","apeglm")
+
+letsinstall = setdiff(pkgs_needed, installed.packages()) 
+if (length(letsinstall) > 0) {
+  for (pkg in letsinstall) {
+    BiocManager::install(pkg, dependencies = TRUE)
+  }
+}
+```
+
+#### Lab 7 - ?:
+
+#### Lab 8 - ?:
+
+#### Lab 9 - machine learning:
+
+```{r}
+pkgs_needed = c("MASS","ExperimentHub", "tidyverse","glmnet",
+                "RColorBrewer","caret", "magrittr")
+letsinstall = setdiff(pkgs_needed, installed.packages()) 
+if (length(letsinstall) > 0) {
+  for (pkg in letsinstall) {
+    BiocManager::install(pkg, dependencies = TRUE)
+  }
+}
+```
+
+#### applications
+```{r}
+pkgs_needed = c("muscData", "scran", "scuttle", "scater")
+letsinstall = setdiff(pkgs_needed, installed.packages()) 
+if (length(letsinstall) > 0) {
+  for (pkg in letsinstall) {
+    BiocManager::install(pkg, dependencies = TRUE)
+  }
+}
+#To download (& cache data) in advance: when asked, type yes to create the cache
 muscData::Kang18_8vs8()
 ```
-install.packages("gridGraphics")
-install.packages("magick")
