@@ -1,0 +1,267 @@
+---
+title: "Introduction to DESeq2 for RNA-seq Differential Expression Analysis"
+author: "adapted from Lars Velten & Julia Rühle"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  html_document:
+    #theme: "cosmo"
+    theme: "cerulean"
+    #highlight: github  
+    df_print: paged
+    number_sections: yes
+    toc: yes
+    #code_folding: hide
+    toc_depth: 4
+    toc_float:
+      collapsed: false
+    highlight: tango
+editor_options:
+  chunk_output_type: console
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+
+
+```
+
+# Getting started 
+
+First, we install and load all the packages that we need for this tutorial.
+
+```{r loading packages, include=TRUE, eval=TRUE, results='hide'}
+pkgs_needed = c("tidyverse","dplyr","ggplot2","patchwork","DESeq2")
+letsinstall = setdiff(pkgs_needed, installed.packages()) 
+if (length(letsinstall) > 0) {
+  for (pkg in letsinstall) {
+    BiocManager::install(pkg, dependencies = TRUE)
+  }
+}
+
+library(ggplot2)
+library(dplyr)
+library(tidyverse)
+library(DESeq2)
+library(patchwork)
+```
+
+# Exploring the Data Set & Cohort 
+
+## Import data 
+
+This tutorial uses data from: 
+
+> Grant, R.A., Morales-Nebreda, L., Markov, N.S. et al. Circuits between infected macrophages and T cells in SARS-CoV-2 pneumonia. Nature 590, 635–641 (2021). https://doi.org/10.1038/s41586-020-03148-w
+
+In the first part of this tutorial, we will read in and manipulate the data, using the tidyverse package. Let's start by reading in the bulk **RNA count data** using the function `read_csv()`{.R} from the tidyverse package and save it as a variable named *counts*. Use the same function to read in the corresponding **metadata** and name this variable *meta*. If you are unsure how to use the `read_csv()`{.R} function, you can type `?read_csv`{.R} into the console to get a detailed documentation of this function. Later, you will see why we are using the tidyverse package rather than the base R functions. 
+
+The data are stored in a zip file. Please download the .zip file and unpack the .zip file via right click (extract all). After extracting the files you should have two files in your folder. 
+
+- Count Data
+- Meta Data
+
+Now, set your working directory to the path of the folder that contains the count and the meta data. You can use the function `setwd()` and paste the path to your `data` folder that you just opened. (You don't know where it is? You can check the path using the terminal). 
+
+```{r workng dir unsolved, include=T, eval=FALSE}
+# set your working directory 
+setwd('...') # paste here the path to your data folder
+```
+```{r workng dir, include=TRUE, eval=TRUE, echo=FALSE}
+setwd('/Users/htonnele/Desktop/UBDS_2024/develop/Lab1_RintroNbioc/data/') # paste here the path to your data folder
+counts <- read_csv("./bulk_RNA_counts.csv")
+meta <- read_csv("./bulk_RNA_metadata.csv")
+```
+
+```{r read in data, include=TRUE, eval=FALSE}
+
+counts <- read_csv("./bulk_RNA_counts.csv")
+meta <- read_csv("./bulk_RNA_metadata.csv")
+
+```
+
+## Structure of count and meta data
+
+> **Hands-on:** 
+>
+* What does the abbreviation ENSG stand for? 
+* How many genes does your count data have? 
+* How many samples does your count data have? 
+* Have a look at the meta data, what information do you have about the patients? 
+* Whats the type of your data frame? How is it different from a dataframe read in using the base R `read.csv()`{.R} function?
+
+Now, that we understand what kind of information we find in the columns and rows of the data provided, we can go ahead and explore the data. In order to make the right conclusions and not introduce any biases when we perform downstream analyses, we want to gather some basic information about the patients who participated in the study. 
+
+> **Hands-on:** 
+>
+* What are the types of disease the patients were diagnosed with? 
+* What are the proportions of women and men in this cohort? Count the number of samples per sex.
+* Whats the minimum, maximum, and average age of the patients in this data set? 
+* Of how many patients do we have single-cell RNA seq data from?
+
+## Describe your Cohort: Manipulating and analysing data with tidyverse
+
+To be able to compute simple summary statistics on our data, we need to reshape and subset our data. Sometimes bracket subsetting (as it is done using base R functions) can be laborious and the code can become very difficult to read. 
+
+The **tidyverse** package helps us to overcome these problems. This package includes of a variety of packages that are very useful and common in data analysis. If you want to read more, here you can find the [tidyverse vignette](https://www.tidyverse.org/packages/).  
+
+One of these included packages is **dplyr**, and we are now going to learn some of the most common functions.
+
+> Some very useful **dplyr** functions: 
+>
+ * Subsetting columns: `select()`{.R}
+ * Subsetting Rows on Conditions:  `filter()`{.R}
+ * Adding columns: `mutate()`{.R}
+ * Compute Summary Statistics on subgroups of your data: `group_by()`{.R} & `summarise()`{.R} 
+ 
+
+Let's have a look at some examples and how we can apply these dplyr functions to make our life easier. 
+
+### Select columns and Filter rows 
+
+**Selecting Columns:** 
+
+```{r, include=TRUE, eval = FALSE}
+
+#How do you select columns using bracket-subsetting?
+# We can either do: 
+meta[,c("sex", "diagnosis")]
+
+#or
+meta[,c(4,5)]
+
+#Using tidyverse's select() function it works like the following
+select(meta, diagnosis, sex)
+
+#we can also do this: 
+#this command selects every column except for the superinfection column 
+select(meta, -superinfection) 
+
+```
+
+**Filtering Rows:** 
+
+```{r, include = TRUE, eval = FALSE}
+
+#How did you select rows before? 
+meta[meta$diagnosis == "COVID-19", ]
+
+#How does this work using tidyverse? 
+filter(meta, diagnosis == "COVID-19")
+
+#we can also select based on multiple criteria 
+filter(meta, diagnosis == "COVID-19" & age > 60)
+
+```
+
+**Select and Filter at the same time:** \
+
+For this, the **pipe symbol %>%** (shortcut: Cmd+Shift+m) comes in very handy.
+
+```{r , eval = FALSE}
+#coupling the two with bracket subsetting: 
+meta[meta$diagnosis == "COVID-19" & meta$age > 60, c("sex", "diagnosis")] # :( this code is not very nice to read
+
+#tidyverse:
+meta %>%
+  filter(diagnosis == "COVID-19" & age > 60) %>%  
+  select(diagnosis, sex)
+
+#Why does this chunk of code not work? 
+meta %>% 
+  select(diagnosis, sex) %>%  
+  filter(diagnosis == "COVID-19" & age > 60)
+
+```
+
+### Add Columns 
+
+In many cases, you want to create new columns using the values of existing columns. For this we are using the `mutate()`{.R} function. For example, you prefer to have even numbers for the age of the patients. So you want to round the existing ones, and create a new column with these.
+
+```{r, eval = FALSE}
+meta %>% 
+  mutate(rounded_age = round(age))
+
+```
+
+### Summary Statistics 
+
+In many data analysis tasks, we want to split the data into groups and apply the same analysis to each group and last, combine the results in a summarized table or plot. For this, we can use the `group_by()`{.R} and `summarise()`{.R} functions.
+
+For example, in our case we are not particularly interested in the average age of the whole patient cohort. We could be more interested in the average age across the four different groups of diagnosis. This we can do in the following way: 
+
+```{r, eval= FALSE}
+
+meta %>% 
+  group_by(diagnosis) %>% 
+  dplyr::summarise(average_age = mean(age))
+
+# Grouping can be also used to count occurrences 
+# Here we are counting the number of patients across the different groups of diagnosis
+meta %>% 
+  group_by(diagnosis) %>% 
+  dplyr::summarise(no_of_patients = n()) 
+
+```
+
+
+## Visualization using ggplot2
+
+**ggplot2** is a plotting package that allows us to plot a variety of easy, as well as complex plots. In general, ggplot2 builds graphics in a "layer-by-layer" fashion, by adding new elements step-wise. 
+
+The basic syntax to build a ggplot figure, looks like the following: 
+
+```{r, eval= FALSE}
+
+ggplot(data = <DATA>, mapping = aes(<MAPPINGS>)) + <GEOM_FUNCTION>()
+
+```
+
+First of all, we have to specify the data frame we would like to plot in the **data** argument. In the **mapping** argument, we define the aesthetics of the plot: We select the variables we want to plot and how we want them to be plotted (e.g. as x/y positions, size, shape, color, ...). Last, we have to define the **geoms**. This sets the representation of the data in the plot (e.g. scatter plot, barplot, boxplot, ...).
+
+Before you start the next Hands-on session, let's try to create a very simple bar plot with one of the previously computed summary statistics in which we counted the number of patients per diagnosis.  
+
+```{r, eval= TRUE}
+
+#Counting the number of patients per diagnosis and store it in a summary table
+no_of_patients_per_diagnosis <- meta %>% 
+  group_by(diagnosis) %>% 
+  dplyr::summarise(no_of_patients = n()) 
+
+#Using ggplot to visualize the numer of patients per diagnosis in a barplot
+ggplot(data = no_of_patients_per_diagnosis, aes(x = diagnosis, y = no_of_patients)) + geom_col() 
+
+```
+
+> **Hands-on:** 
+> 
+Let's try to reproduce some parts of the paper of Figure 1 to visualize the distribution of the cohort using ggplot2. 
+>
+* Have a look at Figure 1 (panel c and d) of the paper before starting this excercise. The link of the paper is provided at the beginning of the document. 
+* Use a boxplot to visualize the distribution of age of the patients across the different groups of diagnosis (Fig. 1, panel c). It is also useful to not only plot the boxes, but also the data points itself. You can check on the internet how to plot the points on top of the boxplot and how to change the colors of the boxes. 
+* Compute the **proportion** of sexes for the different diagnosis groups (Fig. 1, panel d) using the tidyverse functions `group_by()`{.R}, `summarise()`{.R} and `mutate()`{.R} visualize it in a stacked bar chart. If you are not happy with the colors, fontsizes or anything of the plot, you can always google.   
+
+
+
+***
+
+Until now we have analysed some data that was provided and was on our computer, as if they were our own data.<br>
+There are many example of data shared in Bioconductor, for example the 
+
+```{r loading packages, include=TRUE, eval=TRUE, results='hide'}
+pkgs_needed = c("limma","muscat","purrr","ExperimentHub","scater")
+letsinstall = setdiff(pkgs_needed, installed.packages()) 
+if (length(letsinstall) > 0) {
+  for (pkg in letsinstall) {
+    BiocManager::install(pkg, dependencies = TRUE)
+  }
+}
+
+library(limma)
+library(muscat)
+library(purrr)
+library(ExperimentHub)
+library(scater)
+```
+
