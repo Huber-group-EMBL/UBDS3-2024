@@ -1,7 +1,7 @@
 ---
 title: 'Lab2: Reproducible publishing and literate programming with Quarto'
 author: "Material adapted from Charlotte Soneson"
-date: "08-13/07/2024"
+date: "09/07/2024"
 format:
     html:
         embed-resources: true
@@ -19,7 +19,7 @@ knitr::opts_chunk$set(echo = TRUE)
 # Quarto and literate programming
 
 In this lab you will learn the basics of literate programming and to use
-quarto from Rstudio.<br>
+the literate programming and manuscript editing system [Quarto](https://quarto.org/). Quarto enables you to produce PDF documents (manuscripts) just as you would do in $\LaTeX$, but also HTML pages---such as the one you are currentl reading---and whole webpages. It even exports to Word-docx format.<br>
 
 ## What is literate programming?
 
