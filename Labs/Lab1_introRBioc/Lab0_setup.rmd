@@ -156,7 +156,8 @@ it contains R code.
 ### Installing packages
 Please install these packages that you are going to need in the following days:<br>
 
-#### Lab 1 - intro to tidy R:<br>
+#### Lab - intro to tidy R:
+
 Install `Bioconductor`
 ```{r, eval=F}
 if (!require("BiocManager", quietly = TRUE))
@@ -166,7 +167,8 @@ BiocManager::install(version = "3.19")
 ```
 
 ```{r, eval=F}
-pkgs_needed = c("dplyr", "ggplot2", "tidyverse", "DESeq2", "patchwork")
+pkgs_needed = c("dplyr", "ggplot2", "tidyverse", "DESeq2", 
+                "patchwork", "limma", "muscat","purrr")
 
 letsinstall = setdiff(pkgs_needed, installed.packages()) 
 if (length(letsinstall) > 0) {
@@ -177,7 +179,7 @@ if (length(letsinstall) > 0) {
 ```
 
 
-#### Lab 2 - Quarto:
+#### Lab - Quarto:
 In the next days we are going to introduce you to literate programming with Quarto (and R Markdown). More about it in the Lab2_quarto
 
 **Getting Quarto**<br>
@@ -224,18 +226,8 @@ if (length(letsinstall) > 0) {
 }
 ```
 
-#### Lab 3 - ?:
-```{r}
-pkgs_needed = c("","","")
-letsinstall = setdiff(pkgs_needed, installed.packages()) 
-if (length(letsinstall) > 0) {
-  for (pkg in letsinstall) {
-    BiocManager::install(pkg, dependencies = TRUE)
-  }
-}
-```
 
-#### Lab 4 - multivariate:
+#### Lab - multivariate:
 ```{r}
 pkgs_needed = c("tidyverse","GGally", "factoextra", "ade4")
 letsinstall = setdiff(pkgs_needed, installed.packages()) 
@@ -245,7 +237,7 @@ if (length(letsinstall) > 0) {
 }
 ```
 
-#### Lab 5 - clustering:
+#### Lab - clustering:
 ```{r }
 pkgs_needed = c("tidyverse",
   "dbscan", "GGally", "pheatmap",
@@ -258,7 +250,7 @@ if (length(letsinstall) > 0) {
 }
 ```
 
-#### Lab 6 - testing:
+#### Lab - testing:
 ```{r}
 pkgs_needed = c("dplyr","ggplot2", "DESeq2","pasilla","genefilter",
                 "pheatmap","readr","tibble","apeglm")
@@ -271,11 +263,7 @@ if (length(letsinstall) > 0) {
 }
 ```
 
-#### Lab 7 - ?:
-
-#### Lab 8 - ?:
-
-#### Lab 9 - machine learning:
+#### Lab - machine learning:
 
 ```{r}
 pkgs_needed = c("MASS","ExperimentHub", "tidyverse","glmnet",
@@ -288,7 +276,7 @@ if (length(letsinstall) > 0) {
 }
 ```
 
-#### applications
+#### single-cell data applications
 ```{r}
 pkgs_needed = c("muscData", "scran", "scuttle", "scater")
 letsinstall = setdiff(pkgs_needed, installed.packages()) 

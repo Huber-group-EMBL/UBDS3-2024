@@ -15,7 +15,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Goal
 
 In this lab, we will become familiar with count data in RNA-Seq high-throughput
-sequencing. We will see how we can apply tools for hypothesis testing to data from RNA-Seq experiments. 
+sequencing. We will see how we can use how to use DEseq2 R package for hypothesis testing to data from RNA-Seq experiments. 
 We will model counts data and evaluate model fits to detect and quantify systematic changes between 
 conditions, compared to within-condition variability (which we consider noise).
 
@@ -26,7 +26,7 @@ Install packages.
 ```{r warning=FALSE, message=FALSE, results='hide'}
 pkgs_needed = c("dplyr","ggplot2", "DESeq2","pasilla","genefilter",
                 "pheatmap","readr","tibble","apeglm")
-BiocManager::install(setdiff(pkgs_needed, installed.packages()), dependencies = TRUE)
+#BiocManager::install(setdiff(pkgs_needed, installed.packages()), dependencies = TRUE)
 ```
 
 Load packages.
@@ -40,6 +40,10 @@ library("genefilter")
 library("pheatmap")
 library("tibble")
 ```
+# DESeq2: Statistical Testing for Differential Expression 
+
+DESeq2 is an R package to analyze count data, such as bulk RNA-Seq. It works with a particular type of object called DESeqDataSet that contains many variables. In order to create such a DESeqDataSet, we have to convert the count and meta data according to specific requirements by the DESeq2 package. You can read about these requirements in detail in the [DESeq2 vignette](https://bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.html).
+
 
 ## Example dataset: the pasilla data
 
@@ -57,45 +61,41 @@ Let us load an example dataset. It resides in the experiment data package ``pasi
 # this point to a file name in your computer
 fn = system.file("extdata", "pasilla_gene_counts.tsv",
                   package = "pasilla", mustWork = TRUE)
+# "gene_id" is the first column in the file, we can use it to define the rownames directly
 counts = as.matrix(read.csv(fn, sep = "\t", row.names = "gene_id"))
-# "gene_id" is the first column in the file, that corresponds to the rownames
 
 ```
+
 The data are stored as a rectangular table in a tab-delimited file, which
 we've read into the matrix ``counts``.
 
-Let's take a look at it:<br>
-```{r counts}
-dim(counts)
-counts[ 2000+(0:3), ]
-```
-
-**Question 1**: what are the columns in the matrix?<br>
-
-**Question 2**: how many genes are there in total?<br>
-
-```{r solution1-2}
-#TODO only in solutions
-# 1. 
-colnames(counts)
-# there are 4 untreated and 3 treated samples
-# 2. 
-nrow(counts)
-# 14599
-# equivalent to do 
-dim(counts)[1]
-```
-
+Let's take a look at it:
 When loading data from a file, a good plausibility check is to print out some of 
 the data, and maybe not only at the very beginning, but also at some random 
 point in the middle, as we have done above. The table is a matrix of integer 
 values: the value in the $i$th row and the $j$th column of the matrix indicates 
-**how many reads have been mapped to gene $i$ in sample $j$**.  
+**how many reads have been mapped to gene $i$ in sample $j$**.  <br>
+
+**Question 1**: print a point in the middle of the dataset, what are the columns in the matrix? What do they correspond to? <br>
+
+**Question 2**: how many genes are there in total?<br>
 
 **Question 3**: what is the read count for the 41st gene in the 3rd sample?<br>
+
 **Question 4**: what is the name of the gene? And of the sample?<br>
-```{r solution3-4}
+
+```{r solution1-2}
 #TODO only in solutions
+# 1.
+counts[ 2000+(0:3), ]
+# there are 4 untreated and 3 treated samples
+# 2. 
+nrow(counts)
+# equivalent to do 
+dim(counts)[1]
+```
+
+```{r solution3-4}
 # 3. 
 counts[41,3]
 # 4. 
@@ -114,7 +114,7 @@ pasillaSampleAnno = read.csv(annotationFile)
 pasillaSampleAnno
 ```
 
-As we see here, the overall dataset was produced in batches (indicated in the column "type" here)
+As we see here, the overall dataset was produced in batches (indicated in the column `type` here)
 the first one consisting of sequencing libraries that were subjected to **single-read** 
 sequencing, the second batch consisting of libraries for which **paired-end**
 sequencing was used.  
@@ -123,12 +123,10 @@ To have a general overview of our dataset, we can use the `str()` function (you 
 ```{r str}
 str(pasillaSampleAnno)
 ```
-**Question 5**: how many columns contain numbers (integers) and how many are characters? <br>
-**Answer 5**: "number.of.lanes" and "exon.counts" are "int" - intergers; all others are "chr" - characters
 
 Let's convert the relevant columns of
 ``pasillaSampleAnno`` into factors, overriding the default level ordering 
-(which is alphabetical) by one that makes more sense to us.
+(which is alphabetical) by one that makes more sense to us. This is needed to avoid warning messages when constructing the DEseq2 object.
 
 ```{r factors}
 pasillaSampleAnno = mutate(
@@ -137,103 +135,114 @@ pasillaSampleAnno = mutate(
   type      = factor(type, levels = c("single-read", "paired-end")))
 ```
 
-**Question 6**: Are the "condition" and "type" column still characters?
-```{r solution6}
+**Question 5**: Are the "condition" and "type" column still characters?
+```{r solution5}
+# no they are factor now
 str(pasillaSampleAnno)
 ```
 
 Let's check if the design is balanced between the factor of interest, 
-``condition``, and the nuisance factor ``type``. 
-**Question 7**: How many sample are untreated and single-read, untreated and paired-end, treated and single-read, treated and paired-end?
-Tip: Use the ``table`` function. If you don't know how it works, look it up doing ``help(table)``
+``condition``, and the nuisance factor ``type``. <br>
+**Question 6**: How many sample are untreated and single-read, untreated and paired-end, treated and single-read, treated and paired-end?
+Tip: Use the ``table`` function. 
 
-```{r solution7}
+```{r solution6}
 table(pasillaSampleAnno[,c("condition","type")])
 ```
 Now that we have an idea of how the data look like, let's prepare them for the analysis.<br>
-We are going to use ``DESeq2``, that is a [Bioconductor package](https://bioconductor.org/packages/release/bioc/html/DESeq2.html) for differential gene expression analysis based on the negative binomial distribution. <br>
-To use the functions from this package, first we need to create a ``DESeqDataSet`` from the matrix ``counts`` and the sample annotation dataframe ``pasillaSampleAnno``. To do so we can use the constructor function ``DESeqDataSetFromMatrix``.<br>
-Look at this code now, do you know what each line does? Execute it step by step and look at the new objects created.<br>
+We are going to use ``DESeq2``. To use the functions from this package, first we need to create a ``DESeqDataSet`` using:
 
-**Question 8**: how is `pasillaSampleAnno[mt, ]` different from `pasillaSampleAnno`?<br>
-**Answer 8**: `pasillaSampleAnno[mt, ]` is ordered so that the order of column `file` matches the order of the column names in `counts`
+  1. the ``counts`` matrix with read counts for each gene (gene id are in row names) in each sample (sample id are in column names) 
+  2. the ``pasillaSampleAnno`` sample annotation dataframe , where per each sample we have different information.
+  
+We can use the constructor function ``DESeqDataSetFromMatrix``.<br>
+The very first step is to make sure the sample id are the same, and in the same order, 
+in the matrix `counts` and the sample annotation dataframe `pasillaSampleAnno`.
 
-**Question 9**: what is the class of `pasilla` object? Is it a "SummarizedExperiment"<br>
-**Answer 9**: it is a "DESeqDataSet", specific of the "DESeq2" dataset. Yes it is. <br>
+**Hands-on:** take a look at the samples id in the two dataset, make them matching. 
+Check that they are in the exact same order, that's critical for running DESeq2.
+```{r solution hands-ons, message = FALSE, warning = FALSE}
+# sample id in `pasillaSampleAnno` are found in the column `pasillaSampleAnno$file`
+# to make sure they match to sample id in `counts`, 
+# we need to remove the `fb` that happens to be used in the `file` column for some reason; 
+# and we match them with the match function to the column names of the matrix `counts`
+rownames(pasillaSampleAnno) = sub("fb$", "", pasillaSampleAnno$file)
+mt = match(colnames(counts), rownames(pasillaSampleAnno))
+pasillaSampleAnno = pasillaSampleAnno[mt,]
 
-You can always use `is()` function to check that your object is what you expect it to be. <br>
-
-**Question 10**: for example are `pasillaSampleAnno` and `counts` data frames (data.frame) or matrices (matrix)?
-```{r solution10}
-is(pasillaSampleAnno, "data.frame")
-is(counts, "matrix")
+# Check if the order is the same, that's critical for running DESeq2
+# TODO
+all(rownames(pasillaSampleAnno) == colnames(counts))
 ```
+Now, we can move on to construct the DeSeqDataSet object. For this we will use the `DESeqDataSetFromMatrix()`{.R} function. In this function we specify the countData, the colData and the design. Here, the design argument is classifying the samples into the two groups that we want to test (treated vs untreated).
 
-```{r DESeq2, message = FALSE, warning = FALSE}
-mt = match(colnames(counts), sub("fb$", "", pasillaSampleAnno$file))
-
+```{r DESeq2.2, include=TRUE}
 pasilla = DESeqDataSetFromMatrix(
   countData = counts,
-  colData   = pasillaSampleAnno[mt, ],
+  colData   = pasillaSampleAnno,
   design    = ~ condition)
 
 class(pasilla)
 is(pasilla, "SummarizedExperiment")
 ```
+**Question 7**: what is the class of `pasilla` object? Is it a "SummarizedExperiment"?<br>
+**Answer 7**: it is a "DESeqDataSet", specific of the "DESeq2" dataset. Yes it is. <br>
 
-Note how in the code above, we have to put in extra work to match the column 
-names of the ``counts`` object with the ``file`` column of the 
-``pasillaSampleAnno`` dataframe, in particular, we need to remove the ``fb`` 
-that happens to be used in the ``file`` column for some reason. Such data 
-wrangling is very common. One of the reasons for storing the data in a 
-``DESeqDataSet`` object is that we then no longer have to worry about such 
-things.
-
+You can always use `is()` function to check that your object is what you expect it to be. <br>
 
 The ``SummarizedExperiment`` class --and therefore ``DESeqDataSet``-- also
 contains facilities for storing annotation of the rows of the count matrix. 
 For now, we are content with the gene identifiers from the row names of 
 the ``counts`` table.
 
-
-**Question 11**: When we constructed our `SummarizedExperiment` object, we 
+**Question 8**: When we constructed our `SummarizedExperiment` object, we 
 also saved some column metadata which we had initially stored in 
 `pasillaSampleAnno`. With which function can we extract this information again?
 (Hint: type `?SummarizedExperiment`, look at the example at the end of the help. You can also print `pasilla` and see how it looks like)
-```{r solution11}
+```{r solution8}
 colData(pasilla)
 ```
-
 
 
 ## The DESeq2 method
 
 After these preparations, we are now ready to jump straight into differential 
 expression analysis. A choice of standard analysis steps are wrapped into a
-single function, ``DESeq``.
+single function, ``DESeq``. This function takes the DESeqDataSet and returns a DESeqDataSet, but with lots of added information (normalization, dispersion estimates, differential expression results, and more). 
+It is a "wrapper" function that calls other functions: in order,
+``estimateSizeFactors``, ``estimateDispersions`` (for dispersion estimation) and 
+``nbinomWaldTest`` (for hypothesis tests for differential abundance). (You can
+always call these functions individually if you want to modify their behavior
+or interject custom steps.) Let us look at the results.
+
 
 ```{r deseq}
 pasilla = DESeq(pasilla)
 ```
 
-The DESeq function is simply a wrapper that calls, in order, the functions 
-``estimateSizeFactors``, ``estimateDispersions`` (dispersion estimation) and 
-``nbinomWaldTest`` (hypothesis tests for differential abundance). You can
-always call these functions individually if you want to modify their behavior
-or interject custom steps. Let us look at the results.
 
 ```{r theresults}
-res = results(pasilla)
+#res = results(pasilla)
+res = results(pasilla, tidy = TRUE) %>% as_tibble()
 res[order(res$padj), ] %>% head
 ```
-The first step after a differential expression analysis is visualization of the
-results.
-
+Finally, its time to look at the results!
 
 ### Histogram of p-values
 
-Now let's take a look at the p-value distribution:
-```{r hist1, fig.width = 4.5, fig.height = 4.5}
+**Question 9**: Check what kind of information is stored in the results table. Do you know why we have a p-value and an adjusted p-value? Which one should you use for further analysis of the differentially expressed genes (DE genes)?<br>
+**Answer 9**:
+For our downstream analysis we should use the adjusted p-value. 
+This p-value is taking into account the number of statistical tests DESeq2 is taking. 
+If we don´t correct for multiple testing we will get many false positives just by chance. 
+For example, if we use test 10000 genes and a standard p-value cut-off of 0.05, 
+we would expect 500 genes to be significantly differentially expressed by chance. 
+
+
+One first important step is to visualize the data and to look a their distribution.<br>
+
+Let's take a look at the p-value distribution:
+```{r hist1, fig.width = 4.5, fig.height = 4.5, warning=FALSE}
 ggplot(as(res, "data.frame"), aes(x = pvalue)) +
   geom_histogram(binwidth = 0.01, fill = "Royalblue", boundary = 0)
 ```
@@ -241,77 +250,19 @@ ggplot(as(res, "data.frame"), aes(x = pvalue)) +
 The distribution displays two main components: a uniform background with values 
 between 0 and 1, and a peak of small p-values at the left.  
 
-**Question 12**: which genes do you think correspond to differentially expressed genes? Why?<br>
+**Question 10**: which genes do you think correspond to differentially expressed genes? Why?<br>
 
-**Answer 12**: The uniform background corresponds to the non-differentially expressed genes. Usually this 
+**Answer 10**: The uniform background corresponds to the non-differentially expressed genes. Usually this 
 is the majority of genes. The left hand peak corresponds to differentially 
 bioexpressed genes.
 
 The ratio of the level of the background to the height of the peak gives us 
 a rough indication of the false discovery rate (FDR) that would be associated 
-with calling the genes in the leftmost bin differentially expressed.
+with calling the genes in the leftmost bin differentially expressed.<br>
 
-**Question 13**: What is the FDR (in %) for the leftmost bin (i.e. when
-rejecting hypotheses smaller than 0.01)? The code snippet below might be a good 
-starting point. Estimate the background level with the median bin count in the 
-histogram object.
-
-```{r hist2}
-# Assuming p_values is your vector of p-values
-pv_hist <- hist(res$pvalue, breaks=seq(0, 1, length=100), plot=F)
-
-# Extract the counts from the histogram
-pv_counts <- pv_hist$counts
-
-# Estimate the background level with the median bin count
-background <- median(pv_counts)
-
-# Count for the leftmost bin (i.e., p-values < 0.01)
-left_bin <- pv_counts[1]
-
-# Calculate the False Discovery Rate (FDR) for the leftmost bin
-FDR <- (left_bin / background) * 100
-
-# Print the FDR
-FDR
-
-```
-
-Recall from class the we can use `p.adjust` function to conduct multiple testing 
-directly on the p-values (and we reject the adjusted p-values $\leq \alpha$). 
-Let us quickly extract the p-values and remove the NAs:
-
-```{r}
-pvals <- na.omit(res$pvalue)
-```
-
-**Question 14**: How many p-values are <= 0.1?
-
-**Question 15**: How many hypotheses do you reject with Benjamini-Hochberg 
-at a FDR of 0.1?
-
-**Question 16**: How many hypotheses do you reject with Bonferroni at a 
-FWER of 0.1?
-
-```{r solution14-16}
-# 14.
-sum(pvals <= 0.1)
-
-# 15. 
-pvals_FDR <- p.adjust(pvals, method = "BH")
-sum(pvals_FDR <= 0.1)
-
-# 16.
-pvals_Bon <- p.adjust(pvals, method = "bonferroni")
-sum(pvals_Bon <= 0.1)
-
-```
-
-You might notice that your answer to 15 is different than what the adjusted
-p-values in `res$padj` might imply; the reason is that internally DESeq2 
-uses a more advanced method to do the FDR correction compared to 
-Benjamini-Hochberg (a simplified variant of IHW in which low counts genes get 
-filtered out). 
+There are different methods for the FDR p-value correction, internally DESeq2 uses a method that 
+is more advanced than the widely used Benjamini-Hochberg method (a simplified variant of IHW in which low counts genes get 
+filtered out). You can find the adjusted p-values in `res$padj`. 
 
 We can use the p-value histogram plot for
 diagnostic purposes. Let's look at a simulation to understand this point. 
@@ -336,18 +287,17 @@ ggplot(tibble(pvalue), aes(x = pvalue)) +
   geom_histogram(binwidth = 0.01, fill = "Royalblue", boundary = 0)
 ```
 
-Looks good. But now assume that two samples were processed on the same day 
-separately from the others. That day, something happened and the means in both 
-samples were shifted. In that case, the histogram is skewed to the right. 
+Looks good. All pvalues are background because there is not difference between control and treatment. 
 
-**Question 17**: Now try to modify the code above:<br>
+**Question 11**: Now try to modify the code above:<br>
 
   a. by simulating two control samples with mean different from the two treated samples, how does the plot look like?<br>
-  b. by shifting the mean of the second and fourth sample by two? What do you observe?
 
-```{r solution17, fig.width = 4.5, fig.height = 4.5}
-#a. 
-set.seed(0xdada2)
+```{r solution11, fig.width = 4.5, fig.height = 4.5}
+#a. by simulating two control samples with mean different from the two treated samples, how does the plot look like?
+# when we run random numbers, we can set a seed so that R will start always from the same random series, in this way the result is reproducible
+# if we want to change the result, we can change the seed
+set.seed(0xdada2) 
 y = cbind(rnorm(10000, 0, 1),
           rnorm(10000, 0, 1),
           rnorm(10000, 2, 1),
@@ -355,8 +305,18 @@ y = cbind(rnorm(10000, 0, 1),
 pvalue = rowttests(y, factor(c("C","C","T","T")))$p.value
 ggplot(tibble(pvalue), aes(x = pvalue)) +
   geom_histogram(binwidth = 0.01, fill = "Royalblue", boundary = 0)
+```
 
-#b.
+Now let's assume that two samples were processed on the same day 
+separately from the others. That day, something happened and the means in both 
+samples were shifted. In that case, the histogram is skewed to the right. 
+
+**Question 12**: Again, try to modify the code above to simulate this:<br>
+  b. Imagine that sample 2 and sample 4 were processed on the same day and for some
+  reason their mean are shifted to the right. Can you simulate this? What do you observe?
+
+```{r solution12, fig.width = 4.5, fig.height = 4.5}
+#b. Imagine that sample 2 and sample 4 were processed on the same day and for some reason their mean are shifted to the right:
 set.seed(0xdada2)
 y = cbind(rnorm(10000, 0, 1),
           rnorm(10000, 2, 1),
@@ -377,52 +337,153 @@ identify blocking factors in an unsupervised fashion, see e.\,g.,
 [Leek and Storey 2007](http://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.0030161) 
 or [Stegle et al 2010](http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1000770).
 
-## Two-factor analysis of the pasilla data
+
+Now that we have checked that they distribute as expected, we can look at our results:<br>
+
+**Hands-on:** 
+
+  1. How many genes are differentially expressed, if we set the significance threshold for the adjusted p-value to < 0.05? 
+  2. Select one of the top DE genes of your analysis (genes with the lowest adjusted p-values). For this gene, obtain the count table using DESeqs `plotCounts()`{.R} function and plot the counts across the condition (treated vs. untreated) for this gene. Tip: You can either use this function directly for plotting, or you can set `returnData=TRUE`{.R} to obtain a count table and use this count table as input for ggplot.  
+  3. Most of the time, we are not interested in one single DE gene but we want to get an overview of all of them. Look up the Wikipedia article on [volcano plots](https://en.wikipedia.org/wiki/Volcano_plot_(statistics)). Using the results table, make a volcano plot that shows the log2 fold change on the x-axis, and the -log10 of the p-value on the y-axis. Color-code by whether the gene is significant and give your plot a title. 
+
+```{r handson solution}
+# How many genes are differentially expressed (padj < 0.05)?
+res %>% filter(padj < 0.05) %>% nrow()
+
+# Plot one of the counts across the two groups of one of the top DE genes?
+
+# First we order the DE genes according to their p-value
+DE_genes_ordered <- res %>% filter(padj < 0.05) %>% 
+  arrange(padj)
+
+# Let´s plot the first one from the list 
+# by changing this you can easily rerun the code below to plot the results for another gene
+gene_oi = "FBgn0039155" 
+
+# Plot it with the DESeq2 function
+plotCounts(pasilla, gene=gene_oi)
+
+# Plot it with ggplot
+plotCounts(pasilla, gene=gene_oi, returnData=TRUE) %>% 
+  ggplot(aes(condition, count)) + 
+  geom_boxplot(aes(fill=condition)) +
+  scale_y_log10() + 
+  theme_classic() +
+  scale_fill_manual(values = c("#FC766AFF", "#5B84B1FF")) +
+  ggtitle(gene_oi)
+
+
+# Make a Volcano Plot 
+vol_to_plot <- res %>%
+  mutate(significant = ifelse(padj < 0.05, TRUE, FALSE)) %>% 
+  arrange(padj)
+
+ggplot(vol_to_plot, aes(x = log2FoldChange, y = -log10(padj), color = significant)) + 
+  geom_point(size = 0.3) + 
+  theme_classic() +
+  scale_color_manual(values = c("#ADEFD1FF", "#00203FFF")) + 
+  ggtitle("Differentially expressed genes between treated and untreated samples")
+
+```
+Amazing! You performed your first Differential Expression Analysis!
+
+***
+
+
+## Advanced DESeq2: Two-factor analysis of the pasilla data
+
+**Covariates** can complicate our analysis and that it´s very important to account for them.
 
 Besides the treatment with siRNA, the ``pasilla`` data have another covariate,
 ``type``, which indicates the type of sequencing that was performed.
-With a PCA (not shown here, but you can try it out!) we can see that the sequencing ``type``
+
+One way to test whether a covariate is influencing our analysis can be by looking at the Principal Component Analysis:
+
+### PCA plot
+
+This type of plot is useful for visualizing the overall effect of experimental 
+covariates and/or to detect batch effects. First we need a data
+transformation, the regularized logarithm or ``rlog``. 
+
+**Question 13**: Can you reproduce the PCA plot below using ``plotPCA``?
+Don't forget to transform the data (tip: there's a function for that too `?rlogTransformation`)
+
+```{r solution13-PCA, echo=F, message=FALSE}
+pas_rlog = rlogTransformation(pasilla)
+plotPCA(pas_rlog, intgroup=c("condition", "type")) + coord_fixed()
+```
+
+
+
+**Question 14**: take a look at the plot, how do the sample distribute? Which component are important to explain this distribution?<br>
+**Answer 14**: Here, the first principal axis,
+PC1, is mostly aligned with the experimental covariate of interest 
+(untreated / treated), while the second axis is roughly aligned with 
+the sequencing protocol (single-read / paired-end). 
+
+
+With a PCA we can see that the sequencing ``type``
 has a considerable systematic effect on the data. 
 Our basic analysis did not take this account, but we will do so now. 
 This should help us get a more correct picture of which
 differences in the data are attributable to the treatment, and which are
 confounded --or masked-- by the sequencing type.
 
+**Hands-on:**<br>
+Rerun the differential expression analysis, but this time account for `type` using a multi-factor design. For this, go to the [DESeq2 vignette](https://bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#multi-factor-designs) and read about how to use multi-factor designs.
+
 ```{r replaceDesign}
 pasillaTwoFactor = pasilla
-# with design we are including the covariates in the formula...
+
+# usign the 'design' function we can change the formula and include the covariates 
 design(pasillaTwoFactor) = formula(~ type + condition)
-pasillaTwoFactor = DESeq(pasillaTwoFactor)
-```
 
-Of the two variables ``type`` and ``condition``, the one of primary interest
-is the latter, and in ``DESeq2``, the convention is to put it at the end of the
-formula. This convention has no effect on the model fitting, but it helps 
-simplify some of the subsequent results reporting. Again, we access the results 
-using the
-``results`` function.
+# Or we can create a new one using DESeqDataSetFromMatrix again, where we put change the design argument - this is equivalent to the one above
+pasillaTwoFactor <- DESeqDataSetFromMatrix(countData = counts,
+                              colData = pasillaSampleAnno,
+                              design = ~ type + condition)
 
-```{r multiResults}
+# Note: Of the two variables `type` and `condition`, the one of primary interest
+# is the `condition`, and in `DESeq2`, the convention is to put it at the end of the
+# formula. This convention has no effect on the model fitting, but it helps 
+# simplify some of the subsequent results reporting.
+
+#Rerun the DESeq() function 
+pasillaTwoFactor <- DESeq(pasillaTwoFactor)
+
+#Storing the results table
 res2 = results(pasillaTwoFactor)
 head(res2, n = 3)
-```
 
-It is also possible to retrieve the $\log_2$ fold changes, p-values and adjusted
-p-values associated with the ``type`` variable.  The function ``results`` takes an
-argument ``contrast`` that lets users specify the name of the variable, the level
-that corresponds to the numerator of the fold change and the level that corresponds
-to the denominator of the fold change.
-
-```{r multiTypeResults}
+# We can retrieve the *log_2* fold changes, p-values and adjusted p-values associated with the `type` variable.
+# The function `results` takes an argument `contrast` that 
+# lets users specify the name of the variable, the level
+# that corresponds to the numerator of the fold change and the level that corresponds
+# to the denominator of the fold change. 
 resType = results(pasillaTwoFactor, 
-                  contrast = c("type", "single-read", "paired-end"))
+                  contrast = c("type", "single-read", "paired-end"), tidy = TRUE) %>% as_tibble()
 head(resType, n = 3)
+
 ```
 
 So what did we gain from this analysis that took into account ``type`` as a 
-nuisance factor (sometimes also called, more politely, a ``blocking factor``), 
-compared to the simple comparison between two groups? Let us plot the
-p-values from both analyses against each other.
+nuisance factor (sometimes also called, more politely, a "blocking factor"), 
+compared to the simple comparison between two groups? 
+
+**Question 15**: How many genes are significantly differentially expressed in the new results?<br>
+**Question 16**: How big is the overlap of the DE genes, if you take the covariate sequencing type into account?<br>
+```{r solution15-16}
+# 15.How many genes are significantly differentially expressed?
+resType %>% filter(padj < 0.05) %>% nrow()
+
+# 16.How big is the overlap of the DE genes, if you take the covariate sex into account?
+DE_genes_cov <- resType %>% filter(padj < 0.05) %>% 
+  arrange(padj)
+
+length(intersect(DE_genes_ordered$row, DE_genes_cov$row))
+```
+
+Let us plot the p-values from both analyses against each other.
 
 ```{r scpres1res2,  warning = FALSE}
 trsf = function(x) ifelse(is.na(x), 0, (-log10(x)) ^ (1/6))
@@ -443,9 +504,9 @@ of visualization. We can see a trend for the joint distribution to lie above the
 bisector, indicating that the p-values in the two-factor analysis are generally 
 smaller than those in the one-factor analysis.
 
-As we can see, the p-values in the two-factor analysis are similar to those 
+As we can see, the p-values in the **two-factor analysis** are similar to those 
 from the one-factor analysis, but are generally smaller. The more sophisticated 
-analysis has led to an, albeit modest, increase in power. We can also see this 
+analysis has led to an, albeit modest, **increase in power.** We can also see this 
 by counting the number of genes that pass a certain significance threshold in 
 each case:
 
@@ -480,3 +541,4 @@ on the data.
 As a note of caution: The two p-values calculated above (one with ~condition
 and one with ~type+condition) correspond to different null hypotheses. This 
 can be a problem when the blocking factor and condition are correlated.
+

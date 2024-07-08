@@ -1625,13 +1625,14 @@ script.</li>
 <h3>Installing packages</h3>
 <p>Please install these packages that you are going to need in the
 following days:<br></p>
-<div id="lab-1---intro-to-tidy-r" class="section level4">
-<h4>Lab 1 - intro to tidy R:<br></h4>
+<div id="lab---intro-to-tidy-r" class="section level4">
+<h4>Lab - intro to tidy R:</h4>
 <p>Install <code>Bioconductor</code></p>
 <pre class="r"><code>if (!require(&quot;BiocManager&quot;, quietly = TRUE))
   install.packages(&quot;BiocManager&quot;)
 BiocManager::install(version = &quot;3.19&quot;)</code></pre>
-<pre class="r"><code>pkgs_needed = c(&quot;dplyr&quot;, &quot;ggplot2&quot;, &quot;tidyverse&quot;, &quot;DESeq2&quot;, &quot;patchwork&quot;)
+<pre class="r"><code>pkgs_needed = c(&quot;dplyr&quot;, &quot;ggplot2&quot;, &quot;tidyverse&quot;, &quot;DESeq2&quot;, 
+                &quot;patchwork&quot;, &quot;limma&quot;, &quot;muscat&quot;,&quot;purrr&quot;)
 
 letsinstall = setdiff(pkgs_needed, installed.packages()) 
 if (length(letsinstall) &gt; 0) {
@@ -1640,8 +1641,8 @@ if (length(letsinstall) &gt; 0) {
   }
 }</code></pre>
 </div>
-<div id="lab-2---quarto" class="section level4">
-<h4>Lab 2 - Quarto:</h4>
+<div id="lab---quarto" class="section level4">
+<h4>Lab - Quarto:</h4>
 <p>In the next days we are going to introduce you to literate
 programming with Quarto (and R Markdown). More about it in the
 Lab2_quarto</p>
@@ -1686,18 +1687,8 @@ if (length(letsinstall) &gt; 0) {
   }
 }</code></pre>
 </div>
-<div id="lab-3--" class="section level4">
-<h4>Lab 3 - ?:</h4>
-<pre class="r"><code>pkgs_needed = c(&quot;&quot;,&quot;&quot;,&quot;&quot;)
-letsinstall = setdiff(pkgs_needed, installed.packages()) 
-if (length(letsinstall) &gt; 0) {
-  for (pkg in letsinstall) {
-    BiocManager::install(pkg, dependencies = TRUE)
-  }
-}</code></pre>
-</div>
-<div id="lab-4---multivariate" class="section level4">
-<h4>Lab 4 - multivariate:</h4>
+<div id="lab---multivariate" class="section level4">
+<h4>Lab - multivariate:</h4>
 <pre class="r"><code>pkgs_needed = c(&quot;tidyverse&quot;,&quot;GGally&quot;, &quot;factoextra&quot;, &quot;ade4&quot;)
 letsinstall = setdiff(pkgs_needed, installed.packages()) 
 if (length(letsinstall) &gt; 0) {
@@ -1705,8 +1696,8 @@ if (length(letsinstall) &gt; 0) {
     BiocManager::install(pkg, dependencies = TRUE)
 }</code></pre>
 </div>
-<div id="lab-5---clustering" class="section level4">
-<h4>Lab 5 - clustering:</h4>
+<div id="lab---clustering" class="section level4">
+<h4>Lab - clustering:</h4>
 <pre class="r"><code>pkgs_needed = c(&quot;tidyverse&quot;,
   &quot;dbscan&quot;, &quot;GGally&quot;, &quot;pheatmap&quot;,
   &quot;flowCore&quot;,&quot;flowViz&quot;,&quot;flowPeaks&quot;, &quot;ggcyto&quot;
@@ -1717,8 +1708,8 @@ if (length(letsinstall) &gt; 0) {
     BiocManager::install(pkg, dependencies = TRUE)
 }</code></pre>
 </div>
-<div id="lab-6---testing" class="section level4">
-<h4>Lab 6 - testing:</h4>
+<div id="lab---testing" class="section level4">
+<h4>Lab - testing:</h4>
 <pre class="r"><code>pkgs_needed = c(&quot;dplyr&quot;,&quot;ggplot2&quot;, &quot;DESeq2&quot;,&quot;pasilla&quot;,&quot;genefilter&quot;,
                 &quot;pheatmap&quot;,&quot;readr&quot;,&quot;tibble&quot;,&quot;apeglm&quot;)
 
@@ -1729,14 +1720,8 @@ if (length(letsinstall) &gt; 0) {
   }
 }</code></pre>
 </div>
-<div id="lab-7--" class="section level4">
-<h4>Lab 7 - ?:</h4>
-</div>
-<div id="lab-8--" class="section level4">
-<h4>Lab 8 - ?:</h4>
-</div>
-<div id="lab-9---machine-learning" class="section level4">
-<h4>Lab 9 - machine learning:</h4>
+<div id="lab---machine-learning" class="section level4">
+<h4>Lab - machine learning:</h4>
 <pre class="r"><code>pkgs_needed = c(&quot;MASS&quot;,&quot;ExperimentHub&quot;, &quot;tidyverse&quot;,&quot;glmnet&quot;,
                 &quot;RColorBrewer&quot;,&quot;caret&quot;, &quot;magrittr&quot;)
 letsinstall = setdiff(pkgs_needed, installed.packages()) 
@@ -1746,8 +1731,8 @@ if (length(letsinstall) &gt; 0) {
   }
 }</code></pre>
 </div>
-<div id="applications" class="section level4">
-<h4>applications</h4>
+<div id="single-cell-data-applications" class="section level4">
+<h4>single-cell data applications</h4>
 <pre class="r"><code>pkgs_needed = c(&quot;muscData&quot;, &quot;scran&quot;, &quot;scuttle&quot;, &quot;scater&quot;)
 letsinstall = setdiff(pkgs_needed, installed.packages()) 
 if (length(letsinstall) &gt; 0) {
