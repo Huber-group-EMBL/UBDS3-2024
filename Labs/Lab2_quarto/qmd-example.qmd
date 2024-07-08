@@ -1,0 +1,43 @@
+---
+title: "My first Quarto document"
+author: "Jane Doe"
+date: "`r Sys.Date()`"
+date-format: "long"
+toc: true
+execute:
+    echo: false
+    eval: true
+format: 
+    html:
+        theme: cosmo
+        embed-resources: true
+params:
+    species: "virginica"
+---
+
+
+# Analysis of iris dataset
+
+```{r}
+#| label: head
+print(head(iris))
+```
+
+These are the first 6 rows of the `iris` dataset 
+that contains a total of `{r} nrow(iris)` observations.<br>
+
+The species present in the dataset are the following ones: 
+```{r}
+#| label: species
+print(levels(iris$Species)) # you can use levels because iris$Species is a factor
+```
+
+Summary of the measurements of sepal length and width in the whole dataset:
+```{r}
+#| echo: true
+#| label: summary
+summary(iris$Sepal.Length)
+summary(iris$Sepal.Width)
+```
+
+
