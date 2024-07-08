@@ -739,9 +739,7 @@ Or directly HTML:
 
 Using the workflow described above, we have a way to reproducibly
 generate figure panels starting from a suitably processed input data
-file. In this section, we will see how we can combine these panels into
-complete figures, which can be directly inserted into your manuscript.
-For this we will use the
+file. Remember the figure you just created in the previous lab, we used the 
 [`patchwork`](https://patchwork.data-imaginist.com/) R package. This is
 not the only R package that allows this type of workflow - you can also
 have a look at
@@ -752,45 +750,6 @@ In python, there is a corresponding package
 The idea behind these packages is that we create the individual figure
 panels as usual, and the use the capabilities of (e.g.) `patchwork` to
 assemble the panels in a suitable configuration.
-
-Let's look at an example. We start by creating three plots, using the
-built-in `iris` data set.
-
-```{r}
-library(ggplot2)
-(p1 <- ggplot(iris, aes(x = Sepal.Length, y = Petal.Length)) + 
-    geom_point(size = 3, aes(color = Species)) + 
-    theme_bw())
-(p2 <- ggplot(iris, aes(x = Sepal.Length)) + 
-    geom_histogram(bins = 15) + 
-    theme_bw())
-(p3 <- ggplot(iris |> dplyr::mutate(index = seq_along(Petal.Length)), 
-              aes(x = index, y = Sepal.Length)) + 
-    geom_line() + 
-    theme_bw())
-```
-
-Next, we combine them into a single figure using `patchwork`. 
-
-  + The `|`symbol is used when we want panels to appear next to each other, in the
-same row. 
-  + The `/` symbol is used when we want panels to appear
-underneath each other, in the same column. 
-
-`patchwork` will do its best to align the axes of the different panels as well as possible, to
-provide a nice and clean visualization.
-
-```{r}
-library(patchwork)
-(p1 | p2) / p3
-```
-
-`patchwork` works with base plots as well as plots generated using
-`ggplot2`.
-
-```{r}
-(p1 | ~hist(iris$Sepal.Length)) / p3
-```
 
 We can also include **pre-generated image files** (e.g., in png format).
 This can be useful if we want to generate figures containing panels with
@@ -805,59 +764,17 @@ to get such files into R and a format compatible with `patchwork` or
 
 puppy <- cowplot::ggdraw() +
     cowplot::draw_image("https://publicdomainvectors.org/photos/johnny_automatic_puppy.png")
-p1 | puppy
+puppy
 ```
 
 We can also add a shared title(`title`), a caption(`caption`), and labels(`tag_levels`) for the individual
 panels. In this way, it is often possible to reproducibly generate
 figures that can be directly used in a publication.
 
-```{r}
-p <- (p1 | p2) / p3
-p + plot_annotation(
-    title = "Some plots for the iris data set",
-    caption = "Here we can put source information",
-    tag_levels = 'A'
-) & 
-    theme_minimal()
-```
-
 Many more examples and guidance can be found on the [patchwork
 website](https://patchwork.data-imaginist.com/).
 
-:::{.callout-warning title="exercise " icon="false"}
-Add a plot of the sepal length vs the sepal width per one species, with on the side the image of that species.<br>
 
-<details>
-<summary><b>
-Possible solution - try it by yourself first
-</b></summary>
- 
- + Look for the image of the species on internet. 
- + in the same folder as `qmd-example.qmd` create a subfolder called 'figs' to store the images
- + save the images in the 'figs/' folder with the corresponding name, e.g. "virginica.jpeg". <br>
- Save them with a name that has the same structure, e.g. "<species>.png" or "<species>.jpeg" if you want to use the parameters.
- + in the `qmd-example.qmd` add
-
-```{{r}}
-library(ggplot2)
-library(patchwork)
-
-p1 <- ggplot(species_oi, aes(x = Sepal.Length, y = Sepal.Width)) + 
-    geom_point(size = 3) + 
-    theme_bw()
-picture <- cowplot::ggdraw() + cowplot::draw_image(paste("figs/",params$species,".jpeg", sep=""))
-
-p <- (p1 | picture)
-p + plot_annotation(
-    title = paste("Species", params$species),
-    tag_levels = 'A'
-) & 
-    theme_minimal()
-```
-</details>
-
-:::
 # Reproducible publishing with journal templates
 
 So far, we have seen how we can write reports and generate complete
