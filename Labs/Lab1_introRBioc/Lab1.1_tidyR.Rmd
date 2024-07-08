@@ -1,6 +1,6 @@
 ---
-title: "Introduction to DESeq2 for RNA-seq Differential Expression Analysis"
-author: "adapted from Lars Velten & Julia Rühle"
+title: "Introduction to data structure and filtering"
+author: "adapted from Julia Rühle"
 date: "`r format(Sys.time(), '%B %d, %Y')`"
 output:
   html_document:
@@ -241,27 +241,4 @@ Let's try to reproduce some parts of the paper of Figure 1 to visualize the dist
 * Have a look at Figure 1 (panel c and d) of the paper before starting this excercise. The link of the paper is provided at the beginning of the document. 
 * Use a boxplot to visualize the distribution of age of the patients across the different groups of diagnosis (Fig. 1, panel c). It is also useful to not only plot the boxes, but also the data points itself. You can check on the internet how to plot the points on top of the boxplot and how to change the colors of the boxes. 
 * Compute the **proportion** of sexes for the different diagnosis groups (Fig. 1, panel d) using the tidyverse functions `group_by()`{.R}, `summarise()`{.R} and `mutate()`{.R} visualize it in a stacked bar chart. If you are not happy with the colors, fontsizes or anything of the plot, you can always google.   
-
-
-
-***
-
-Until now we have analysed some data that was provided and was on our computer, as if they were our own data.<br>
-There are many example of data shared in Bioconductor, for example the 
-
-```{r loading packages, include=TRUE, eval=TRUE, results='hide'}
-pkgs_needed = c("limma","muscat","purrr","ExperimentHub","scater")
-letsinstall = setdiff(pkgs_needed, installed.packages()) 
-if (length(letsinstall) > 0) {
-  for (pkg in letsinstall) {
-    BiocManager::install(pkg, dependencies = TRUE)
-  }
-}
-
-library(limma)
-library(muscat)
-library(purrr)
-library(ExperimentHub)
-library(scater)
-```
 
