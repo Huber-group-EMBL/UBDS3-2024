@@ -67,7 +67,8 @@ Let's first get to know our data sets.
 
 ```{r}
 #| label: questions-1-5-answers
-#| echo: !expr (! params$include_answers)
+#| eval: !expr params$include_answers
+#| echo: !expr params$include_answers
 #| fig-width: 4
 #| fig-height: 4
 #| out-width: "60%"
