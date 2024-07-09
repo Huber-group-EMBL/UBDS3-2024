@@ -1,0 +1,1 @@
+quarto render document.ipynb -P alpha:0.2 -P ratio:0.3

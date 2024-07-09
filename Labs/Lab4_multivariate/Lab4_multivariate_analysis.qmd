@@ -1,14 +1,26 @@
 ---
-title: 'Lab 4:Multivariate Analysis'
+title: "Lab: Multivariate Analysis"
 author: "Bios 221: Modern Statistics for Modern Biology"
-date: "10/7/2024"
-output: 
-  html_document:
-    toc: true
-    toc_float: true
+date: "7/10/2024"
+format: 
+  html:
+    code-fold: false
+    code-tools: true
+    embed-resources: true
+    highlight-style: github
+    toc: true 
+    code-line-numbers: false 
+params:
+  include_answers: false
 ---
 
-## Goal
+```{r}
+#| label: initialize
+#| echo: FALSE
+knitr::opts_chunk$set(cache = TRUE, autodep = TRUE)
+```
+
+# Goal
 
 In this lab we will learn the basics of Multivariate Analysis and PCA using a few simple examples.
 
@@ -16,53 +28,87 @@ Work through this lab by running all the R code to your computer and making sure
 that you understand the input and the output. Make alterations where you seem
 fit. We encourage you to work through this lab with a partner. 
 
+# Setup
+
+The following code installs needed packages
+
 ```{r setup, warning=FALSE, message=FALSE, results='hide'}
-knitr::opts_chunk$set(echo = TRUE)
-pkgs_needed = c("tidyverse","GGally", "factoextra", "ade4")
+pkgs_needed = c("tidyverse", "GGally", "factoextra", "ade4")
 BiocManager::install(setdiff(pkgs_needed, installed.packages()))
 library("tidyverse")
 ```
 
-## Obtain Data 
-
-In this lab we will be working with the following two simple datasets:
+Obtain data sets that we will be working with.
 
 ```{r}
 turtles = read.table(url("https://web.stanford.edu/class/bios221/data/PaintedTurtles.txt"),
-                     header=TRUE)
+                     header = TRUE)
 head(turtles)
 ```
 
 ```{r}
 download.file(url = "https://web.stanford.edu/class/bios221/data/athletes.RData",
-              destfile = "athletes.RData",mode = "wb")
+              destfile = "athletes.RData", mode = "wb")
 load("athletes.RData")
-athletes[1:3,]
+athletes[1:3, ]
 ```
 
 Let's first get to know our data sets. 
 
-**Question 1**: How many athletes/turtles do you have in the data sets? 
+::: {.callout-note collapse="false"}
 
-**Question 2**: What's the record distance in the longjump category? And which athlete (number) made this record?
+## Questions
 
-**Question 3**: What's the average time across all athletes for the 100m run?
-
-**Question 4**: Can you plot the histogram showing the distribution of the times for the 100m run?
-
-**Question 5**: How many athletes of those who run faster than the average in the 100m run, also run faster than the average in the 1500m distance? 
+1. How many athletes / turtles do you have in the data sets? 
+2. What's the record distance in the longjump category? And which athlete (number) made this record?
+3. What's the average time across all athletes for the 100m run?
+4. Can you plot the histogram showing the distribution of the times for the 100m run?
+5. How many athletes of those who run faster than the average in the 100m run, also run faster than the average in the 1500m distance? 
 
 ```{r}
-# TODO
+#| label: questions-1-5-answers
+#| echo: !expr (! params$include_answers)
+#| fig-width: 4
+#| fig-height: 4
+#| out-width: "60%"
+
+#1
+nrow(athletes)
+nrow(turtles)
+
+#2
+max(athletes$long)
+which.max(athletes$long)
+
+#3 
+mean(athletes$m100)
+
+#4
+hist(athletes$m100)
+
+#5 
+av100  = mean(athletes$m100)
+av1500 = mean(athletes$m1500)
+
+sum( (athletes$m100 > av100) & (athletes$m1500 > av1500) )
+
+#5 alternative solution
+with(athletes, table(m100 > mean(m100), m1500 > mean(m1500)))
 ```
+
+:::
 
 ## Low dimensional data summaries and preparation
 
-It is instructive to first consider 2-dimensional summaries of the dataset: The function `ggpairs` of the GGally package gives a very nice summary of the features of the data set as well as on how they are correlated with each other. 
+It is instructive to first consider 2-dimensional summaries of the data. The function `ggpairs` from the `GGally` package gives a nice summary of the features and how they are correlated with each other. 
 
 ```{r}
+#| label: GGally
+#| fig-width: 5
+#| fig-height: 5
+#| out-width: "80%"
 library("GGally")
-ggpairs(turtles[,-1], axisLabels="none")
+ggpairs(turtles[, -1], axisLabels = "none")
 ```
 
 **Question 6**: What do you see on the diagonal? What do the stars indicate next to the correlation value?
@@ -72,31 +118,61 @@ ggpairs(turtles[,-1], axisLabels="none")
 **Question 8**: In the lecture, we have seen another way to investigate correlations in the data. Can you use the `pheatmap` function of the pheatmap package to illustrate the pairwise correlations of the features in the athletes data set. 
 
 ```{r}
+#| label: Heatmap
+#| fig-width: 6
+#| fig-height: 6
+#| out-width: "80%"
+
 # TODO
+
+#6 
+#Diagonal: Histogram displaying the distribution of the different variables
+#Stars indicate a significant correlation between the two variables  
+
+#7 
+ggpairs(athletes, axisLabels="none")
+
+#8
+library("pheatmap")
+pheatmap(cor(athletes), cellwidth = 20, cellheight = 20)
+
 ```
 
 ## Preprocessing the data
 
-In many cases, different variables are measured in different units and at different scales (usually measured with variance). To make the variables comparable, our first task in data analysis is to transform the data: Standardizing the data to a common standard deviation. This rescaling is done using the `scale` function which makes every column have a variance of 1 (and also mean 0).
+In many cases, different variables are measured in different units and at different scales. As discussed in the lecture, we have various options to transform the data. Here, we elect to standardize the data to a common standard deviation. This rescaling is done using the `scale` function, which subtracts the mean and divides by the standard deviation, so that every column has a unit standard deviation and mean zero.
 
 ```{r turtlesDim12}
-scaledTurtles=data.frame(scale(turtles[,-1]),sex=turtles[,1])
+scaledTurtles = data.frame(scale(turtles[, -1]), sex = turtles[, 1])
+head(scaledTurtles)
 ```
 
-**Question 1**: Can you compute the standard deviation and mean of each column in the `turtles` data frame? Can you do the same on the scaled dataset, i.e. on `scaledTurtles`? What was the mean of turtles' heights before standardizing?
+**Question 1**: Can you compute the standard deviation and mean of each column in the `turtles` data frame? Can you do the same on the scaled dataset, i.e. on `scaledturtles`? What was the mean of turtles' heights before standardizing?
 
 ```{r}
 # TODO
+
+#1 
+apply(turtles[,-1], 2, sd)
+apply(scaledTurtles[,-4], 2, sd)
+apply(turtles[,-1], 2, mean)
+
 ```
 
 We can visualize two columns/dimensions (for example height and width) of this scaled data using the ggplot package. 
 
 ```{r turtlesDim}
+#| label: ggplotscaledturtles
+#| fig-width: 5
+#| fig-height: 4
+#| out-width: "80%"
 library("ggplot2")
 
-ggplot(scaledTurtles,aes(x=width,y=height, group =sex)) +
-  geom_point(aes(color=sex))
+ggplot(scaledTurtles,aes(x = width,y = height, group = sex)) +
+  geom_point(aes(color = sex)) + coord_fixed()
 ```
+
+What is the purpose of the `coord_fixed()` modifier here?
 
 ## Dimensionality reduction
 
@@ -107,26 +183,26 @@ The first example will be the projection of the points in a two-dimensional spac
 But first we need to scale the athlete data set, in the same way as we did it with the turtles data set. 
 
 ```{r}
-#Scaling 
-athletes = scale(athletes)
-n = nrow(athletes)
-athletes = data.frame(athletes)
+scaledathletes = data.frame(scale(athletes))
+n = nrow(scaledathletes)
 ```
 
-```{r SimpleScatter}
-#Plotting the 2-dimensional points defined by weight(x-coordinate) and disc (y-coordinate)
-p = ggplot(athletes, aes(x = weight,y=  disc)) +
-  geom_point(size = 2, shape=21)
+```{r}
+#| label: ggplotscaledathletes
+#| fig-width: 5
+#| fig-height: 4
+#| out-width: "80%"
+# First, p is a 2-dimensional plot of the points defined by weight (x) and disc (y)
+p = ggplot(scaledathletes, aes(x = weight, y = disc)) + geom_point(size = 2, shape = 21)
 
-#Here we are adding the projected points (red) & theprojection lines (dashed)
+# Then we add the projected points (red) & the projection lines (dashed)
 p + geom_point(aes(y = rep(0, n)), colour="red") +
-  geom_segment(aes(xend = weight, yend = rep(0,n)), linetype = "dashed")
+    geom_segment(aes(xend = weight, yend = rep(0, n)), linetype = "dashed")
 ```
 
 Now try to do the following:
 
-**Question 1**: Calculate the variance of the red points in the above
-figure (points are projected onto the weight-axis).
+**Question 1**: Calculate the standard deviation of the red points' (their x-coordinates) in the above figure.
 
 **Question 2**: Make a similar plot showing projection lines onto the y 
 axis and show projected points in blue. What is the variance of the projected 
@@ -134,28 +210,41 @@ points now?
 
 ```{r}
 # TODO
+
+#1
+sd(scaledathletes$weight)
+
+#2
+p + geom_point(aes(x = rep(0, n)), colour="blue") +
+  geom_segment(aes(yend = disc, xend = rep(0, n)), linetype = "dashed")
+
+sd(scaledathletes$disc)
+
 ```
 
 ## Summarize 2D-data by a line
 
-In the above example when projecting the 2-dimensional points to the weight-axis, we lost the disc information. In order to keep more information, we will now project the 2 dimensional points onto a line.  
+In the above example when projecting the 2-dimensional points to the `weight` axis, we lost the `disc` information. In order to keep more information, we will now project the 2 dimensional point cloud onto another line.  
 
-For this, we first compute a linear model to find the regression line using the `lm` function (linear model). We regress `disc` (y-axis) on `weight` (x-axis); The regression line is defined by two parameters: its slope and its intercept. The slope a is given by the second coefficient in the output of `lm` and its intercept b is the first coefficient:
+For this, we first compute a linear model to find the regression line using the `lm` function (linear model). We regress `disc` on `weight`. The regression line is defined by two parameters: its slope and its intercept. The slope a is given by the second coefficient in the output of `lm` and its intercept b is the first coefficient:
 
-```{r Reg1}
-#computing the linear model 
-reg1 = lm(disc ~ weight,data = athletes)
+```{r}
+#| label: reg1
+#| fig-width: 5
+#| fig-height: 4
+#| out-width: "80%"
+reg1 = lm(disc ~ weight, data = scaledathletes)
 
-#extracting the intercept and slope values   
+# Extract intercept and slope values   
 a = reg1$coefficients[1] # Intercept
 b = reg1$coefficients[2] # slope
 
-#Plotting the points p (computed in the code section before) & the regression line 
+# Plot the points p (computed in the code section before) & the regression line 
 pline = p + geom_abline(intercept = a, slope = b, col = "blue", lwd = 1.5)
 
-#adding the projection lines (from the point to its fitted value)
+# Add the projection lines (from the point to its fitted value)
 pline + geom_segment(aes(xend = weight, yend = reg1$fitted),
-                     colour = "red", arrow = arrow(length = unit(0.15,"cm")))
+                     colour = "red", arrow = arrow(length = unit(0.15, "cm")))
 ```
 
 **Question 1**: Can you regress `weight` on `discs` and generate a similar plot?
@@ -164,6 +253,28 @@ pline + geom_segment(aes(xend = weight, yend = reg1$fitted),
 
 ```{r}
 # TODO
+
+#1
+reg2 = lm(weight ~ disc, data = scaledathletes)
+
+#extracting the intercept and slope values   
+a = reg2$coefficients[1] # Intercept
+b = reg2$coefficients[2] # slope
+
+#Plotting the points p (computed in the code section before) & the regression line 
+
+p = ggplot(scaledathletes, aes(x = disc,y=  weight)) +
+  geom_point(size = 2, shape=21)
+
+newline = p + geom_abline(intercept = a, slope = b, col = "green", lwd = 1.5)
+
+#adding the projection lines (from the point to its fitted value)
+newline + geom_segment(aes(y = weight, x = disc, yend = reg2$fitted, xend = disc), colour = "yellow") + coord_flip()
+
+
+#2
+
+
 ```
 
 ## A line that minimizes distances in both directions
@@ -174,7 +285,7 @@ Specifically, we compute a line that minimizes the sum of squares of the orthogo
 
 ```{r, include = FALSE}
 
-X = cbind(athletes$disc, athletes$weight)
+X = cbind(scaledathletes$disc, scaledathletes$weight)
 svda = svd(X)
 pc = X %*% svda$v[, 1] %*% t(svda$v[, 1])
 bp = svda$v[2, 1] / svda$v[1, 1]
@@ -204,6 +315,17 @@ turtlesc = scale(turtles[, -1])
 
 ```{r PCAturtles}
 # TODO
+
+#1 
+apply(turtles[,-1], 2, mean)
+apply(turtles[,-1], 2, var)
+
+#2
+turtlesc <- scale(turtles[,-1])
+
+#3
+pheatmap(cor(turtlesc))
+
 ```
 
 We basically saw that all 3 variables are very strongly correlated. Because of the strong correlations, we would expect that the data matrix can be well approximated by a rank 1 matrix. Let's do the PCA:
@@ -229,6 +351,13 @@ Note: Here we see one very large component in this case and two very small ones.
 
 ```{r}
 # TODO
+
+#4
+summary(pca1)
+
+#5
+#1 would be sufficient 
+
 ```
 
 Now, lets plot the samples with their PC1 and PC2 coordinates, together with the variables. The representation of both, the samples and the variables is called a biplot.  
@@ -243,6 +372,15 @@ fviz_pca_biplot(pca1, label = "var")
 
 ```{r}
 # TODO
+
+#6
+
+fviz_pca_biplot(pca1, label = "var", col.ind = turtles[,1]) 
+
+#7
+#females 
+
+
 ```
 
 ## Back to the athletes
@@ -253,7 +391,7 @@ Now let us try to run the PCA on a larger data set and interpret the correspondi
 library("ade4")
 
 #if we are the dudi.pca function we dont need to scale the data
-pca.ath = dudi.pca(athletes, scannf = FALSE)
+pca.ath = dudi.pca(scaledathletes, scannf = FALSE)
 pca.ath$eig
 ```
 
@@ -267,5 +405,17 @@ pca.ath$eig
 
 ```{r}
 #TODO 
-```
 
+#1
+fviz_eig(pca.ath, geom = "bar", bar_width = 0.3) + ggtitle("")
+
+#2
+# 2 or 4 
+
+#3
+fviz_pca_biplot(pca.ath, label = "var") 
+
+#4
+fviz_pca_ind(pca.ath) + ggtitle("") + ylim(c(-2.5,5.7))
+
+```
