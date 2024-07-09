@@ -1,6 +1,6 @@
 ---
 title: "Lab: Multivariate Analysis"
-author: "Bios 221: Modern Statistics for Modern Biology"
+author: "Wolfgang Huber, Susan Holmes, TAs of the Stanford class 'Modern Statistics for Modern Biology', Julia Ruehle"
 date: "7/10/2024"
 format: 
   html:
@@ -11,7 +11,7 @@ format:
     toc: true 
     code-line-numbers: false 
 params:
-  include_answers: false
+  include_answers: true
 ---
 
 ```{r}
@@ -22,7 +22,7 @@ knitr::opts_chunk$set(cache = TRUE, autodep = TRUE)
 
 # Goal
 
-In this lab we will learn the basics of Multivariate Analysis and PCA using a few simple examples.
+In this lab we will learn the basics of multivariate analysis and PCA using a few simple examples.
 
 Work through this lab by running all the R code to your computer and making sure 
 that you understand the input and the output. Make alterations where you seem
@@ -32,15 +32,22 @@ fit. We encourage you to work through this lab with a partner.
 
 The following code installs needed packages
 
-```{r setup, warning=FALSE, message=FALSE, results='hide'}
-pkgs_needed = c("tidyverse", "GGally", "factoextra", "ade4")
-BiocManager::install(setdiff(pkgs_needed, installed.packages()))
-library("tidyverse")
+```{r setup}
+#| label: setup
+#| warning: false
+#| message: false
+#| results: 'hide'
+install_if_needed = function(x) {
+  p = setdiff(x, installed.packages())
+  if (length(p) > 0) BiocManager::install(p)
+}
+install_if_needed(c("GGally", "factoextra", "ade4"))
 ```
 
 Obtain data sets that we will be working with.
 
 ```{r}
+#| label: turtlesload
 turtles = read.table(url("https://web.stanford.edu/class/bios221/data/PaintedTurtles.txt"),
                      header = TRUE)
 head(turtles)
@@ -135,7 +142,7 @@ ggpairs(turtles[, -1], axisLabels = "none")
 # Stars: significant correlation between the two variables  
 
 #2 
-ggpairs(athletes, axisLabels="none")
+ggpairs(athletes, axisLabels = "none")
 ```
 ```{r}
 #| label: questions-8-answers
@@ -201,6 +208,7 @@ The first example will be the projection of the points in a two-dimensional spac
 But first we need to scale the athlete data set, in the same way as we did it with the turtles data set. 
 
 ```{r}
+#| label: scaledathletes
 scaledathletes = data.frame(scale(athletes))
 n = nrow(scaledathletes)
 ```
@@ -211,10 +219,10 @@ n = nrow(scaledathletes)
 #| fig-height: 4
 #| out-width: "80%"
 # First, p is a 2-dimensional plot of the points defined by weight (x) and disc (y)
-p = ggplot(scaledathletes, aes(x = weight, y = disc)) + geom_point(size = 2, shape = 21)
+p = ggplot(scaledathletes, aes(x = weight, y = disc)) + geom_point(shape = 1)
 
 # Then we add the projected points (red) & the projection lines (dashed)
-p + geom_point(aes(y = rep(0, n)), colour = "#0056B9") +
+p + geom_point(aes(y = rep(0, n)), color = "#0056B9") +
     geom_segment(aes(xend = weight, yend = rep(0, n)), linetype = "dashed")
 ```
 
@@ -237,7 +245,7 @@ Now try to do the following:
 sd(scaledathletes$weight)
 
 #2
-p + geom_point(aes(x = rep(0, n)), colour = "#0056B9") +
+p + geom_point(aes(x = rep(0, n)), color = "#0056B9") +
   geom_segment(aes(yend = disc, xend = rep(0, n)), linetype = "dashed")
 
 sd(scaledathletes$disc)
@@ -276,22 +284,23 @@ Add the projection lines (from the point to its fitted value)
 #| fig-height: 4
 #| out-width: "80%"
 pline + geom_segment(aes(xend = weight, yend = reg1$fitted),
-                     colour = "#FFD800", arrow = arrow(length = unit(0.15, "cm")))
+                     color = "#FFD800", arrow = arrow(length = unit(0.15, "cm")))
 ```
 
 ::: {.callout-note collapse="false"}
 
-## Questions
+## Question
 
-1. Can you regress `weight` on `discs` and generate a similar plot?
-
-2. Can you create a plot that shows all points, as well as both regression lines, i.e., a plot that show both the line you get from `lm(disc ~ weight)` and `lm(weight ~ disc)`?
+Can you regress `weight` on `discs` and generate a similar plot?
 
 ```{r}
-#| label: questions-reg1-answers
+#| label: questions-reg1-answers1
 #| eval: !expr params$include_answers
 #| echo: !expr params$include_answers
 #| message: false
+#| fig-width: 4
+#| fig-height: 4
+#| out-width: "80%"
 #1
 reg2 = lm(weight ~ disc, data = scaledathletes)
 
@@ -301,16 +310,49 @@ b = reg2$coefficients[2] # slope
 
 # Plot the points p (computed in the code section before) & the regression line 
 
-p = ggplot(scaledathletes, aes(x = disc, y = weight)) + geom_point(size = 2, shape = 21) + coord_fixed()
-newline = p + geom_abline(intercept = a, slope = b, col = "#0056B9", lwd = 1.5)
+p = ggplot(scaledathletes, aes(x = disc, y = weight)) + geom_point(shape = 1) + coord_fixed()
+newline = p + geom_abline(intercept = a, slope = b, col = "#0056B9")
 
 # Add the projection lines (from the point to its fitted value)
-newline + geom_segment(aes(y = weight, x = disc, yend = reg2$fitted, xend = disc), colour = "#FFD800") + coord_flip()
+newline + geom_segment(
+  aes(y = weight, x = disc, yend = reg2$fitted, xend = disc), 
+  color = "#FFD800", 
+  arrow = arrow(length = unit(0.15, "cm"))) + coord_flip()
+```
 
+:::
 
-#2
+::: {.callout-note collapse="false"}
 
-# TO DO
+## Question
+
+Can you create a plot that shows all points, as well as both regression lines, i.e., a plot that show both the line you get from `lm(disc ~ weight)` and `lm(weight ~ disc)`?
+
+```{r}
+#| label: questions-reg1-answers2
+#| eval: !expr params$include_answers
+#| echo: false
+#| results: 'asis'
+cat("We plot the data such that the $x$-axis is `disc` and the $y$-axis is `weight`. So we can directly use the intercept and slope parameters from the first regression, `reg1`. For the second regression, `reg2`, we invert
+\\begin{align}
+y&=a+bx\\quad\\quad\\Rightarrow\\\\
+x&=-\\frac{a}{b}+\\frac{1}{b}y
+\\end{align}")
+```
+```{r}
+#| label: questions-reg1-answers3
+#| eval: !expr params$include_answers
+#| fig-width: 4
+#| fig-height: 4
+#| out-width: "80%"
+a1 = reg1$coefficients[1]
+b1 = reg1$coefficients[2]
+a2 = reg2$coefficients[1]
+b2 = reg2$coefficients[2]
+ggplot(scaledathletes, aes(x = disc, y = weight)) + geom_point(shape = 1) + 
+  coord_fixed() + 
+  geom_abline(intercept = a1, slope = b1 , col = "#0056B9") +
+  geom_abline(intercept = -a2/b2, slope = 1/b1, col = "#FFD800")
 ```
 
 :::
@@ -330,7 +372,7 @@ pc = X %*% svda$v[, 1] %*% t(svda$v[, 1])
 bp = svda$v[2, 1] / svda$v[1, 1]
 ap = mean(pc[, 2]) - bp * mean(pc[, 1])
 
-p + geom_segment(xend = pc[,1], yend = pc[,2]) + 
+p + geom_segment(xend = pc[, 1], yend = pc[, 2], arrow = arrow(length = unit(0.15, "cm"))) + 
   geom_abline(intercept = ap, slope = bp, col = "purple", lwd = 1.5) + 
   coord_fixed()
 
@@ -378,6 +420,7 @@ From the correlations, you see that all 3 variables are strongly correlated. Hen
 #| fig-width: 4
 #| fig-height: 4
 #| out-width: "60%"
+#| message: false
 library("factoextra")
 pca1 = princomp(turtlesc)
 pca1
