@@ -64,20 +64,10 @@ The data are stored in a zip file. Please download the .zip file and unpack the 
 
 Now, set your working directory to the path of the folder that contains the count and the meta data. You can use the function `setwd()` and paste the path to your `data` folder that you just opened. (You don't know where it is? You can check the path using the terminal). 
 
-```{r workng dir unsolved, include=T, eval=FALSE}
-# set your working directory 
-setwd('...') # paste here the path to your data folder
-```
-```{r workng dir, include=TRUE, eval=TRUE, echo=FALSE}
-setwd('/Users/htonnele/Desktop/UBDS_2024/develop/Lab1_RintroNbioc/data/') # paste here the path to your data folder
-counts <- read_csv("./bulk_RNA_counts.csv")
-meta <- read_csv("./bulk_RNA_metadata.csv")
-```
+```{r read in data, include=TRUE, eval=TRUE}
 
-```{r read in data, include=TRUE, eval=FALSE}
-
-counts <- read_csv("./bulk_RNA_counts.csv")
-meta <- read_csv("./bulk_RNA_metadata.csv")
+counts <- read_csv("./data/bulk_RNA_counts.csv")
+meta <- read_csv("./data/bulk_RNA_metadata.csv")
 
 ```
 
@@ -91,6 +81,29 @@ meta <- read_csv("./bulk_RNA_metadata.csv")
 * Have a look at the meta data, what information do you have about the patients? 
 * Whats the type of your data frame? How is it different from a dataframe read in using the base R `read.csv()`{.R} function?
 
+**Solutions:**
+```{r sol 1 , include=TRUE}
+
+# What does the abbreviation ENSG stand for? 
+# It stands for Ensembl Gene ID. Ensembl is a genome browser for vertebrate genomes. There is different genome browsers, so in some cases you will find different names for the same genes. 
+
+# How many genes does your count data have? 
+# This is the number of the rows in your count data 
+nrow(counts)
+
+# How many samples does your count data have? 
+ncol(counts)
+
+# Have a look at the meta data, what information do you have about the patients? 
+# All of the patient information can be found in the columns of the meta data. 
+meta
+
+# Whats the type of your data frame? How is it different from a data frame read in using the base R `read.csv()`{.R} function?
+# If you read in the data using the read_csv() function, this will create a tibble. Tibble is the data type we will need to apply the tidyverse package (which you will see later). For now, if you output the tibble compared to a data frame, not the whole table gets printed in the console and you´ll find some additional information about the data like the dimensions. 
+
+```
+
+
 Now, that we understand what kind of information we find in the columns and rows of the data provided, we can go ahead and explore the data. In order to make the right conclusions and not introduce any biases when we perform downstream analyses, we want to gather some basic information about the patients who participated in the study. 
 
 > **Hands-on:** 
@@ -99,6 +112,23 @@ Now, that we understand what kind of information we find in the columns and rows
 * What are the proportions of women and men in this cohort? Count the number of samples per sex.
 * Whats the minimum, maximum, and average age of the patients in this data set? 
 * Of how many patients do we have single-cell RNA seq data from?
+
+**Solutions:**
+```{r sol2 , include=TRUE, eval = TRUE}
+
+# What are the types of disease the patients were diagnosed with?
+unique(meta$diagnosis)
+
+# What are the proportions of women and men in this cohort? Count the number of samples per sex.
+table(meta$sex)
+
+# Whats the minimum, maximum, and average age of the patients in this data set? 
+mean(meta$age)
+
+# Of how many patients do we have single-cell RNA seq data from?
+sum(!is.na(meta$scRNAseq_id))
+
+```
 
 ## Describe your Cohort: Manipulating and analysing data with tidyverse
 
@@ -214,6 +244,32 @@ meta %>%
 * What is the average "days from first intubation" for the covid patients compared to the average "days from first intubation" for the other groups of non-healthy patients?
 * 
 
+**Solutions**
+```{r sol 3, eval= FALSE}
+
+# Can you extract all samples (rows) with Covid patients?
+meta %>% filter(diagnosis == "COVID-19")
+
+#Can you extract all samples with Covid patients that suffered from a superinfection?
+meta %>% filter(diagnosis == "COVID-19") %>% 
+  filter(superinfection == "Superinfection")
+
+#How many samples do we have of patients with "Other Pneumonia" that are younger than 50?
+meta %>% filter(diagnosis == "Other Pneumonia", age < 50)
+
+#How many patients do we have of patients with "Other Pneumonia" that are younger than 50?
+meta %>% filter(diagnosis == "Other Pneumonia", age < 50) %>% 
+  group_by(patient_id)
+
+#What is the average "days from first intubation" for the Covid patients compared to the average "days from first intubation" for the other groups of diagnosis?
+
+meta %>% 
+  group_by(diagnosis) %>% 
+  summarise(av_days_from_first_intu = mean(days_from_first_intubation))
+  
+ 
+```
+
 ## Visualization using ggplot2
 
 [**ggplot2**](https://ggplot2.tidyverse.org) is a plotting package that allows us to plot a variety of easy, as well as complex plots. In general, ggplot2 builds graphics in a "layer-by-layer" fashion, by adding new elements step-wise. 
@@ -254,6 +310,44 @@ Let's try to reproduce some parts of the paper of Figure 1 to visualize the dist
 * Have a look at Figure 1 (panel c and d) of the paper before starting this excercise. The link of the paper is provided at the beginning of the document. 
 * Use a boxplot to visualize the distribution of age of the patients across the different groups of diagnosis (Fig. 1, panel c). It is also useful to not only plot the boxes, but also the data points itself. You can check on the internet how to plot the points on top of the boxplot and how to change the colors of the boxes. 
 * Compute the **proportion** of sexes for the different diagnosis groups (Fig. 1, panel d) using the tidyverse functions `group_by()`{.R}, `summarise()`{.R} and `mutate()`{.R} visualize it in a stacked bar chart. If you are not happy with the colors, fontsizes or anything of the plot, you can always google.   
+
+**Solutions**
+```{r sol 4a, include = TRUE, eval = TRUE}
+
+patient_age_plot <- ggplot(meta, aes(x = diagnosis, y = age, fill = diagnosis)) + 
+  geom_boxplot() + 
+  geom_jitter(size = 0.5) + 
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, vjust = 0.9, hjust= 0.95)) +
+  scale_fill_brewer(palette="Accent") + 
+  ggtitle("Patient Age across the different Diagnosis") +
+  theme(legend.position = "none") 
+  
+```
+
+```{r sol 4b, include = TRUE, eval = TRUE}
+
+sex_to_plot <- meta %>% 
+  group_by(diagnosis, sex) %>% 
+  dplyr::summarise(number_of_patients = n()) %>% 
+  mutate(rel_no_of_pats = number_of_patients/sum(number_of_patients))
+
+plot_sex <- ggplot(sex_to_plot, aes(x = diagnosis, y = rel_no_of_pats, fill = sex)) + 
+  geom_bar(position="stack", stat = "identity") + 
+  theme_classic() + 
+  scale_fill_brewer(palette="Set2") + 
+  theme(axis.text.x = element_text(angle = 45, vjust = 0.9, hjust= 0.95)) + 
+  ggtitle("Sex distribution across Diagnosis")
+  
+```
+
+Your final plots should look somehow like these: 
+
+```{r sol 4c, include = TRUE, eval = TRUE}
+
+patient_age_plot + plot_sex
+  
+```
 
 ----------
 

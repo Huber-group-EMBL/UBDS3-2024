@@ -47,14 +47,6 @@ if (length(letsinstall) > 0) {
 }
 ```
 
-```{r}
-#| label: load_packages
-#| output: false
-#| eval: !expr (! isTRUE(params$skip_execution))
-#| 
-library(tidyverse)
-```
-
 # Hierarchical clustering
 
 The Morder data are gene expression measurements for 156 genes on T cells of 
@@ -68,10 +60,25 @@ load(url("http://web.stanford.edu/class/bios221/data/Morder.RData"))
 dim(Morder)
 ```
 
-In 'base' R a function to perform hierarchical clustering is `hclust()`.
+::: {.callout-note collapse="true"}
+## Question
+How many samples of each T cell type (naïve, effector, memory) are there in the data?
+
+```{r}
+#| label: question_cell_types
+#| eval: !expr (! params$skip_execution & ! params$skip_answers)
+#| echo: !expr (! params$skip_answers)
+rownames(Morder) |> 
+  strsplit(split = "_") |> 
+  sapply(function(x) x[2]) |> 
+  table()
+```
+:::
+
+In base R the function to perform hierarchical clustering is `hclust()`.
 To cluster the genes with hierarchical clustering you first need
 to compute a distance matrix storing all pairwise (gene-to-gene)
-dissimilarities. The following commands would be useful:
+dissimilarities. This is how to do it:
 
 ```{r}
 #| label: hclust_genes
@@ -87,76 +94,154 @@ plot(gene_clust)
 ```
 
 ::: {.callout-note collapse="true"}
-## Question: Why in the provided code the input to `dist()` function is `t(Morder)`? 
+## Question
+Why in the provided code the input to `dist()` function is `t(Morder)`? 
 
+```{r}
+#| label: question_transpose
+#| eval: !expr (! params$skip_execution & ! params$skip_answers)
+#| echo: false
+#| results: 'asis'
+cat(
+  "Because dist() cmputes distances between rows, we need to use t() to transposes the expression matrix Morder, so that we cluster genes, and not samples."
+)
+```
 :::
 
 In hierarchical clustering one needs to choose the method for agglomerating the 
-clusters. By default `hclust()` uses a "complete" linkage method. Please redo 
-hierarchical clustering with "ward.D2" method. Note that in the `hclust()` there 
-are "ward.D" and "ward.D2" methods available. Please call `?hclust` to read
-about the difference between the two methods.
+clusters. By default `hclust()` uses a "complete" linkage method (see `?hclust()` 
+for info). 
+
+::: {.callout-note collapse="true"}
+## Question
+Redo hierarchical clustering with "ward.D2" method and plot the dendogram.
 
 ```{r}
 #| label: hclust_genes_ward.D2
-#| eval: !expr (! isTRUE(params$skip_execution))
+#| eval: !expr (! params$skip_execution & ! params$skip_answers)
+#| echo: !expr (! params$skip_answers)
 #| fig.width: 15
 #| fig.height: 8
-gene_clust <- hclust(d = dist(t(Morder)), method = "ward.D2")
-plot(gene_clust)
+gene_clust_wd2 <- hclust(d = dist(t(Morder)), method = "ward.D2")
+plot(gene_clust_wd2)
 ```
 
-::: {.callout-note collapse="true"}
-## Question: Notice that the values on the y axis of hclust dendogram changed. What do they correspond to?
-::: 
+Notice that the values on the y axis of hclust dendogram changed.
+What do they correspond to?
 
-Now, instead of clustering genes, apply hierarchical clustering
-for samples (observations), with default linkage method.
+```{r}
+#| label: hclust_genes_ward.D2_dend
+#| eval: !expr (! params$skip_execution & ! params$skip_answers)
+#| echo: false
+#| results: 'asis'
+cat(
+  "Distance between clusters, according to agglomeration method choice."
+)
+```
+:::
+
+Note that in the `hclust()` there are "ward.D" and "ward.D2" methods available. 
+Please call `?hclust` to read about the difference between the two methods.
+
+Next, instead of clustering genes, we will apply hierarchical clustering for 
+samples (observations)
+
+::: {.callout-note collapse="true"}
+## Question
+Use dist and hclust (with default linkage method) to cluster samples.
 
 ```{r}
 #| label: hclust_samples
-#| eval: !expr (! isTRUE(params$skip_execution))
+#| eval: !expr (! params$skip_execution)
+#| echo: !expr (! params$skip_answers)
 #| fig.width: 15
 #| fig.height: 8
 # we don't transpose the matrix now (samples are rows)
 D_samples <- dist(Morder)
 sample_clust <- hclust(d = D_samples)
-plot(sample_clust)
 ```
 
-::: {.callout-note collapse="true"}
-## Question: How many clusters of samples are there at the dendrogram height of 12. 
+How many clusters of samples are there at the dendrogram height of 12? Hint: 
+the `abline()` function might be helpful.
 
-Hint: the `abline()` function might be helpful.
-
-
+```{r}
+#| label: hclust_samples_abline
+#| eval: !expr (! params$skip_execution & ! params$skip_answers)
+#| echo: !expr (! params$skip_answers)
+#| fig.width: 15
+#| fig.height: 8
+plot(sample_clust)
+abline(a=12, b=0, col="blue")
+```
+```{r}
+#| label: hclust_samples_abline_answer
+#| eval: !expr (! params$skip_execution & ! params$skip_answers)
+#| echo: false
+#| results: 'asis'
+cat(sprintf(
+  "We see %g clusters at the height of 12",
+  cutree(sample_clust, h=12) |> unique() |> length()
+))
+```
 :::
 
 Now that you know how to perform hierarchical clustering, use `pheatmap()`
-to generate a heatmap with rows and columns grouped according
-to computed dendrograms. 
+to generate a heatmap with clustered rows and columns. 
 
 ```{r}
 #| label: pheatmap
 #| eval: !expr (! isTRUE(params$skip_execution))
-#| fig.cap: "Heatmap of the Morder data"
-#| fig.height: 10
+#| fig.height: 8
 #| fig.width: 8
 library(pheatmap)
-pheatmap(Morder, fontsize_col=6, fontsize_row = 15) 
+pheatmap(
+  mat = Morder,
+  fontsize_col = 6, fontsize_row = 10
+) 
 ```
 
 ::: {.callout-note collapse="true"}
-## Question: In `pheatmap` you can specify what distance metric to compute for clustering rows and columns. What type of distance does `pheatmap` use by default?
+## Question
+What type of distance and which clustering method does `pheatmap` use by default
+for clustering rows and columns?
 
+```{r}
+#| label: pheatmap_default_distance
+#| eval: !expr (! params$skip_execution & ! params$skip_answers)
+#| echo: false
+#| results: 'asis'
+cat(
+  "Euclidean distance and complete linkage clustering (see `?pheatmap`)"
+)
+```
+
+Note that these are default values for `dist()` and `hclust()`, too. Look at how
+clustering heatmap changes if you use different distance and clustering methods 
+(e.g. 'ward.D2').
+
+```{r}
+#| label: pheatmap_wd2
+#| eval: !expr (! params$skip_execution & ! params$skip_answers)
+#| echo: !expr (! params$skip_answers)
+# cluster genes
+gene_clust_wd2 <- hclust(d = dist(t(Morder)), method = "ward.D2")
+
+# cluster samples
+sample_clust_wd2 <- hclust(d = dist(Morder), method = "ward.D2")
+
+# order expression matrix by clustering results
+Morder_clustered <- Morder[sample_clust_wd2$order, gene_clust_wd2$order]
+
+# we use pre-computed clustering, so we need to specify that pheatmap should not
+# re-cluster the input data
+pheatmap(
+  mat = Morder_clustered,
+  cluster_rows = FALSE, cluster_cols = FALSE,
+  fontsize_col = 6, fontsize_row = 10
+) 
+```
 
 :::
-
-::: {.callout-note collapse="true"}
-## Question: What type of clustering (agglomeration) method does `pheatmap` use by default?
-
-:::
-
 
 # Density based clustering
 ## Mass cytometry (CyTOF)
@@ -171,17 +256,29 @@ simultaneous measurement of 15, whereas
 [mass cytometry (CyTOF)](https://en.wikipedia.org/wiki/Mass_cytometry) of as 
 many as 40 proteins per single cell.
 
-We start by downloading and reading in a CyTOF dataset. The dataset 
-comes from a single-cell mass cytometry study by 
-[Bendall et al.](http://science.sciencemag.org/content/332/6030/687.full)
-on differential immune drug responses across human hematopoietic cells
-over time.
+We will be working with the CyTOF dataset from a single-cell mass cytometry 
+study by [Bendall et al.](http://science.sciencemag.org/content/332/6030/687.full)
+on differential immune drug responses across human hematopoietic cells over time.
 
-We first download and then load this data in R using flowCore package.
+First we load the necessary packages.
+
+```{r}
+#| label: load_packages
+#| output: false
+#| eval: !expr (! isTRUE(params$skip_execution))
+library(tidyverse)
+library(flowCore)
+library(flowViz)
+library(flowPeaks)
+library(ggcyto)
+```
+
+Then we download and load this data in R using flowCore package.
 
 ```{r}
 #| label: cytometry_download
 #| eval: FALSE
+
 # download file from web (14.3 Mb)
 download.file(
   url = "http://web.stanford.edu/class/bios221/data/Bendall_2011.fcs",
@@ -192,33 +289,42 @@ download.file(
 # options(timeout = 1000)
 ```
 ```{r}
-#| label: cytometry
+#| label: cytometry_load
 #| eval: !expr (! isTRUE(params$skip_execution))
+#| message: FALSE
 #| warning: FALSE
-library(flowCore)
-library(flowViz)
-library(flowPeaks)
-library(ggcyto)
-
 # load file in R - here we use a function from flowCore package
 fcsB <- flowCore::read.FCS("Bendall_2011.fcs")
+```
+
+::: {.callout-note collapse="true"}
+## Question
+Look at the structure of the `fcsB` object. How many variables and how many 
+cells were measured? 
+
+```{r}
+#| label: fcB_vars
+#| eval: !expr (! params$skip_execution & ! params$skip_answers)
+#| echo: !expr (! params$skip_answers)
 fcsB
 
-# inspect slots of the flowFrame object
+# variables
+length(colnames(fcsB))
+
+# cells
+nrow(exprs(fcsB))
+```
+:::
+
+Inspect slots of the flowFrame object:
+
+```{r}
+#| label: fcB_slots
+#| eval: !expr (! params$skip_execution)
 slotNames(fcsB)
 ```
 
 Different slots of the `flowFrame` objects can be accessed with `exprs(fcsB)`, `parameters(fcsB)` and `description(fcsB)` functions.
-
-
-::: {.callout-note collapse="true"}
-## Question: Look at the structure of the `fcsB` object. How many variables were measured? 
-:::
-
-::: {.callout-note collapse="true"}
-## Question: How many cells were measured in the `fcsB` object?
-
-:::
 
 ## Data preprocessing
 
@@ -230,7 +336,8 @@ analysis and plotting code more readable.
 ```{r}
 #| label: fcB_markers
 #| eval: !expr (! isTRUE(params$skip_execution))
-
+#| message: FALSE
+#| warning: FALSE
 # download data from the web
 markersB = read_csv(url("http://web.stanford.edu/class/bios221/data/Bendall_2011_markers.csv"))
 
@@ -245,20 +352,21 @@ colnames(fcsB)[mt] = markersB$marker
 ```
 
 Below, we show how to plot the joint distribution of the cell lengths and 
-the `DNA191` (indicates the activity of the cell whether cell is dead or alive).
-The information is included in the `fcsB` object.
+the `DNA191` (this variable indicates the activity of the cell, i.e. whether the
+cell is dead or alive):
 
 ```{r}
 #| label: flowPlot
 #| eval: !expr (! isTRUE(params$skip_execution))
 #| fig.width: 6
 #| fig.height: 6
-flowPlot(fcsB, plotParameters = c("Cell_length", "DNA191"), logy=TRUE)
+flowPlot(fcsB, plotParameters = c("Cell_length", "DNA191"), logy = TRUE)
 ```
 
 It is standard to transform both flow and mass cytometry data using one of 
 several special functions, we take the example of the inverse hyperbolic sine 
-(arcsinh), which serves as a variance stabilizing transformation. 
+(arcsinh), which serves as a variance stabilizing transformation.  
+
 First, we show the distribution on untransformed raw data:
 
 ```{r}
@@ -270,9 +378,9 @@ densityplot(~`CD3all`, fcsB)
 ```
 
 To apply the transformation and to plot the data you can use functions
-from the `flowCore`` package. After the transformation the cells seem to 
-form two clusters: Based solely on one dimension (CD3all) we see two cell subsets 
-(the two modes).
+from the `flowCore` package. After the transformation the cells seem to 
+form two clusters. Based solely on one dimension (CD3all) we see two cell
+subsets (the two modes).
 
 ```{r}
 #| label: fcsB_transform
@@ -296,7 +404,7 @@ and `?flowCore::filter`
 #| label: kmeansFilter
 #| eval: !expr (! isTRUE(params$skip_execution))
 kf = kmeansFilter("CD3all"=c("Pop1","Pop2"), filterId="myKmFilter")
-fres = filter(fcsBT, kf)
+fres = flowCore::filter(fcsBT, kf)
 summary(fres)
 ```
 
@@ -309,8 +417,8 @@ fcsBT1 = split(fcsBT, fres, population="Pop1")
 fcsBT2 = split(fcsBT, fres, population="Pop2")
 ```
 
-We can also cluster cell with the `flowPeaks()` function from `flowPeaks` 
-package. The algorithm for this clustering algorithm is specified
+We can also cluster cells using k-means with the `flowPeaks()` function from 
+`flowPeaks` package. The algorithm for this clustering algorithm is specified
 in detail in a paper by
 [Ge Y. et al (2012)](https://academic.oup.com/bioinformatics/article/28/15/2052/236255).
 
@@ -326,37 +434,38 @@ plot(fp)
 ```
 
 ::: {.callout-note collapse="true"}
-## Question: How many dimensions (markers) does the above code use to split the data into 4 cell subsets using kmeans?
-
-:::
-
-A Bioconductor package ``ggcyto`` build on top of ``ggplot2`` 
-includes functions for generating visualizations specifically
-for cytometry data. Note that here `fcsB` or `fcsBT` are not 
-'data.frames' but objects of class  'flowFrame'. This means
-that you cannot use `fcsB` and `fcsBT`  (without conversion to data.frame)
-as inputs to `ggplot()`. 'flowFrame' objects hold marker expression
-data and sample information data, so you can access any variables you need.
-
+## Question
+How many dimensions (markers) does the above code use to split the data into 
+4 cell subsets using kmeans?
 
 ```{r}
-#| label: ggcytoCD4CD8
+#| label: flowpeaks_kmeans
+#| eval: !expr (! params$skip_execution & ! params$skip_answers)
+#| echo: false
+#| results: 'asis'
+cat("2 dimensions, based on `CD56` and `CD3all`")
+```
+:::
+
+Note that here `fcsB` or `fcsBT` are not 'data.frames' but objects of class 'flowFrame'. This meansthat  you cannot use `fcsB` and `fcsBT`  (without conversion to data.frame) as inputs to `ggplot()`.
+However, 'flowFrame' objects hold marker expression data together with sample information data, so you could access any variables you need for plotting directly from these objects (and this would be lost by converting them to 'data.frames')
+This is why for plottimg now we use a Bioconductor package ``ggcyto``, built on top of ``ggplot2``. This package includes functions for generating visualizations specifically for cytometry data, starting from 'flowFrame' objects.
+
+We can look at distributions of measured markers, e.g CD4, by plotting the histogram:
+
+```{r}
+#| label: ggcyto_CD4CD8__transform_hist
 #| eval: !expr (! isTRUE(params$skip_execution))
 #| fig.width: 8
 #| fig.height: 6
 library("ggcyto")
 # Untransformed data
-ggcyto(fcsB,aes(x = CD4)) + geom_histogram(bins = 60) 
+ggcyto(fcsB,aes(x = CD4)) + geom_histogram(bins = 90) 
+# Transformed data
+ggcyto(fcsBT, aes(x = CD4)) + geom_histogram(bins = 90) 
 ```
 
-```{r}
-#| label: ggcyto_CD4CD8_transform
-#| eval: !expr (! isTRUE(params$skip_execution))
-#| fig.width: 8
-#| fig.height: 6
-# Transformed data
-ggcyto(fcsBT, aes(x=CD4)) + geom_histogram(bins=90) 
-```
+`autoplot()` function plots the density of selected markers.
 
 ```{r}
 #| label: ggcyto_autoplot_cd4
@@ -367,22 +476,20 @@ ggcyto(fcsBT, aes(x=CD4)) + geom_histogram(bins=90)
 autoplot(fcsBT, "CD4")
 ```
 
+We can compare the distributions of two markers, e.g. CD4 and CD8.
+
 ```{r}
 #| label: ggcyto_density2d
 #| eval: !expr (! isTRUE(params$skip_execution))
 #| fig.width: 6
 #| fig.height: 6
+# 2d density plot
 ggcyto(fcsBT, aes(x = CD4, y = CD8)) + geom_density2d(colour="black") 
-```
-
-```{r}
-#| label: ggcyto_hex
-#| eval: !expr (! isTRUE(params$skip_execution))
-#| fig.width: 6
-#| fig.height: 6
+# hexbin plot
 ggcyto(fcsBT, aes(x = CD4, y = CD8)) + geom_hex(bins = 50) 
 ```
 
+The same can be achieved with `autoplot()` for two variables.
 
 ```{r}
 #| label: ggcyto_autoplot_cd4_cd8
@@ -398,16 +505,18 @@ For more details on capabilities of `ggcyto` refer to the following
 
 ## Density based clustering
 
-Data sets such as flow cytometry containing only a few markers and a large 
-number of cells are amenable to density clustering. DBSCAN algorithm looks for 
-regions of high density separated by sparse emptier regions. This method has 
-the advantage of being able to cope with clusters that are not necessarily 
-convex (i.e. not blob-shaped). One implementation of such a method is called 
-``dbscan``, let us look at an example by running the code below:
+Data sets such as flow cytometry containing only a few variables (markers) and a 
+large number of observations (cells) are amenable to density clustering. 
+DBSCAN algorithm looks for regions of high density separated by sparse emptier 
+regions. This method has the advantage of being able to cope with clusters that 
+are not necessarily convex (i.e. not blob-shaped). One implementation of such a
+method is called ``dbscan``, let us look at an example by running the code below.
 
 ```{r dbscanfcs5}
 #| label: dbscan
 #| eval: !expr (! isTRUE(params$skip_execution))
+#| warning: FALSE
+#| message: FALSE
 library(dbscan)
 # Select a small subset of 5 protein markers
 mc5 = exprs(fcsBT)[, c("CD4", "CD8", "CD20", "CD3all", "CD56")]
@@ -416,18 +525,43 @@ mc5df = data.frame(mc5)
 mc5df$cluster = as.factor(res5$cluster)
 ```
 
-
 ::: {.callout-note collapse="true"}
-## Question: How many clusters did `dbscan()` find?
+## Question
+How many clusters did `dbscan()` find?
 
+```{r}
+#| label: dbscan_clusters
+#| eval: !expr (! params$skip_execution & ! params$skip_answers)
+#| echo: !expr (! params$skip_answers)
+table(mc5df$cluster)
+```
+```{r}
+#| label: dbscan_clusters_num
+#| eval: !expr (! params$skip_execution & ! params$skip_answers)
+#| echo: false
+#| results: 'asis'
+cat(
+  table(mc5df$cluster) |> length()-1,
+  " clusters were found (0 are unclustered observations)."
+)
+```
 :::
 
-Note that we do not count the `0` as a cluster, since it contains all cells that were not assigned to any cluster. Looking up the documentation  of `dbscan` (`?dbscan`) we find that "Points which cannot be assigned to a cluster will be reported as members of the noise cluster 0."
+Note that we do not count the `0` as a cluster, since it contains all cells that 
+were not assigned to any cluster. Looking up the documentation  of `dbscan` 
+(`?dbscan`) we find that "Points which cannot be assigned to a cluster will be 
+reported as members of the noise cluster 0."
 
 ::: {.callout-note collapse="true"}
-## Question: How many cells were clustered into cluster 3 by `dbscan()`?
+## Question
+How many cells were clustered into cluster 3 by `dbscan()`?
 
-
+```{r}
+#| label: dbscan_count
+#| eval: !expr (! params$skip_execution & ! params$skip_answers)
+#| echo: !expr (! params$skip_answers)
+sum(mc5df$cluster == 3)
+```
 :::
 
 We can now generate a CD8-vs-CD4 2d-density plot for the cells colored
