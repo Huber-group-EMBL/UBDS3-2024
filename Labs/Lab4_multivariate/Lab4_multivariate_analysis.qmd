@@ -548,11 +548,11 @@ knitr::opts_chunk$set(cache=TRUE, message=FALSE, warning=FALSE)
 ## Dependencies
 
 ```{r load-libs}
-library(dplyr)
-library(scran)
-library(scater)
-library(ggplot2)
-library(ExperimentHub)
+library("dplyr")
+library("scran")
+library("scater")
+library("ggplot2")
+library("ExperimentHub")
 ```
 
 ## Data retrieval
@@ -575,7 +575,7 @@ sce <- sce[rowSums(counts(sce) > 1) >= 10, ]
 
 
 # Analysis continued
-Now we start with the new part
+Now we start with the new part.
 
 ## Feature selection
 
@@ -589,7 +589,7 @@ df <- modelGeneVar(sce)
 head(df)
 ```
 
-> Use `dplyr` to filter the above gene-level statistics (`df`) for genes the 2,000 genes with the highest `bio`logical variance component.
+Use `dplyr` to filter the above gene-level statistics (`df`) for genes the 2,000 genes with the highest `bio`logical variance component.
 
 ```{r fil}
 #| eval: true
@@ -647,7 +647,7 @@ pcs[1:5, 1:5]
 dim(pcs) 
 ```
 
-> Construct a `data.frame` that includes both, PCs and cell-level metdata (`colData`). Generate a scatter plot of PCs 1 and 2 as shown below, with cells colored by experimental condition and `cell` subpopulation, respectively; x and y axes should have a fixed aspect ratio! 
+Construct a `data.frame` that includes both, PCs and cell-level metdata (`colData`). Generate a scatter plot of PCs 1 and 2 as shown below, with cells colored by experimental condition and `cell` subpopulation, respectively; x and y axes should have a fixed aspect ratio! 
 
 ```{r plt-pca-stim, fig.width=5, fig.height=4}
 #| eval: true
@@ -668,7 +668,7 @@ ggplot(df, aes(PC1, PC2, col=cell)) +
 
 It's pretty clear from the plots above that experimental condition (`stim`) and `cell` subpopulations seem to be considerable drivers of gene expression variability. But what is driving these differences? We can explore this visually by coloring cells by other cell metadata, e.g., library size (total sum of counts). 
 
-> Generate a scatter plot of PCs 1 and 2 with cells colored by log-library size. Taking into consideration the plots generated above, what is the main driver of gene expression variation (PC1)?
+Generate a scatter plot of PCs 1 and 2 with cells colored by log-library size. Taking into consideration the plots generated above, what is the main driver of gene expression variation (PC1)?
 
 ```{r, plt-pcs-ls}
 #| eval: !expr params$include_answers
@@ -684,10 +684,10 @@ Finally, note that the dataset retrieved from `ExperimentHub` already contains a
 - plot PCs (linear) again t-SNE dimensions (non-linear)
 - `facet_wrap()` by `stim/ind/cell` to split plots according to some metadata variable
 
-```{r eval=FALSE}
+```{r}
+#| label: cbind
 #| eval: false
 #| echo: true
-
 map <- reducedDim(sce, "TSNE")
 df <- cbind(df, map)
 ggplot(df, ...)
