@@ -103,7 +103,7 @@ sum( (athletes$m100 < av100) & (athletes$m1500 < av1500) )
 #5 alternative solution
 with(athletes, table(m100 < mean(m100), m1500 < mean(m1500)))
 
-#5 yet another solution
+#5 yet another solution 
 dplyr::filter(athletes,
               m100 < mean(m100), 
               m1500 < mean(m1500)) |> 
@@ -171,7 +171,7 @@ pheatmap(cor(athletes), cellwidth = 20, cellheight = 20,
 In many cases, different variables are measured in different units and at different scales. As discussed in the lecture, we have various options to transform the data. Here, we elect to standardize the data to a common standard deviation. This rescaling is done using the `scale` function, which subtracts the mean and divides by the standard deviation, so that every column has a unit standard deviation and mean zero.
 
 ```{r turtlesDim12}
-scaledTurtles = data.frame(scale(turtles[, -1]), sex = turtles[, 1])
+scaledTurtles = data.frame(sex = turtles[, 1], scale(turtles[, -1]))
 head(scaledTurtles)
 ```
 
@@ -185,9 +185,9 @@ head(scaledTurtles)
 #| label: questions-9-answers
 #| eval: !expr params$include_answers
 #| echo: !expr params$include_answers# TODO
-apply(turtles[, -1], 2, sd)
-apply(scaledTurtles[, -4], 2, sd)
-apply(turtles[, -1], 2, mean)
+apply(turtles[, -1],       2, sd)
+apply(scaledTurtles[, -1], 2, sd)
+apply(turtles[, -1],       2, mean)
 ```
 
 :::
@@ -200,7 +200,7 @@ We can visualize two columns/dimensions (for example height and width) of the sc
 #| fig-height: 4
 #| out-width: "80%"
 library("ggplot2")
-ggplot(scaledTurtles,aes(x = width,y = height, group = sex)) +
+ggplot(scaledTurtles, aes(x = width, y = height, group = sex)) +
   geom_point(aes(color = sex)) + coord_fixed()
 ```
 
@@ -540,18 +540,9 @@ fviz_pca_ind(pca.ath) + ggtitle("") + ylim(c(-2.5, 5.7))
 
 :::
 
-
-
-
-******
-
-```{r setup2, include=FALSE}
-knitr::opts_chunk$set(cache=TRUE, message=FALSE, warning=FALSE)
-```
-
 # Back to the single cell dataset
 
-## Dependencies
+## Packages
 
 ```{r load-libs}
 library("dplyr")
@@ -565,9 +556,9 @@ library("ExperimentHub")
 
 This is what we did yesterday, open the Rmarkdown document that you saved yesterday and run them again. 
 ```{r load-data}
-eh <- ExperimentHub()
-q <- query(eh, "Kang18")
-(sce <- eh[[q$ah_id]])
+eh = ExperimentHub()
+q = query(eh, "Kang18")
+(sce = eh[[q$ah_id]])
 ```
 
 ## Quality control
@@ -595,10 +586,14 @@ df <- modelGeneVar(sce)
 head(df)
 ```
 
+::: {.callout-note collapse="false"}
+
+## Question
+
 Use `dplyr` to filter the above gene-level statistics (`df`) for genes the 2,000 genes with the highest `bio`logical variance component.
 
-```{r fil}
-#| eval: true
+```{r}
+#| label: fil
 #| echo: !expr params$include_answers
 
 fd <- df |>
@@ -611,7 +606,9 @@ fd <- df |>
     slice_max(bio, n=2e3)
 ```
 
-Reproduce the below scatter plot (`geom_point()`) of gene expression `mean`s vs. `total` variance estimates. You will need a 2nd layer to highlight the top-2,000 genes selected above (red points), and a 3rd layer to add the `tech`nical variance estimate (blue dashed line).
+:::
+
+Reproduce the below scatter plot (`geom_point()`) of gene expression `mean`s vs. `total` variance estimates. You will need a 2nd layer to highlight the top 2000 genes selected above (red points), and a 3rd layer to add the `tech`nical variance estimate (blue dashed line).
 
 ```{r mv-tot, fig.width=4, fig.height=4}
 #| eval: true
@@ -644,10 +641,10 @@ length(sel <- rownames(fd))
 sce <- runPCA(sce, subset_row=sel)
 ```
 
-By default, `runPCA()` computes 50 PCs that are stored in the input object as a `reducedDim()` slot:
+By default, `runPCA()` computes the top 50 principal compared and stores them in resulting object in the `reducedDim()` slot:
 
 ```{r pca-show}
-# rows=cells, columns=PCs
+# rows = cells, columns = PCs
 pcs <- reducedDim(sce, "PCA")
 pcs[1:5, 1:5]
 dim(pcs) 
@@ -684,7 +681,7 @@ ggplot(df, aes(PC1, PC2, col=log10(sum))) +
     scale_color_viridis_c()
 ```
 
-Finally, note that the dataset retrieved from `ExperimentHub` already contains a non-linear embedding, t-SNE, that has been pre-computed by the original authors. We can access this representation as follows, and you are welcomed to explore visually exploring the data on your own, e.g., 
+Finally, note that the dataset retrieved from `ExperimentHub` already contains a non-linear embedding, t-SNE, that was computed by the original authors. We can access this as follows, and you are welcomed to further visually explore the data on your own. E.g., 
 
 - color cells by gene expression (`logcounts()`)
 - plot PCs (linear) again t-SNE dimensions (non-linear)

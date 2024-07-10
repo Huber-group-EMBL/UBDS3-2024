@@ -3237,7 +3237,7 @@ window.Quarto = {
   <li><a href="#back-to-the-athletes" id="toc-back-to-the-athletes" class="nav-link" data-scroll-target="#back-to-the-athletes">Back to the athletes</a></li>
   <li><a href="#back-to-the-single-cell-dataset" id="toc-back-to-the-single-cell-dataset" class="nav-link" data-scroll-target="#back-to-the-single-cell-dataset">Back to the single cell dataset</a>
   <ul class="collapse">
-  <li><a href="#dependencies" id="toc-dependencies" class="nav-link" data-scroll-target="#dependencies">Dependencies</a></li>
+  <li><a href="#packages" id="toc-packages" class="nav-link" data-scroll-target="#packages">Packages</a></li>
   <li><a href="#data-retrieval" id="toc-data-retrieval" class="nav-link" data-scroll-target="#data-retrieval">Data retrieval</a></li>
   <li><a href="#quality-control" id="toc-quality-control" class="nav-link" data-scroll-target="#quality-control">Quality control</a></li>
   </ul></li>
@@ -3387,16 +3387,16 @@ Questions
 <h1>Preprocessing the data</h1>
 <p>In many cases, different variables are measured in different units and at different scales. As discussed in the lecture, we have various options to transform the data. Here, we elect to standardize the data to a common standard deviation. This rescaling is done using the <code>scale</code> function, which subtracts the mean and divides by the standard deviation, so that every column has a unit standard deviation and mean zero.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>scaledTurtles <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="fu">scale</span>(turtles[, <span class="sc">-</span><span class="dv">1</span>]), <span class="at">sex =</span> turtles[, <span class="dv">1</span>])</span>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>scaledTurtles <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">sex =</span> turtles[, <span class="dv">1</span>], <span class="fu">scale</span>(turtles[, <span class="sc">-</span><span class="dv">1</span>]))</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(scaledTurtles)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>       length      width     height sex
-1 -1.30299868 -1.1389780 -0.9929102   f
-2 -1.05887715 -0.9023072 -0.9929102   f
-3 -1.05887715 -0.7445267 -0.5163133   f
-4 -0.96122853 -0.7445267 -0.7546117   f
-5 -0.76593131 -0.5867462 -0.2780148   f
-6 -0.08239102 -0.2711852  0.4368805   f</code></pre>
+<pre><code>  sex      length      width     height
+1   f -1.30299868 -1.1389780 -0.9929102
+2   f -1.05887715 -0.9023072 -0.9929102
+3   f -1.05887715 -0.7445267 -0.5163133
+4   f -0.96122853 -0.7445267 -0.7546117
+5   f -0.76593131 -0.5867462 -0.2780148
+6   f -0.08239102 -0.2711852  0.4368805</code></pre>
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
@@ -3420,7 +3420,7 @@ Questions
 <p>We can visualize two columns/dimensions (for example height and width) of the scaled data using <code>ggplot</code>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;ggplot2&quot;</span>)</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(scaledTurtles,<span class="fu">aes</span>(<span class="at">x =</span> width,<span class="at">y =</span> height, <span class="at">group =</span> sex)) <span class="sc">+</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(scaledTurtles, <span class="fu">aes</span>(<span class="at">x =</span> width, <span class="at">y =</span> height, <span class="at">group =</span> sex)) <span class="sc">+</span></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">color =</span> sex)) <span class="sc">+</span> <span class="fu">coord_fixed</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
@@ -3703,12 +3703,11 @@ Questions
 </div>
 </div>
 </div>
-<hr>
 </section>
 <section id="back-to-the-single-cell-dataset" class="level1">
 <h1>Back to the single cell dataset</h1>
-<section id="dependencies" class="level2">
-<h2 class="anchored" data-anchor-id="dependencies">Dependencies</h2>
+<section id="packages" class="level2">
+<h2 class="anchored" data-anchor-id="packages">Packages</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;dplyr&quot;</span>)</span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;scran&quot;</span>)</span>
@@ -3721,9 +3720,9 @@ Questions
 <h2 class="anchored" data-anchor-id="data-retrieval">Data retrieval</h2>
 <p>This is what we did yesterday, open the Rmarkdown document that you saved yesterday and run them again.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>eh <span class="ot">&lt;-</span> <span class="fu">ExperimentHub</span>()</span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>q <span class="ot">&lt;-</span> <span class="fu">query</span>(eh, <span class="st">&quot;Kang18&quot;</span>)</span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>(sce <span class="ot">&lt;-</span> eh[[q<span class="sc">$</span>ah_id]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>eh <span class="ot">=</span> <span class="fu">ExperimentHub</span>()</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>q <span class="ot">=</span> <span class="fu">query</span>(eh, <span class="st">&quot;Kang18&quot;</span>)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>(<span class="at">sce =</span> eh[[q<span class="sc">$</span>ah_id]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>see ?muscData and browseVignettes(&#39;muscData&#39;) for documentation</code></pre>
 </div>
@@ -3780,8 +3779,23 @@ TNFRSF4  0.0583023 0.0831188 0.0650732 0.01804558  3.87765e-02  7.40648e-01
 SDF4     0.0792608 0.0918320 0.0881562 0.00367583  3.95352e-01  7.40648e-01</code></pre>
 </div>
 </div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Question
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-11" class="callout-11-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
 <p>Use <code>dplyr</code> to filter the above gene-level statistics (<code>df</code>) for genes the 2,000 genes with the highest <code>bio</code>logical variance component.</p>
-<p>Reproduce the below scatter plot (<code>geom_point()</code>) of gene expression <code>mean</code>s vs. <code>total</code> variance estimates. You will need a 2nd layer to highlight the top-2,000 genes selected above (red points), and a 3rd layer to add the <code>tech</code>nical variance estimate (blue dashed line).</p>
+</div>
+</div>
+</div>
+<p>Reproduce the below scatter plot (<code>geom_point()</code>) of gene expression <code>mean</code>s vs. <code>total</code> variance estimates. You will need a 2nd layer to highlight the top 2000 genes selected above (red points), and a 3rd layer to add the <code>tech</code>nical variance estimate (blue dashed line).</p>
 <div class="cell">
 <div class="cell-output-display">
 <div>
@@ -3814,9 +3828,9 @@ SDF4     0.0792608 0.0918320 0.0881562 0.00367583  3.95352e-01  7.40648e-01</cod
 <div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># perform principal component analysis</span></span>
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>sce <span class="ot">&lt;-</span> <span class="fu">runPCA</span>(sce, <span class="at">subset_row=</span>sel)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>By default, <code>runPCA()</code> computes 50 PCs that are stored in the input object as a <code>reducedDim()</code> slot:</p>
+<p>By default, <code>runPCA()</code> computes the top 50 principal compared and stores them in resulting object in the <code>reducedDim()</code> slot:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># rows=cells, columns=PCs</span></span>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># rows = cells, columns = PCs</span></span>
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>pcs <span class="ot">&lt;-</span> <span class="fu">reducedDim</span>(sce, <span class="st">&quot;PCA&quot;</span>)</span>
 <span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>pcs[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -4447,7 +4461,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb40-111"><a href="#cb40-111" aria-hidden="true" tabindex="-1"></a><span class="co">#5 alternative solution</span></span>
 <span id="cb40-112"><a href="#cb40-112" aria-hidden="true" tabindex="-1"></a><span class="fu">with</span>(athletes, <span class="fu">table</span>(m100 <span class="sc">&lt;</span> <span class="fu">mean</span>(m100), m1500 <span class="sc">&lt;</span> <span class="fu">mean</span>(m1500)))</span>
 <span id="cb40-113"><a href="#cb40-113" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-114"><a href="#cb40-114" aria-hidden="true" tabindex="-1"></a><span class="co">#5 yet another solution</span></span>
+<span id="cb40-114"><a href="#cb40-114" aria-hidden="true" tabindex="-1"></a><span class="co">#5 yet another solution </span></span>
 <span id="cb40-115"><a href="#cb40-115" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">filter</span>(athletes,</span>
 <span id="cb40-116"><a href="#cb40-116" aria-hidden="true" tabindex="-1"></a>              m100 <span class="sc">&lt;</span> <span class="fu">mean</span>(m100), </span>
 <span id="cb40-117"><a href="#cb40-117" aria-hidden="true" tabindex="-1"></a>              m1500 <span class="sc">&lt;</span> <span class="fu">mean</span>(m1500)) <span class="sc">|&gt;</span> </span>
@@ -4515,7 +4529,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb40-185"><a href="#cb40-185" aria-hidden="true" tabindex="-1"></a>In many cases, different variables are measured in different units and at different scales. As discussed in the lecture, we have various options to transform the data. Here, we elect to standardize the data to a common standard deviation. This rescaling is done using the <span class="in">`scale`</span> function, which subtracts the mean and divides by the standard deviation, so that every column has a unit standard deviation and mean zero.</span>
 <span id="cb40-186"><a href="#cb40-186" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb40-187"><a href="#cb40-187" aria-hidden="true" tabindex="-1"></a><span class="in">```{r turtlesDim12}</span></span>
-<span id="cb40-188"><a href="#cb40-188" aria-hidden="true" tabindex="-1"></a><span class="in">scaledTurtles = data.frame(scale(turtles[, -1]), sex = turtles[, 1])</span></span>
+<span id="cb40-188"><a href="#cb40-188" aria-hidden="true" tabindex="-1"></a><span class="in">scaledTurtles = data.frame(sex = turtles[, 1], scale(turtles[, -1]))</span></span>
 <span id="cb40-189"><a href="#cb40-189" aria-hidden="true" tabindex="-1"></a><span class="in">head(scaledTurtles)</span></span>
 <span id="cb40-190"><a href="#cb40-190" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb40-191"><a href="#cb40-191" aria-hidden="true" tabindex="-1"></a></span>
@@ -4529,9 +4543,9 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb40-201"><a href="#cb40-201" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: questions-9-answers</span></span>
 <span id="cb40-202"><a href="#cb40-202" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: !expr params$include_answers</span></span>
 <span id="cb40-203"><a href="#cb40-203" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: !expr params$include_answers# </span><span class="al">TODO</span></span>
-<span id="cb40-204"><a href="#cb40-204" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(turtles[, <span class="sc">-</span><span class="dv">1</span>], <span class="dv">2</span>, sd)</span>
-<span id="cb40-205"><a href="#cb40-205" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(scaledTurtles[, <span class="sc">-</span><span class="dv">4</span>], <span class="dv">2</span>, sd)</span>
-<span id="cb40-206"><a href="#cb40-206" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(turtles[, <span class="sc">-</span><span class="dv">1</span>], <span class="dv">2</span>, mean)</span>
+<span id="cb40-204"><a href="#cb40-204" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(turtles[, <span class="sc">-</span><span class="dv">1</span>],       <span class="dv">2</span>, sd)</span>
+<span id="cb40-205"><a href="#cb40-205" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(scaledTurtles[, <span class="sc">-</span><span class="dv">1</span>], <span class="dv">2</span>, sd)</span>
+<span id="cb40-206"><a href="#cb40-206" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(turtles[, <span class="sc">-</span><span class="dv">1</span>],       <span class="dv">2</span>, mean)</span>
 <span id="cb40-207"><a href="#cb40-207" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb40-208"><a href="#cb40-208" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb40-209"><a href="#cb40-209" aria-hidden="true" tabindex="-1"></a>:::</span>
@@ -4544,7 +4558,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb40-216"><a href="#cb40-216" aria-hidden="true" tabindex="-1"></a><span class="in">#| fig-height: 4</span></span>
 <span id="cb40-217"><a href="#cb40-217" aria-hidden="true" tabindex="-1"></a><span class="in">#| out-width: &quot;80%&quot;</span></span>
 <span id="cb40-218"><a href="#cb40-218" aria-hidden="true" tabindex="-1"></a><span class="in">library(&quot;ggplot2&quot;)</span></span>
-<span id="cb40-219"><a href="#cb40-219" aria-hidden="true" tabindex="-1"></a><span class="in">ggplot(scaledTurtles,aes(x = width,y = height, group = sex)) +</span></span>
+<span id="cb40-219"><a href="#cb40-219" aria-hidden="true" tabindex="-1"></a><span class="in">ggplot(scaledTurtles, aes(x = width, y = height, group = sex)) +</span></span>
 <span id="cb40-220"><a href="#cb40-220" aria-hidden="true" tabindex="-1"></a><span class="in">  geom_point(aes(color = sex)) + coord_fixed()</span></span>
 <span id="cb40-221"><a href="#cb40-221" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb40-222"><a href="#cb40-222" aria-hidden="true" tabindex="-1"></a></span>
@@ -4884,164 +4898,161 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb40-588"><a href="#cb40-588" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb40-589"><a href="#cb40-589" aria-hidden="true" tabindex="-1"></a>:::</span>
 <span id="cb40-590"><a href="#cb40-590" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-591"><a href="#cb40-591" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-591"><a href="#cb40-591" aria-hidden="true" tabindex="-1"></a><span class="fu"># Back to the single cell dataset</span></span>
 <span id="cb40-592"><a href="#cb40-592" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-593"><a href="#cb40-593" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-594"><a href="#cb40-594" aria-hidden="true" tabindex="-1"></a>******</span>
-<span id="cb40-595"><a href="#cb40-595" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-596"><a href="#cb40-596" aria-hidden="true" tabindex="-1"></a><span class="in">```{r setup2, include=FALSE}</span></span>
-<span id="cb40-597"><a href="#cb40-597" aria-hidden="true" tabindex="-1"></a><span class="in">knitr::opts_chunk$set(cache=TRUE, message=FALSE, warning=FALSE)</span></span>
-<span id="cb40-598"><a href="#cb40-598" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb40-599"><a href="#cb40-599" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-600"><a href="#cb40-600" aria-hidden="true" tabindex="-1"></a><span class="fu"># Back to the single cell dataset</span></span>
-<span id="cb40-601"><a href="#cb40-601" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-602"><a href="#cb40-602" aria-hidden="true" tabindex="-1"></a><span class="fu">## Dependencies</span></span>
-<span id="cb40-603"><a href="#cb40-603" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-604"><a href="#cb40-604" aria-hidden="true" tabindex="-1"></a><span class="in">```{r load-libs}</span></span>
-<span id="cb40-605"><a href="#cb40-605" aria-hidden="true" tabindex="-1"></a><span class="in">library(&quot;dplyr&quot;)</span></span>
-<span id="cb40-606"><a href="#cb40-606" aria-hidden="true" tabindex="-1"></a><span class="in">library(&quot;scran&quot;)</span></span>
-<span id="cb40-607"><a href="#cb40-607" aria-hidden="true" tabindex="-1"></a><span class="in">library(&quot;scater&quot;)</span></span>
-<span id="cb40-608"><a href="#cb40-608" aria-hidden="true" tabindex="-1"></a><span class="in">library(&quot;ggplot2&quot;)</span></span>
-<span id="cb40-609"><a href="#cb40-609" aria-hidden="true" tabindex="-1"></a><span class="in">library(&quot;ExperimentHub&quot;)</span></span>
+<span id="cb40-593"><a href="#cb40-593" aria-hidden="true" tabindex="-1"></a><span class="fu">## Packages</span></span>
+<span id="cb40-594"><a href="#cb40-594" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-595"><a href="#cb40-595" aria-hidden="true" tabindex="-1"></a><span class="in">```{r load-libs}</span></span>
+<span id="cb40-596"><a href="#cb40-596" aria-hidden="true" tabindex="-1"></a><span class="in">library(&quot;dplyr&quot;)</span></span>
+<span id="cb40-597"><a href="#cb40-597" aria-hidden="true" tabindex="-1"></a><span class="in">library(&quot;scran&quot;)</span></span>
+<span id="cb40-598"><a href="#cb40-598" aria-hidden="true" tabindex="-1"></a><span class="in">library(&quot;scater&quot;)</span></span>
+<span id="cb40-599"><a href="#cb40-599" aria-hidden="true" tabindex="-1"></a><span class="in">library(&quot;ggplot2&quot;)</span></span>
+<span id="cb40-600"><a href="#cb40-600" aria-hidden="true" tabindex="-1"></a><span class="in">library(&quot;ExperimentHub&quot;)</span></span>
+<span id="cb40-601"><a href="#cb40-601" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb40-602"><a href="#cb40-602" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-603"><a href="#cb40-603" aria-hidden="true" tabindex="-1"></a><span class="fu">## Data retrieval</span></span>
+<span id="cb40-604"><a href="#cb40-604" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-605"><a href="#cb40-605" aria-hidden="true" tabindex="-1"></a>This is what we did yesterday, open the Rmarkdown document that you saved yesterday and run them again. </span>
+<span id="cb40-606"><a href="#cb40-606" aria-hidden="true" tabindex="-1"></a><span class="in">```{r load-data}</span></span>
+<span id="cb40-607"><a href="#cb40-607" aria-hidden="true" tabindex="-1"></a><span class="in">eh = ExperimentHub()</span></span>
+<span id="cb40-608"><a href="#cb40-608" aria-hidden="true" tabindex="-1"></a><span class="in">q = query(eh, &quot;Kang18&quot;)</span></span>
+<span id="cb40-609"><a href="#cb40-609" aria-hidden="true" tabindex="-1"></a><span class="in">(sce = eh[[q$ah_id]])</span></span>
 <span id="cb40-610"><a href="#cb40-610" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb40-611"><a href="#cb40-611" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-612"><a href="#cb40-612" aria-hidden="true" tabindex="-1"></a><span class="fu">## Data retrieval</span></span>
+<span id="cb40-612"><a href="#cb40-612" aria-hidden="true" tabindex="-1"></a><span class="fu">## Quality control</span></span>
 <span id="cb40-613"><a href="#cb40-613" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-614"><a href="#cb40-614" aria-hidden="true" tabindex="-1"></a>This is what we did yesterday, open the Rmarkdown document that you saved yesterday and run them again. </span>
-<span id="cb40-615"><a href="#cb40-615" aria-hidden="true" tabindex="-1"></a><span class="in">```{r load-data}</span></span>
-<span id="cb40-616"><a href="#cb40-616" aria-hidden="true" tabindex="-1"></a><span class="in">eh &lt;- ExperimentHub()</span></span>
-<span id="cb40-617"><a href="#cb40-617" aria-hidden="true" tabindex="-1"></a><span class="in">q &lt;- query(eh, &quot;Kang18&quot;)</span></span>
-<span id="cb40-618"><a href="#cb40-618" aria-hidden="true" tabindex="-1"></a><span class="in">(sce &lt;- eh[[q$ah_id]])</span></span>
+<span id="cb40-614"><a href="#cb40-614" aria-hidden="true" tabindex="-1"></a><span class="in">```{r qc}</span></span>
+<span id="cb40-615"><a href="#cb40-615" aria-hidden="true" tabindex="-1"></a><span class="in">sce &lt;- sce[rowSums(counts(sce) &gt; 0) &gt; 0, ]</span></span>
+<span id="cb40-616"><a href="#cb40-616" aria-hidden="true" tabindex="-1"></a><span class="in">sce &lt;- addPerCellQC(sce)</span></span>
+<span id="cb40-617"><a href="#cb40-617" aria-hidden="true" tabindex="-1"></a><span class="in">sce &lt;- sce[, !isOutlier(sce$detected, nmads=2, log=TRUE)]</span></span>
+<span id="cb40-618"><a href="#cb40-618" aria-hidden="true" tabindex="-1"></a><span class="in">sce &lt;- sce[rowSums(counts(sce) &gt; 1) &gt;= 10, ]</span></span>
 <span id="cb40-619"><a href="#cb40-619" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb40-620"><a href="#cb40-620" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-621"><a href="#cb40-621" aria-hidden="true" tabindex="-1"></a><span class="fu">## Quality control</span></span>
-<span id="cb40-622"><a href="#cb40-622" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-623"><a href="#cb40-623" aria-hidden="true" tabindex="-1"></a><span class="in">```{r qc}</span></span>
-<span id="cb40-624"><a href="#cb40-624" aria-hidden="true" tabindex="-1"></a><span class="in">sce &lt;- sce[rowSums(counts(sce) &gt; 0) &gt; 0, ]</span></span>
-<span id="cb40-625"><a href="#cb40-625" aria-hidden="true" tabindex="-1"></a><span class="in">sce &lt;- addPerCellQC(sce)</span></span>
-<span id="cb40-626"><a href="#cb40-626" aria-hidden="true" tabindex="-1"></a><span class="in">sce &lt;- sce[, !isOutlier(sce$detected, nmads=2, log=TRUE)]</span></span>
-<span id="cb40-627"><a href="#cb40-627" aria-hidden="true" tabindex="-1"></a><span class="in">sce &lt;- sce[rowSums(counts(sce) &gt; 1) &gt;= 10, ]</span></span>
-<span id="cb40-628"><a href="#cb40-628" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb40-629"><a href="#cb40-629" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-630"><a href="#cb40-630" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-631"><a href="#cb40-631" aria-hidden="true" tabindex="-1"></a><span class="fu"># Analysis continued</span></span>
-<span id="cb40-632"><a href="#cb40-632" aria-hidden="true" tabindex="-1"></a>Now we start with the new part.</span>
-<span id="cb40-633"><a href="#cb40-633" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-634"><a href="#cb40-634" aria-hidden="true" tabindex="-1"></a><span class="fu">## Feature selection</span></span>
-<span id="cb40-635"><a href="#cb40-635" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-636"><a href="#cb40-636" aria-hidden="true" tabindex="-1"></a>For each gene, we compute the variance and mean of the log-expression values. A trend is fitted to the variance against the mean for all genes. The fitted value for each gene is used as a proxy for the technical component of variation for each gene, under the assumption that most genes exhibit a low baseline level of variation that is not biologically interesting. The biological component of variation for each gene is defined as the the residual from the trend. (see <span class="in">`?modelGeneVar`</span>)</span>
-<span id="cb40-637"><a href="#cb40-637" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-638"><a href="#cb40-638" aria-hidden="true" tabindex="-1"></a><span class="in">```{r sel}</span></span>
-<span id="cb40-639"><a href="#cb40-639" aria-hidden="true" tabindex="-1"></a><span class="in"># log-library size normalization</span></span>
-<span id="cb40-640"><a href="#cb40-640" aria-hidden="true" tabindex="-1"></a><span class="in">sce &lt;- logNormCounts(sce) </span></span>
-<span id="cb40-641"><a href="#cb40-641" aria-hidden="true" tabindex="-1"></a><span class="in"># model gene expr. mean vs. var.</span></span>
-<span id="cb40-642"><a href="#cb40-642" aria-hidden="true" tabindex="-1"></a><span class="in">df &lt;- modelGeneVar(sce) </span></span>
-<span id="cb40-643"><a href="#cb40-643" aria-hidden="true" tabindex="-1"></a><span class="in">head(df)</span></span>
-<span id="cb40-644"><a href="#cb40-644" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb40-645"><a href="#cb40-645" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-646"><a href="#cb40-646" aria-hidden="true" tabindex="-1"></a>Use <span class="in">`dplyr`</span> to filter the above gene-level statistics (<span class="in">`df`</span>) for genes the 2,000 genes with the highest <span class="in">`bio`</span>logical variance component.</span>
-<span id="cb40-647"><a href="#cb40-647" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-648"><a href="#cb40-648" aria-hidden="true" tabindex="-1"></a><span class="in">```{r fil}</span></span>
-<span id="cb40-649"><a href="#cb40-649" aria-hidden="true" tabindex="-1"></a><span class="in">#| eval: true</span></span>
-<span id="cb40-650"><a href="#cb40-650" aria-hidden="true" tabindex="-1"></a><span class="in">#| echo: !expr params$include_answers</span></span>
-<span id="cb40-651"><a href="#cb40-651" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-652"><a href="#cb40-652" aria-hidden="true" tabindex="-1"></a><span class="in">fd &lt;- df |&gt;</span></span>
-<span id="cb40-653"><a href="#cb40-653" aria-hidden="true" tabindex="-1"></a><span class="in">    data.frame() |&gt;</span></span>
-<span id="cb40-654"><a href="#cb40-654" aria-hidden="true" tabindex="-1"></a><span class="in">    arrange(bio) |&gt;</span></span>
-<span id="cb40-655"><a href="#cb40-655" aria-hidden="true" tabindex="-1"></a><span class="in">    tail(n=2e3)</span></span>
-<span id="cb40-656"><a href="#cb40-656" aria-hidden="true" tabindex="-1"></a><span class="in"># or...</span></span>
-<span id="cb40-657"><a href="#cb40-657" aria-hidden="true" tabindex="-1"></a><span class="in">fd &lt;- df |&gt;</span></span>
-<span id="cb40-658"><a href="#cb40-658" aria-hidden="true" tabindex="-1"></a><span class="in">    data.frame() |&gt;</span></span>
-<span id="cb40-659"><a href="#cb40-659" aria-hidden="true" tabindex="-1"></a><span class="in">    slice_max(bio, n=2e3)</span></span>
-<span id="cb40-660"><a href="#cb40-660" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb40-661"><a href="#cb40-661" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-662"><a href="#cb40-662" aria-hidden="true" tabindex="-1"></a>Reproduce the below scatter plot (<span class="in">`geom_point()`</span>) of gene expression <span class="in">`mean`</span>s vs. <span class="in">`total`</span> variance estimates. You will need a 2nd layer to highlight the top-2,000 genes selected above (red points), and a 3rd layer to add the <span class="in">`tech`</span>nical variance estimate (blue dashed line).</span>
-<span id="cb40-663"><a href="#cb40-663" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-664"><a href="#cb40-664" aria-hidden="true" tabindex="-1"></a><span class="in">```{r mv-tot, fig.width=4, fig.height=4}</span></span>
-<span id="cb40-665"><a href="#cb40-665" aria-hidden="true" tabindex="-1"></a><span class="in">#| eval: true</span></span>
-<span id="cb40-666"><a href="#cb40-666" aria-hidden="true" tabindex="-1"></a><span class="in">#| echo: !expr params$include_answers</span></span>
-<span id="cb40-667"><a href="#cb40-667" aria-hidden="true" tabindex="-1"></a><span class="in">ggplot(df, aes(x=mean, y=total)) +</span></span>
-<span id="cb40-668"><a href="#cb40-668" aria-hidden="true" tabindex="-1"></a><span class="in">    geom_point() +</span></span>
-<span id="cb40-669"><a href="#cb40-669" aria-hidden="true" tabindex="-1"></a><span class="in">    geom_point(data=fd, col=&quot;red&quot;) +</span></span>
-<span id="cb40-670"><a href="#cb40-670" aria-hidden="true" tabindex="-1"></a><span class="in">    geom_line(aes(y=tech), col=&quot;blue&quot;, lty=2)</span></span>
-<span id="cb40-671"><a href="#cb40-671" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb40-672"><a href="#cb40-672" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-673"><a href="#cb40-673" aria-hidden="true" tabindex="-1"></a>The genes selected above correspond to genes with a large deviation from the baseline level of (technical) variation, i.e., they tend to have a large biological variance component:</span>
-<span id="cb40-674"><a href="#cb40-674" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-675"><a href="#cb40-675" aria-hidden="true" tabindex="-1"></a><span class="in">```{r mv-var, fig.width=4, fig.height=4}</span></span>
-<span id="cb40-676"><a href="#cb40-676" aria-hidden="true" tabindex="-1"></a><span class="in">#| eval: true</span></span>
-<span id="cb40-677"><a href="#cb40-677" aria-hidden="true" tabindex="-1"></a><span class="in">#| echo: !expr params$include_answers</span></span>
-<span id="cb40-678"><a href="#cb40-678" aria-hidden="true" tabindex="-1"></a><span class="in">ggplot(df, aes(x=mean, y=bio)) +</span></span>
-<span id="cb40-679"><a href="#cb40-679" aria-hidden="true" tabindex="-1"></a><span class="in">    geom_point() +</span></span>
-<span id="cb40-680"><a href="#cb40-680" aria-hidden="true" tabindex="-1"></a><span class="in">    geom_point(data=fd, col=&quot;red&quot;) +</span></span>
-<span id="cb40-681"><a href="#cb40-681" aria-hidden="true" tabindex="-1"></a><span class="in">    geom_hline(yintercept=0, col=&quot;blue&quot;, lty=2)</span></span>
-<span id="cb40-682"><a href="#cb40-682" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb40-683"><a href="#cb40-683" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-684"><a href="#cb40-684" aria-hidden="true" tabindex="-1"></a><span class="fu">## Dimension reduction</span></span>
-<span id="cb40-685"><a href="#cb40-685" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-686"><a href="#cb40-686" aria-hidden="true" tabindex="-1"></a>In standard scRNA-seq data anlysis pipelines, these &quot;highly variable features&quot; are subjected to principal component analysis (PCA) in order to identify major axes of variation. We can perform PCA on a <span class="in">`SingleCellExperiment`</span> using <span class="in">`runPCA()`</span> (<span class="in">`scater`</span> package), where we specify the subset of features to use via argument <span class="in">`subset_row`</span>:</span>
-<span id="cb40-687"><a href="#cb40-687" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-688"><a href="#cb40-688" aria-hidden="true" tabindex="-1"></a><span class="in">```{r pca-calc}</span></span>
-<span id="cb40-689"><a href="#cb40-689" aria-hidden="true" tabindex="-1"></a><span class="in"># get selected features</span></span>
-<span id="cb40-690"><a href="#cb40-690" aria-hidden="true" tabindex="-1"></a><span class="in">length(sel &lt;- rownames(fd))</span></span>
-<span id="cb40-691"><a href="#cb40-691" aria-hidden="true" tabindex="-1"></a><span class="in"># perform principal component analysis</span></span>
-<span id="cb40-692"><a href="#cb40-692" aria-hidden="true" tabindex="-1"></a><span class="in">sce &lt;- runPCA(sce, subset_row=sel)</span></span>
-<span id="cb40-693"><a href="#cb40-693" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb40-694"><a href="#cb40-694" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-695"><a href="#cb40-695" aria-hidden="true" tabindex="-1"></a>By default, <span class="in">`runPCA()`</span> computes 50 PCs that are stored in the input object as a <span class="in">`reducedDim()`</span> slot:</span>
-<span id="cb40-696"><a href="#cb40-696" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-697"><a href="#cb40-697" aria-hidden="true" tabindex="-1"></a><span class="in">```{r pca-show}</span></span>
-<span id="cb40-698"><a href="#cb40-698" aria-hidden="true" tabindex="-1"></a><span class="in"># rows=cells, columns=PCs</span></span>
-<span id="cb40-699"><a href="#cb40-699" aria-hidden="true" tabindex="-1"></a><span class="in">pcs &lt;- reducedDim(sce, &quot;PCA&quot;)</span></span>
-<span id="cb40-700"><a href="#cb40-700" aria-hidden="true" tabindex="-1"></a><span class="in">pcs[1:5, 1:5]</span></span>
-<span id="cb40-701"><a href="#cb40-701" aria-hidden="true" tabindex="-1"></a><span class="in">dim(pcs) </span></span>
-<span id="cb40-702"><a href="#cb40-702" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb40-703"><a href="#cb40-703" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-704"><a href="#cb40-704" aria-hidden="true" tabindex="-1"></a>Construct a <span class="in">`data.frame`</span> that includes both, PCs and cell-level metdata (<span class="in">`colData`</span>). Generate a scatter plot of PCs 1 and 2 as shown below, with cells colored by experimental condition and <span class="in">`cell`</span> subpopulation, respectively; x and y axes should have a fixed aspect ratio! </span>
-<span id="cb40-705"><a href="#cb40-705" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-706"><a href="#cb40-706" aria-hidden="true" tabindex="-1"></a><span class="in">```{r plt-pca-stim, fig.width=5, fig.height=4}</span></span>
-<span id="cb40-707"><a href="#cb40-707" aria-hidden="true" tabindex="-1"></a><span class="in">#| eval: true</span></span>
-<span id="cb40-708"><a href="#cb40-708" aria-hidden="true" tabindex="-1"></a><span class="in">#| echo: !expr params$include_answers</span></span>
-<span id="cb40-709"><a href="#cb40-709" aria-hidden="true" tabindex="-1"></a><span class="in">df &lt;- data.frame(pcs, colData(sce))</span></span>
-<span id="cb40-710"><a href="#cb40-710" aria-hidden="true" tabindex="-1"></a><span class="in">ggplot(df, aes(PC1, PC2, col=stim)) +</span></span>
-<span id="cb40-711"><a href="#cb40-711" aria-hidden="true" tabindex="-1"></a><span class="in">    geom_point(size=0.2) + coord_equal() +</span></span>
-<span id="cb40-712"><a href="#cb40-712" aria-hidden="true" tabindex="-1"></a><span class="in">    guides(col=guide_legend(override.aes=list(size=2))) </span></span>
-<span id="cb40-713"><a href="#cb40-713" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb40-714"><a href="#cb40-714" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-715"><a href="#cb40-715" aria-hidden="true" tabindex="-1"></a><span class="in">```{r plt-pca-cell, fig.width=6, fig.height=4}</span></span>
-<span id="cb40-716"><a href="#cb40-716" aria-hidden="true" tabindex="-1"></a><span class="in">#| eval: true</span></span>
-<span id="cb40-717"><a href="#cb40-717" aria-hidden="true" tabindex="-1"></a><span class="in">#| echo: !expr params$include_answers</span></span>
-<span id="cb40-718"><a href="#cb40-718" aria-hidden="true" tabindex="-1"></a><span class="in">ggplot(df, aes(PC1, PC2, col=cell)) + </span></span>
-<span id="cb40-719"><a href="#cb40-719" aria-hidden="true" tabindex="-1"></a><span class="in">    geom_point(size=0.2) + coord_equal() +</span></span>
-<span id="cb40-720"><a href="#cb40-720" aria-hidden="true" tabindex="-1"></a><span class="in">    guides(col=guide_legend(override.aes=list(size=2)))</span></span>
-<span id="cb40-721"><a href="#cb40-721" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb40-722"><a href="#cb40-722" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-723"><a href="#cb40-723" aria-hidden="true" tabindex="-1"></a>It&#39;s pretty clear from the plots above that experimental condition (<span class="in">`stim`</span>) and <span class="in">`cell`</span> subpopulations seem to be considerable drivers of gene expression variability. But what is driving these differences? We can explore this visually by coloring cells by other cell metadata, e.g., library size (total sum of counts). </span>
-<span id="cb40-724"><a href="#cb40-724" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-725"><a href="#cb40-725" aria-hidden="true" tabindex="-1"></a>Generate a scatter plot of PCs 1 and 2 with cells colored by log-library size. Taking into consideration the plots generated above, what is the main driver of gene expression variation (PC1)?</span>
-<span id="cb40-726"><a href="#cb40-726" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-727"><a href="#cb40-727" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, plt-pcs-ls}</span></span>
-<span id="cb40-728"><a href="#cb40-728" aria-hidden="true" tabindex="-1"></a><span class="in">#| eval: !expr params$include_answers</span></span>
-<span id="cb40-729"><a href="#cb40-729" aria-hidden="true" tabindex="-1"></a><span class="in">#| echo: !expr params$include_answers</span></span>
-<span id="cb40-730"><a href="#cb40-730" aria-hidden="true" tabindex="-1"></a><span class="in">ggplot(df, aes(PC1, PC2, col=log10(sum))) +</span></span>
-<span id="cb40-731"><a href="#cb40-731" aria-hidden="true" tabindex="-1"></a><span class="in">    geom_point(size=0.2) + coord_equal() +</span></span>
-<span id="cb40-732"><a href="#cb40-732" aria-hidden="true" tabindex="-1"></a><span class="in">    scale_color_viridis_c()</span></span>
-<span id="cb40-733"><a href="#cb40-733" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb40-734"><a href="#cb40-734" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-735"><a href="#cb40-735" aria-hidden="true" tabindex="-1"></a>Finally, note that the dataset retrieved from <span class="in">`ExperimentHub`</span> already contains a non-linear embedding, t-SNE, that has been pre-computed by the original authors. We can access this representation as follows, and you are welcomed to explore visually exploring the data on your own, e.g., </span>
-<span id="cb40-736"><a href="#cb40-736" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-737"><a href="#cb40-737" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>color cells by gene expression (<span class="in">`logcounts()`</span>)</span>
-<span id="cb40-738"><a href="#cb40-738" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>plot PCs (linear) again t-SNE dimensions (non-linear)</span>
-<span id="cb40-739"><a href="#cb40-739" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`facet_wrap()`</span> by <span class="in">`stim/ind/cell`</span> to split plots according to some metadata variable</span>
-<span id="cb40-740"><a href="#cb40-740" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-743"><a href="#cb40-743" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb40-744"><a href="#cb40-744" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: cbind</span></span>
-<span id="cb40-745"><a href="#cb40-745" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
-<span id="cb40-746"><a href="#cb40-746" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: true</span></span>
-<span id="cb40-747"><a href="#cb40-747" aria-hidden="true" tabindex="-1"></a>map <span class="ot">&lt;-</span> <span class="fu">reducedDim</span>(sce, <span class="st">&quot;TSNE&quot;</span>)</span>
-<span id="cb40-748"><a href="#cb40-748" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">cbind</span>(df, map)</span>
-<span id="cb40-749"><a href="#cb40-749" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df, ...)</span>
-<span id="cb40-750"><a href="#cb40-750" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb40-621"><a href="#cb40-621" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-622"><a href="#cb40-622" aria-hidden="true" tabindex="-1"></a><span class="fu"># Analysis continued</span></span>
+<span id="cb40-623"><a href="#cb40-623" aria-hidden="true" tabindex="-1"></a>Now we start with the new part.</span>
+<span id="cb40-624"><a href="#cb40-624" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-625"><a href="#cb40-625" aria-hidden="true" tabindex="-1"></a><span class="fu">## Feature selection</span></span>
+<span id="cb40-626"><a href="#cb40-626" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-627"><a href="#cb40-627" aria-hidden="true" tabindex="-1"></a>For each gene, we compute the variance and mean of the log-expression values. A trend is fitted to the variance against the mean for all genes. The fitted value for each gene is used as a proxy for the technical component of variation for each gene, under the assumption that most genes exhibit a low baseline level of variation that is not biologically interesting. The biological component of variation for each gene is defined as the the residual from the trend. (see <span class="in">`?modelGeneVar`</span>)</span>
+<span id="cb40-628"><a href="#cb40-628" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-629"><a href="#cb40-629" aria-hidden="true" tabindex="-1"></a><span class="in">```{r sel}</span></span>
+<span id="cb40-630"><a href="#cb40-630" aria-hidden="true" tabindex="-1"></a><span class="in"># log-library size normalization</span></span>
+<span id="cb40-631"><a href="#cb40-631" aria-hidden="true" tabindex="-1"></a><span class="in">sce &lt;- logNormCounts(sce) </span></span>
+<span id="cb40-632"><a href="#cb40-632" aria-hidden="true" tabindex="-1"></a><span class="in"># model gene expr. mean vs. var.</span></span>
+<span id="cb40-633"><a href="#cb40-633" aria-hidden="true" tabindex="-1"></a><span class="in">df &lt;- modelGeneVar(sce) </span></span>
+<span id="cb40-634"><a href="#cb40-634" aria-hidden="true" tabindex="-1"></a><span class="in">head(df)</span></span>
+<span id="cb40-635"><a href="#cb40-635" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb40-636"><a href="#cb40-636" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-637"><a href="#cb40-637" aria-hidden="true" tabindex="-1"></a>::: {.callout-note collapse=&quot;false&quot;}</span>
+<span id="cb40-638"><a href="#cb40-638" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-639"><a href="#cb40-639" aria-hidden="true" tabindex="-1"></a><span class="fu">## Question</span></span>
+<span id="cb40-640"><a href="#cb40-640" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-641"><a href="#cb40-641" aria-hidden="true" tabindex="-1"></a>Use <span class="in">`dplyr`</span> to filter the above gene-level statistics (<span class="in">`df`</span>) for genes the 2,000 genes with the highest <span class="in">`bio`</span>logical variance component.</span>
+<span id="cb40-642"><a href="#cb40-642" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-645"><a href="#cb40-645" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb40-646"><a href="#cb40-646" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: fil</span></span>
+<span id="cb40-647"><a href="#cb40-647" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: !expr params$include_answers</span></span>
+<span id="cb40-648"><a href="#cb40-648" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-649"><a href="#cb40-649" aria-hidden="true" tabindex="-1"></a>fd <span class="ot">&lt;-</span> df <span class="sc">|&gt;</span></span>
+<span id="cb40-650"><a href="#cb40-650" aria-hidden="true" tabindex="-1"></a>    <span class="fu">data.frame</span>() <span class="sc">|&gt;</span></span>
+<span id="cb40-651"><a href="#cb40-651" aria-hidden="true" tabindex="-1"></a>    <span class="fu">arrange</span>(bio) <span class="sc">|&gt;</span></span>
+<span id="cb40-652"><a href="#cb40-652" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tail</span>(<span class="at">n=</span><span class="fl">2e3</span>)</span>
+<span id="cb40-653"><a href="#cb40-653" aria-hidden="true" tabindex="-1"></a><span class="co"># or...</span></span>
+<span id="cb40-654"><a href="#cb40-654" aria-hidden="true" tabindex="-1"></a>fd <span class="ot">&lt;-</span> df <span class="sc">|&gt;</span></span>
+<span id="cb40-655"><a href="#cb40-655" aria-hidden="true" tabindex="-1"></a>    <span class="fu">data.frame</span>() <span class="sc">|&gt;</span></span>
+<span id="cb40-656"><a href="#cb40-656" aria-hidden="true" tabindex="-1"></a>    <span class="fu">slice_max</span>(bio, <span class="at">n=</span><span class="fl">2e3</span>)</span>
+<span id="cb40-657"><a href="#cb40-657" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb40-658"><a href="#cb40-658" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-659"><a href="#cb40-659" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb40-660"><a href="#cb40-660" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-661"><a href="#cb40-661" aria-hidden="true" tabindex="-1"></a>Reproduce the below scatter plot (<span class="in">`geom_point()`</span>) of gene expression <span class="in">`mean`</span>s vs. <span class="in">`total`</span> variance estimates. You will need a 2nd layer to highlight the top 2000 genes selected above (red points), and a 3rd layer to add the <span class="in">`tech`</span>nical variance estimate (blue dashed line).</span>
+<span id="cb40-662"><a href="#cb40-662" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-663"><a href="#cb40-663" aria-hidden="true" tabindex="-1"></a><span class="in">```{r mv-tot, fig.width=4, fig.height=4}</span></span>
+<span id="cb40-664"><a href="#cb40-664" aria-hidden="true" tabindex="-1"></a><span class="in">#| eval: true</span></span>
+<span id="cb40-665"><a href="#cb40-665" aria-hidden="true" tabindex="-1"></a><span class="in">#| echo: !expr params$include_answers</span></span>
+<span id="cb40-666"><a href="#cb40-666" aria-hidden="true" tabindex="-1"></a><span class="in">ggplot(df, aes(x=mean, y=total)) +</span></span>
+<span id="cb40-667"><a href="#cb40-667" aria-hidden="true" tabindex="-1"></a><span class="in">    geom_point() +</span></span>
+<span id="cb40-668"><a href="#cb40-668" aria-hidden="true" tabindex="-1"></a><span class="in">    geom_point(data=fd, col=&quot;red&quot;) +</span></span>
+<span id="cb40-669"><a href="#cb40-669" aria-hidden="true" tabindex="-1"></a><span class="in">    geom_line(aes(y=tech), col=&quot;blue&quot;, lty=2)</span></span>
+<span id="cb40-670"><a href="#cb40-670" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb40-671"><a href="#cb40-671" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-672"><a href="#cb40-672" aria-hidden="true" tabindex="-1"></a>The genes selected above correspond to genes with a large deviation from the baseline level of (technical) variation, i.e., they tend to have a large biological variance component:</span>
+<span id="cb40-673"><a href="#cb40-673" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-674"><a href="#cb40-674" aria-hidden="true" tabindex="-1"></a><span class="in">```{r mv-var, fig.width=4, fig.height=4}</span></span>
+<span id="cb40-675"><a href="#cb40-675" aria-hidden="true" tabindex="-1"></a><span class="in">#| eval: true</span></span>
+<span id="cb40-676"><a href="#cb40-676" aria-hidden="true" tabindex="-1"></a><span class="in">#| echo: !expr params$include_answers</span></span>
+<span id="cb40-677"><a href="#cb40-677" aria-hidden="true" tabindex="-1"></a><span class="in">ggplot(df, aes(x=mean, y=bio)) +</span></span>
+<span id="cb40-678"><a href="#cb40-678" aria-hidden="true" tabindex="-1"></a><span class="in">    geom_point() +</span></span>
+<span id="cb40-679"><a href="#cb40-679" aria-hidden="true" tabindex="-1"></a><span class="in">    geom_point(data=fd, col=&quot;red&quot;) +</span></span>
+<span id="cb40-680"><a href="#cb40-680" aria-hidden="true" tabindex="-1"></a><span class="in">    geom_hline(yintercept=0, col=&quot;blue&quot;, lty=2)</span></span>
+<span id="cb40-681"><a href="#cb40-681" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb40-682"><a href="#cb40-682" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-683"><a href="#cb40-683" aria-hidden="true" tabindex="-1"></a><span class="fu">## Dimension reduction</span></span>
+<span id="cb40-684"><a href="#cb40-684" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-685"><a href="#cb40-685" aria-hidden="true" tabindex="-1"></a>In standard scRNA-seq data anlysis pipelines, these &quot;highly variable features&quot; are subjected to principal component analysis (PCA) in order to identify major axes of variation. We can perform PCA on a <span class="in">`SingleCellExperiment`</span> using <span class="in">`runPCA()`</span> (<span class="in">`scater`</span> package), where we specify the subset of features to use via argument <span class="in">`subset_row`</span>:</span>
+<span id="cb40-686"><a href="#cb40-686" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-687"><a href="#cb40-687" aria-hidden="true" tabindex="-1"></a><span class="in">```{r pca-calc}</span></span>
+<span id="cb40-688"><a href="#cb40-688" aria-hidden="true" tabindex="-1"></a><span class="in"># get selected features</span></span>
+<span id="cb40-689"><a href="#cb40-689" aria-hidden="true" tabindex="-1"></a><span class="in">length(sel &lt;- rownames(fd))</span></span>
+<span id="cb40-690"><a href="#cb40-690" aria-hidden="true" tabindex="-1"></a><span class="in"># perform principal component analysis</span></span>
+<span id="cb40-691"><a href="#cb40-691" aria-hidden="true" tabindex="-1"></a><span class="in">sce &lt;- runPCA(sce, subset_row=sel)</span></span>
+<span id="cb40-692"><a href="#cb40-692" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb40-693"><a href="#cb40-693" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-694"><a href="#cb40-694" aria-hidden="true" tabindex="-1"></a>By default, <span class="in">`runPCA()`</span> computes the top 50 principal compared and stores them in resulting object in the <span class="in">`reducedDim()`</span> slot:</span>
+<span id="cb40-695"><a href="#cb40-695" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-696"><a href="#cb40-696" aria-hidden="true" tabindex="-1"></a><span class="in">```{r pca-show}</span></span>
+<span id="cb40-697"><a href="#cb40-697" aria-hidden="true" tabindex="-1"></a><span class="in"># rows = cells, columns = PCs</span></span>
+<span id="cb40-698"><a href="#cb40-698" aria-hidden="true" tabindex="-1"></a><span class="in">pcs &lt;- reducedDim(sce, &quot;PCA&quot;)</span></span>
+<span id="cb40-699"><a href="#cb40-699" aria-hidden="true" tabindex="-1"></a><span class="in">pcs[1:5, 1:5]</span></span>
+<span id="cb40-700"><a href="#cb40-700" aria-hidden="true" tabindex="-1"></a><span class="in">dim(pcs) </span></span>
+<span id="cb40-701"><a href="#cb40-701" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb40-702"><a href="#cb40-702" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-703"><a href="#cb40-703" aria-hidden="true" tabindex="-1"></a>Construct a <span class="in">`data.frame`</span> that includes both, PCs and cell-level metdata (<span class="in">`colData`</span>). Generate a scatter plot of PCs 1 and 2 as shown below, with cells colored by experimental condition and <span class="in">`cell`</span> subpopulation, respectively; x and y axes should have a fixed aspect ratio! </span>
+<span id="cb40-704"><a href="#cb40-704" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-705"><a href="#cb40-705" aria-hidden="true" tabindex="-1"></a><span class="in">```{r plt-pca-stim, fig.width=5, fig.height=4}</span></span>
+<span id="cb40-706"><a href="#cb40-706" aria-hidden="true" tabindex="-1"></a><span class="in">#| eval: true</span></span>
+<span id="cb40-707"><a href="#cb40-707" aria-hidden="true" tabindex="-1"></a><span class="in">#| echo: !expr params$include_answers</span></span>
+<span id="cb40-708"><a href="#cb40-708" aria-hidden="true" tabindex="-1"></a><span class="in">df &lt;- data.frame(pcs, colData(sce))</span></span>
+<span id="cb40-709"><a href="#cb40-709" aria-hidden="true" tabindex="-1"></a><span class="in">ggplot(df, aes(PC1, PC2, col=stim)) +</span></span>
+<span id="cb40-710"><a href="#cb40-710" aria-hidden="true" tabindex="-1"></a><span class="in">    geom_point(size=0.2) + coord_equal() +</span></span>
+<span id="cb40-711"><a href="#cb40-711" aria-hidden="true" tabindex="-1"></a><span class="in">    guides(col=guide_legend(override.aes=list(size=2))) </span></span>
+<span id="cb40-712"><a href="#cb40-712" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb40-713"><a href="#cb40-713" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-714"><a href="#cb40-714" aria-hidden="true" tabindex="-1"></a><span class="in">```{r plt-pca-cell, fig.width=6, fig.height=4}</span></span>
+<span id="cb40-715"><a href="#cb40-715" aria-hidden="true" tabindex="-1"></a><span class="in">#| eval: true</span></span>
+<span id="cb40-716"><a href="#cb40-716" aria-hidden="true" tabindex="-1"></a><span class="in">#| echo: !expr params$include_answers</span></span>
+<span id="cb40-717"><a href="#cb40-717" aria-hidden="true" tabindex="-1"></a><span class="in">ggplot(df, aes(PC1, PC2, col=cell)) + </span></span>
+<span id="cb40-718"><a href="#cb40-718" aria-hidden="true" tabindex="-1"></a><span class="in">    geom_point(size=0.2) + coord_equal() +</span></span>
+<span id="cb40-719"><a href="#cb40-719" aria-hidden="true" tabindex="-1"></a><span class="in">    guides(col=guide_legend(override.aes=list(size=2)))</span></span>
+<span id="cb40-720"><a href="#cb40-720" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb40-721"><a href="#cb40-721" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-722"><a href="#cb40-722" aria-hidden="true" tabindex="-1"></a>It&#39;s pretty clear from the plots above that experimental condition (<span class="in">`stim`</span>) and <span class="in">`cell`</span> subpopulations seem to be considerable drivers of gene expression variability. But what is driving these differences? We can explore this visually by coloring cells by other cell metadata, e.g., library size (total sum of counts). </span>
+<span id="cb40-723"><a href="#cb40-723" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-724"><a href="#cb40-724" aria-hidden="true" tabindex="-1"></a>Generate a scatter plot of PCs 1 and 2 with cells colored by log-library size. Taking into consideration the plots generated above, what is the main driver of gene expression variation (PC1)?</span>
+<span id="cb40-725"><a href="#cb40-725" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-726"><a href="#cb40-726" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, plt-pcs-ls}</span></span>
+<span id="cb40-727"><a href="#cb40-727" aria-hidden="true" tabindex="-1"></a><span class="in">#| eval: !expr params$include_answers</span></span>
+<span id="cb40-728"><a href="#cb40-728" aria-hidden="true" tabindex="-1"></a><span class="in">#| echo: !expr params$include_answers</span></span>
+<span id="cb40-729"><a href="#cb40-729" aria-hidden="true" tabindex="-1"></a><span class="in">ggplot(df, aes(PC1, PC2, col=log10(sum))) +</span></span>
+<span id="cb40-730"><a href="#cb40-730" aria-hidden="true" tabindex="-1"></a><span class="in">    geom_point(size=0.2) + coord_equal() +</span></span>
+<span id="cb40-731"><a href="#cb40-731" aria-hidden="true" tabindex="-1"></a><span class="in">    scale_color_viridis_c()</span></span>
+<span id="cb40-732"><a href="#cb40-732" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb40-733"><a href="#cb40-733" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-734"><a href="#cb40-734" aria-hidden="true" tabindex="-1"></a>Finally, note that the dataset retrieved from <span class="in">`ExperimentHub`</span> already contains a non-linear embedding, t-SNE, that has been pre-computed by the original authors. We can access this representation as follows, and you are welcomed to explore visually exploring the data on your own, e.g., </span>
+<span id="cb40-735"><a href="#cb40-735" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-736"><a href="#cb40-736" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>color cells by gene expression (<span class="in">`logcounts()`</span>)</span>
+<span id="cb40-737"><a href="#cb40-737" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>plot PCs (linear) again t-SNE dimensions (non-linear)</span>
+<span id="cb40-738"><a href="#cb40-738" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`facet_wrap()`</span> by <span class="in">`stim/ind/cell`</span> to split plots according to some metadata variable</span>
+<span id="cb40-739"><a href="#cb40-739" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-742"><a href="#cb40-742" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb40-743"><a href="#cb40-743" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: cbind</span></span>
+<span id="cb40-744"><a href="#cb40-744" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
+<span id="cb40-745"><a href="#cb40-745" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: true</span></span>
+<span id="cb40-746"><a href="#cb40-746" aria-hidden="true" tabindex="-1"></a>map <span class="ot">&lt;-</span> <span class="fu">reducedDim</span>(sce, <span class="st">&quot;TSNE&quot;</span>)</span>
+<span id="cb40-747"><a href="#cb40-747" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">cbind</span>(df, map)</span>
+<span id="cb40-748"><a href="#cb40-748" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df, ...)</span>
+<span id="cb40-749"><a href="#cb40-749" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 </code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
