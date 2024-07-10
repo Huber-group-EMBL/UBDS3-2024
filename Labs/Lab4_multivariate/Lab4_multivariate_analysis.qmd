@@ -343,6 +343,7 @@ x&=-\\frac{a}{b}+\\frac{1}{b}y
 ```{r}
 #| label: questions-reg1-answers3
 #| eval: !expr params$include_answers
+#| echo: !expr params$include_answers
 #| fig-width: 4
 #| fig-height: 4
 #| out-width: "80%"

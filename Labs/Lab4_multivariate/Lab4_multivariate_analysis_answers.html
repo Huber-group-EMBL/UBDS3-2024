@@ -4751,195 +4751,196 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb67-379"><a href="#cb67-379" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb67-380"><a href="#cb67-380" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: questions-reg1-answers3</span></span>
 <span id="cb67-381"><a href="#cb67-381" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: !expr params$include_answers</span></span>
-<span id="cb67-382"><a href="#cb67-382" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-width: 4</span></span>
-<span id="cb67-383"><a href="#cb67-383" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-height: 4</span></span>
-<span id="cb67-384"><a href="#cb67-384" aria-hidden="true" tabindex="-1"></a><span class="co">#| out-width: &quot;80%&quot;</span></span>
-<span id="cb67-385"><a href="#cb67-385" aria-hidden="true" tabindex="-1"></a>a1 <span class="ot">=</span> reg1<span class="sc">$</span>coefficients[<span class="dv">1</span>]</span>
-<span id="cb67-386"><a href="#cb67-386" aria-hidden="true" tabindex="-1"></a>b1 <span class="ot">=</span> reg1<span class="sc">$</span>coefficients[<span class="dv">2</span>]</span>
-<span id="cb67-387"><a href="#cb67-387" aria-hidden="true" tabindex="-1"></a>a2 <span class="ot">=</span> reg2<span class="sc">$</span>coefficients[<span class="dv">1</span>]</span>
-<span id="cb67-388"><a href="#cb67-388" aria-hidden="true" tabindex="-1"></a>b2 <span class="ot">=</span> reg2<span class="sc">$</span>coefficients[<span class="dv">2</span>]</span>
-<span id="cb67-389"><a href="#cb67-389" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(scaledathletes, <span class="fu">aes</span>(<span class="at">x =</span> disc, <span class="at">y =</span> weight)) <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="at">shape =</span> <span class="dv">1</span>) <span class="sc">+</span> </span>
-<span id="cb67-390"><a href="#cb67-390" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_fixed</span>() <span class="sc">+</span> </span>
-<span id="cb67-391"><a href="#cb67-391" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">intercept =</span> a1, <span class="at">slope =</span> b1 , <span class="at">col =</span> <span class="st">&quot;#0056B9&quot;</span>) <span class="sc">+</span></span>
-<span id="cb67-392"><a href="#cb67-392" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">intercept =</span> <span class="sc">-</span>a2<span class="sc">/</span>b2, <span class="at">slope =</span> <span class="dv">1</span><span class="sc">/</span>b1, <span class="at">col =</span> <span class="st">&quot;#FFD800&quot;</span>)</span>
-<span id="cb67-393"><a href="#cb67-393" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb67-394"><a href="#cb67-394" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-395"><a href="#cb67-395" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb67-396"><a href="#cb67-396" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-382"><a href="#cb67-382" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: !expr params$include_answers</span></span>
+<span id="cb67-383"><a href="#cb67-383" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-width: 4</span></span>
+<span id="cb67-384"><a href="#cb67-384" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-height: 4</span></span>
+<span id="cb67-385"><a href="#cb67-385" aria-hidden="true" tabindex="-1"></a><span class="co">#| out-width: &quot;80%&quot;</span></span>
+<span id="cb67-386"><a href="#cb67-386" aria-hidden="true" tabindex="-1"></a>a1 <span class="ot">=</span> reg1<span class="sc">$</span>coefficients[<span class="dv">1</span>]</span>
+<span id="cb67-387"><a href="#cb67-387" aria-hidden="true" tabindex="-1"></a>b1 <span class="ot">=</span> reg1<span class="sc">$</span>coefficients[<span class="dv">2</span>]</span>
+<span id="cb67-388"><a href="#cb67-388" aria-hidden="true" tabindex="-1"></a>a2 <span class="ot">=</span> reg2<span class="sc">$</span>coefficients[<span class="dv">1</span>]</span>
+<span id="cb67-389"><a href="#cb67-389" aria-hidden="true" tabindex="-1"></a>b2 <span class="ot">=</span> reg2<span class="sc">$</span>coefficients[<span class="dv">2</span>]</span>
+<span id="cb67-390"><a href="#cb67-390" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(scaledathletes, <span class="fu">aes</span>(<span class="at">x =</span> disc, <span class="at">y =</span> weight)) <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="at">shape =</span> <span class="dv">1</span>) <span class="sc">+</span> </span>
+<span id="cb67-391"><a href="#cb67-391" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_fixed</span>() <span class="sc">+</span> </span>
+<span id="cb67-392"><a href="#cb67-392" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">intercept =</span> a1, <span class="at">slope =</span> b1 , <span class="at">col =</span> <span class="st">&quot;#0056B9&quot;</span>) <span class="sc">+</span></span>
+<span id="cb67-393"><a href="#cb67-393" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">intercept =</span> <span class="sc">-</span>a2<span class="sc">/</span>b2, <span class="at">slope =</span> <span class="dv">1</span><span class="sc">/</span>b1, <span class="at">col =</span> <span class="st">&quot;#FFD800&quot;</span>)</span>
+<span id="cb67-394"><a href="#cb67-394" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb67-395"><a href="#cb67-395" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-396"><a href="#cb67-396" aria-hidden="true" tabindex="-1"></a>:::</span>
 <span id="cb67-397"><a href="#cb67-397" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-398"><a href="#cb67-398" aria-hidden="true" tabindex="-1"></a><span class="fu">## A line that minimizes distances in both directions</span></span>
-<span id="cb67-399"><a href="#cb67-399" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-400"><a href="#cb67-400" aria-hidden="true" tabindex="-1"></a>Below we are plotting a line chosen to minimize the error in both the horizontal and vertical directions. This results in minimizing the diagonal projections onto the line.  </span>
-<span id="cb67-401"><a href="#cb67-401" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-402"><a href="#cb67-402" aria-hidden="true" tabindex="-1"></a>Specifically, we compute a line that minimizes the sum of squares of the orthogonal (perpendicular) projections of data points onto it; we call this the principal component line (purple).</span>
-<span id="cb67-403"><a href="#cb67-403" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-404"><a href="#cb67-404" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, include = FALSE}</span></span>
-<span id="cb67-405"><a href="#cb67-405" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-406"><a href="#cb67-406" aria-hidden="true" tabindex="-1"></a><span class="in">X = cbind(scaledathletes$disc, scaledathletes$weight)</span></span>
-<span id="cb67-407"><a href="#cb67-407" aria-hidden="true" tabindex="-1"></a><span class="in">svda = svd(X)</span></span>
-<span id="cb67-408"><a href="#cb67-408" aria-hidden="true" tabindex="-1"></a><span class="in">pc = X %*% svda$v[, 1] %*% t(svda$v[, 1])</span></span>
-<span id="cb67-409"><a href="#cb67-409" aria-hidden="true" tabindex="-1"></a><span class="in">bp = svda$v[2, 1] / svda$v[1, 1]</span></span>
-<span id="cb67-410"><a href="#cb67-410" aria-hidden="true" tabindex="-1"></a><span class="in">ap = mean(pc[, 2]) - bp * mean(pc[, 1])</span></span>
-<span id="cb67-411"><a href="#cb67-411" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-412"><a href="#cb67-412" aria-hidden="true" tabindex="-1"></a><span class="in">p + geom_segment(xend = pc[, 1], yend = pc[, 2], arrow = arrow(length = unit(0.15, &quot;cm&quot;))) + </span></span>
-<span id="cb67-413"><a href="#cb67-413" aria-hidden="true" tabindex="-1"></a><span class="in">  geom_abline(intercept = ap, slope = bp, col = &quot;purple&quot;, lwd = 1.5) + </span></span>
-<span id="cb67-414"><a href="#cb67-414" aria-hidden="true" tabindex="-1"></a><span class="in">  coord_fixed()</span></span>
-<span id="cb67-415"><a href="#cb67-415" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-416"><a href="#cb67-416" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb67-417"><a href="#cb67-417" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-418"><a href="#cb67-418" aria-hidden="true" tabindex="-1"></a>Now let&#39;s see how we can use the learned on a higher-dimensional data set. </span>
-<span id="cb67-419"><a href="#cb67-419" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-420"><a href="#cb67-420" aria-hidden="true" tabindex="-1"></a><span class="fu">## Turtle PCA</span></span>
-<span id="cb67-421"><a href="#cb67-421" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-422"><a href="#cb67-422" aria-hidden="true" tabindex="-1"></a>To start we will come back to the turtles data set. First, we need to make sure we understand the basic features of the data and preprocess it in a way that its in the correct &quot;shape&quot; for running the PCA analysis. </span>
-<span id="cb67-423"><a href="#cb67-423" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-424"><a href="#cb67-424" aria-hidden="true" tabindex="-1"></a>::: {.callout-note collapse=&quot;false&quot;}</span>
-<span id="cb67-425"><a href="#cb67-425" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-426"><a href="#cb67-426" aria-hidden="true" tabindex="-1"></a><span class="fu">## Questions</span></span>
-<span id="cb67-427"><a href="#cb67-427" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-428"><a href="#cb67-428" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>What are the mean values and standard deviation, of each of the 3 features: length, width and height. </span>
-<span id="cb67-429"><a href="#cb67-429" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Scale the data. </span>
-<span id="cb67-430"><a href="#cb67-430" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Explore the correlations between the 3 variables after scaling the data. What do you see? </span>
-<span id="cb67-431"><a href="#cb67-431" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-434"><a href="#cb67-434" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb67-435"><a href="#cb67-435" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: questions-turtle-answers</span></span>
-<span id="cb67-436"><a href="#cb67-436" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: !expr params$include_answers</span></span>
-<span id="cb67-437"><a href="#cb67-437" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: !expr params$include_answers</span></span>
-<span id="cb67-438"><a href="#cb67-438" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-width: 4</span></span>
-<span id="cb67-439"><a href="#cb67-439" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-height: 4</span></span>
-<span id="cb67-440"><a href="#cb67-440" aria-hidden="true" tabindex="-1"></a><span class="co">#| out-width: &quot;60%&quot;</span></span>
-<span id="cb67-441"><a href="#cb67-441" aria-hidden="true" tabindex="-1"></a><span class="co">#1 </span></span>
-<span id="cb67-442"><a href="#cb67-442" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(turtles[, <span class="sc">-</span><span class="dv">1</span>], <span class="dv">2</span>, mean)</span>
-<span id="cb67-443"><a href="#cb67-443" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(turtles[, <span class="sc">-</span><span class="dv">1</span>], <span class="dv">2</span>, sd)</span>
-<span id="cb67-444"><a href="#cb67-444" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-445"><a href="#cb67-445" aria-hidden="true" tabindex="-1"></a><span class="co">#2</span></span>
-<span id="cb67-446"><a href="#cb67-446" aria-hidden="true" tabindex="-1"></a>turtlesc <span class="ot">=</span> <span class="fu">scale</span>(turtles[, <span class="sc">-</span><span class="dv">1</span>])</span>
-<span id="cb67-447"><a href="#cb67-447" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-448"><a href="#cb67-448" aria-hidden="true" tabindex="-1"></a><span class="co">#3</span></span>
-<span id="cb67-449"><a href="#cb67-449" aria-hidden="true" tabindex="-1"></a>corrs <span class="ot">=</span> <span class="fu">cor</span>(turtlesc)</span>
-<span id="cb67-450"><a href="#cb67-450" aria-hidden="true" tabindex="-1"></a>corrs <span class="sc">|&gt;</span> <span class="fu">round</span>(<span class="dv">3</span>)</span>
-<span id="cb67-451"><a href="#cb67-451" aria-hidden="true" tabindex="-1"></a><span class="fu">pheatmap</span>(corrs, <span class="at">cellwidth =</span> <span class="dv">40</span>, <span class="at">cellheight =</span> <span class="dv">40</span>, <span class="at">color =</span> mycolors)</span>
-<span id="cb67-452"><a href="#cb67-452" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb67-453"><a href="#cb67-453" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-454"><a href="#cb67-454" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb67-455"><a href="#cb67-455" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-456"><a href="#cb67-456" aria-hidden="true" tabindex="-1"></a>From the correlations, you see that all 3 variables are strongly correlated. (In the heatmap, note that the color scale already starts with a high value at its lower end.) Hence we expect that the data can be well approximated by a single variable. Let&#39;s do the PCA:</span>
-<span id="cb67-457"><a href="#cb67-457" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-460"><a href="#cb67-460" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb67-461"><a href="#cb67-461" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: pcaturtles</span></span>
-<span id="cb67-462"><a href="#cb67-462" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-width: 4</span></span>
-<span id="cb67-463"><a href="#cb67-463" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-height: 4</span></span>
-<span id="cb67-464"><a href="#cb67-464" aria-hidden="true" tabindex="-1"></a><span class="co">#| out-width: &quot;60%&quot;</span></span>
-<span id="cb67-465"><a href="#cb67-465" aria-hidden="true" tabindex="-1"></a><span class="co">#| message: false</span></span>
-<span id="cb67-466"><a href="#cb67-466" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;factoextra&quot;</span>)</span>
-<span id="cb67-467"><a href="#cb67-467" aria-hidden="true" tabindex="-1"></a>pca1 <span class="ot">=</span> <span class="fu">princomp</span>(turtlesc)</span>
-<span id="cb67-468"><a href="#cb67-468" aria-hidden="true" tabindex="-1"></a>pca1</span>
-<span id="cb67-469"><a href="#cb67-469" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb67-470"><a href="#cb67-470" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-471"><a href="#cb67-471" aria-hidden="true" tabindex="-1"></a>To look at the relative importance of the principal components, we can look at their variances: the screeplot. The screeplot shows the eigenvalues for the standardized data. </span>
-<span id="cb67-472"><a href="#cb67-472" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-473"><a href="#cb67-473" aria-hidden="true" tabindex="-1"></a><span class="in">```{r scree}</span></span>
-<span id="cb67-474"><a href="#cb67-474" aria-hidden="true" tabindex="-1"></a><span class="in">#| label: screeturtles</span></span>
-<span id="cb67-475"><a href="#cb67-475" aria-hidden="true" tabindex="-1"></a><span class="in">#| fig-width: 4</span></span>
-<span id="cb67-476"><a href="#cb67-476" aria-hidden="true" tabindex="-1"></a><span class="in">#| fig-height: 4</span></span>
-<span id="cb67-477"><a href="#cb67-477" aria-hidden="true" tabindex="-1"></a><span class="in">#| out-width: &quot;60%&quot;</span></span>
-<span id="cb67-478"><a href="#cb67-478" aria-hidden="true" tabindex="-1"></a><span class="in">fviz_eig(pca1, geom = &quot;bar&quot;, width = 0.4)</span></span>
-<span id="cb67-479"><a href="#cb67-479" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb67-480"><a href="#cb67-480" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-481"><a href="#cb67-481" aria-hidden="true" tabindex="-1"></a>Note: Here we see one very large component in this case and two very small ones. In this case the data are (almost) one dimensional.</span>
-<span id="cb67-482"><a href="#cb67-482" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-483"><a href="#cb67-483" aria-hidden="true" tabindex="-1"></a>::: {.callout-note collapse=&quot;false&quot;}</span>
-<span id="cb67-484"><a href="#cb67-484" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-485"><a href="#cb67-485" aria-hidden="true" tabindex="-1"></a><span class="fu">## Questions</span></span>
-<span id="cb67-486"><a href="#cb67-486" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-487"><a href="#cb67-487" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>What is the percentage of variance explained by the first PC? How can you obtain this value from the pca1 object? </span>
-<span id="cb67-488"><a href="#cb67-488" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>How many PCs are you using if you want to project the turtles data set? </span>
-<span id="cb67-489"><a href="#cb67-489" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-492"><a href="#cb67-492" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb67-493"><a href="#cb67-493" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: questions-summarypcaturtle</span></span>
-<span id="cb67-494"><a href="#cb67-494" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: !expr params$include_answers</span></span>
-<span id="cb67-495"><a href="#cb67-495" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: !expr params$include_answers</span></span>
-<span id="cb67-496"><a href="#cb67-496" aria-hidden="true" tabindex="-1"></a><span class="co">#1</span></span>
-<span id="cb67-497"><a href="#cb67-497" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(pca1)</span>
-<span id="cb67-498"><a href="#cb67-498" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-499"><a href="#cb67-499" aria-hidden="true" tabindex="-1"></a><span class="co">#2</span></span>
-<span id="cb67-500"><a href="#cb67-500" aria-hidden="true" tabindex="-1"></a><span class="co"># One PC would be sufficient.</span></span>
-<span id="cb67-501"><a href="#cb67-501" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb67-502"><a href="#cb67-502" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-503"><a href="#cb67-503" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb67-504"><a href="#cb67-504" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-505"><a href="#cb67-505" aria-hidden="true" tabindex="-1"></a>Now, lets plot the samples with their PC1 and PC2 coordinates, together with the variables. The representation of both, the samples and the variables is called a biplot.  </span>
-<span id="cb67-506"><a href="#cb67-506" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-507"><a href="#cb67-507" aria-hidden="true" tabindex="-1"></a><span class="in">```{r turtlesbiplot}</span></span>
-<span id="cb67-508"><a href="#cb67-508" aria-hidden="true" tabindex="-1"></a><span class="in">fviz_pca_biplot(pca1, label = &quot;var&quot;) </span></span>
-<span id="cb67-509"><a href="#cb67-509" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb67-510"><a href="#cb67-510" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-511"><a href="#cb67-511" aria-hidden="true" tabindex="-1"></a>::: {.callout-note collapse=&quot;false&quot;}</span>
-<span id="cb67-512"><a href="#cb67-512" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-513"><a href="#cb67-513" aria-hidden="true" tabindex="-1"></a><span class="fu">## Questions</span></span>
-<span id="cb67-514"><a href="#cb67-514" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-515"><a href="#cb67-515" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Can you extend this plotting code to color the female samples differently than the male samples? </span>
-<span id="cb67-516"><a href="#cb67-516" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Did the males or female turtles tend to be larger?</span>
-<span id="cb67-517"><a href="#cb67-517" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-520"><a href="#cb67-520" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb67-521"><a href="#cb67-521" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: questions-fviz_pca_biplot-turtles</span></span>
-<span id="cb67-522"><a href="#cb67-522" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: !expr params$include_answers</span></span>
-<span id="cb67-523"><a href="#cb67-523" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: !expr params$include_answers</span></span>
-<span id="cb67-524"><a href="#cb67-524" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-width: 4</span></span>
-<span id="cb67-525"><a href="#cb67-525" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-height: 4</span></span>
-<span id="cb67-526"><a href="#cb67-526" aria-hidden="true" tabindex="-1"></a><span class="co">#| out-width: &quot;60%&quot;</span></span>
-<span id="cb67-527"><a href="#cb67-527" aria-hidden="true" tabindex="-1"></a><span class="co">#6</span></span>
-<span id="cb67-528"><a href="#cb67-528" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_pca_biplot</span>(pca1, <span class="at">label =</span> <span class="st">&quot;var&quot;</span>, <span class="at">col.ind =</span> turtles[,<span class="dv">1</span>]) </span>
-<span id="cb67-529"><a href="#cb67-529" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-530"><a href="#cb67-530" aria-hidden="true" tabindex="-1"></a><span class="co">#7</span></span>
-<span id="cb67-531"><a href="#cb67-531" aria-hidden="true" tabindex="-1"></a><span class="co"># Females </span></span>
-<span id="cb67-532"><a href="#cb67-532" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb67-533"><a href="#cb67-533" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-534"><a href="#cb67-534" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb67-535"><a href="#cb67-535" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-536"><a href="#cb67-536" aria-hidden="true" tabindex="-1"></a><span class="fu">## Back to the athletes</span></span>
-<span id="cb67-537"><a href="#cb67-537" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-538"><a href="#cb67-538" aria-hidden="true" tabindex="-1"></a>Now let us try to run the PCA on a larger data set and interpret the corresponding scree plot. In this case we are using a different library, with a slightly different output of the PCA computation. But the principle is the same. </span>
-<span id="cb67-539"><a href="#cb67-539" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-542"><a href="#cb67-542" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb67-543"><a href="#cb67-543" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: pac.ath</span></span>
-<span id="cb67-544"><a href="#cb67-544" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;ade4&quot;</span>)</span>
-<span id="cb67-545"><a href="#cb67-545" aria-hidden="true" tabindex="-1"></a><span class="co"># The dudi.pca function by default already centers and scales the data by itself</span></span>
-<span id="cb67-546"><a href="#cb67-546" aria-hidden="true" tabindex="-1"></a>pca.ath <span class="ot">=</span> <span class="fu">dudi.pca</span>(athletes, <span class="at">scannf =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb67-547"><a href="#cb67-547" aria-hidden="true" tabindex="-1"></a>pca.ath<span class="sc">$</span>eig</span>
-<span id="cb67-548"><a href="#cb67-548" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb67-549"><a href="#cb67-549" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-550"><a href="#cb67-550" aria-hidden="true" tabindex="-1"></a>::: {.callout-note collapse=&quot;false&quot;}</span>
-<span id="cb67-551"><a href="#cb67-551" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-552"><a href="#cb67-552" aria-hidden="true" tabindex="-1"></a><span class="fu">## Questions</span></span>
-<span id="cb67-553"><a href="#cb67-553" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-554"><a href="#cb67-554" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Just like in the above turtle data set. Can you produce a scree plot? </span>
-<span id="cb67-555"><a href="#cb67-555" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>How many PCs are you using if you want to project the athletes data set? </span>
-<span id="cb67-556"><a href="#cb67-556" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Can you plot the samples with their PC1 and PC2 coordinates, together with the variables in a biplot? </span>
-<span id="cb67-557"><a href="#cb67-557" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Can you plot the numbers of the athletes onto the samples. What do you notice about the numbers?</span>
-<span id="cb67-558"><a href="#cb67-558" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-561"><a href="#cb67-561" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb67-562"><a href="#cb67-562" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: questions-athletets</span></span>
-<span id="cb67-563"><a href="#cb67-563" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: !expr params$include_answers</span></span>
-<span id="cb67-564"><a href="#cb67-564" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: !expr params$include_answers</span></span>
-<span id="cb67-565"><a href="#cb67-565" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-width: 4</span></span>
-<span id="cb67-566"><a href="#cb67-566" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-height: 4</span></span>
-<span id="cb67-567"><a href="#cb67-567" aria-hidden="true" tabindex="-1"></a><span class="co">#| out-width: &quot;60%&quot;</span></span>
-<span id="cb67-568"><a href="#cb67-568" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-569"><a href="#cb67-569" aria-hidden="true" tabindex="-1"></a><span class="co">#1</span></span>
-<span id="cb67-570"><a href="#cb67-570" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_eig</span>(pca.ath, <span class="at">geom =</span> <span class="st">&quot;bar&quot;</span>, <span class="at">bar_width =</span> <span class="fl">0.3</span>) <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">&quot;&quot;</span>)</span>
-<span id="cb67-571"><a href="#cb67-571" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-572"><a href="#cb67-572" aria-hidden="true" tabindex="-1"></a><span class="co">#2</span></span>
-<span id="cb67-573"><a href="#cb67-573" aria-hidden="true" tabindex="-1"></a><span class="co">#     Somewhere between 2 and 4 </span></span>
-<span id="cb67-574"><a href="#cb67-574" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-575"><a href="#cb67-575" aria-hidden="true" tabindex="-1"></a><span class="co">#3</span></span>
-<span id="cb67-576"><a href="#cb67-576" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_pca_biplot</span>(pca.ath, <span class="at">label =</span> <span class="st">&quot;var&quot;</span>) </span>
-<span id="cb67-577"><a href="#cb67-577" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-578"><a href="#cb67-578" aria-hidden="true" tabindex="-1"></a><span class="co">#4</span></span>
-<span id="cb67-579"><a href="#cb67-579" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_pca_ind</span>(pca.ath) <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">&quot;&quot;</span>) <span class="sc">+</span> <span class="fu">ylim</span>(<span class="fu">c</span>(<span class="sc">-</span><span class="fl">2.5</span>, <span class="fl">5.7</span>))</span>
-<span id="cb67-580"><a href="#cb67-580" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb67-581"><a href="#cb67-581" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-582"><a href="#cb67-582" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb67-398"><a href="#cb67-398" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-399"><a href="#cb67-399" aria-hidden="true" tabindex="-1"></a><span class="fu">## A line that minimizes distances in both directions</span></span>
+<span id="cb67-400"><a href="#cb67-400" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-401"><a href="#cb67-401" aria-hidden="true" tabindex="-1"></a>Below we are plotting a line chosen to minimize the error in both the horizontal and vertical directions. This results in minimizing the diagonal projections onto the line.  </span>
+<span id="cb67-402"><a href="#cb67-402" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-403"><a href="#cb67-403" aria-hidden="true" tabindex="-1"></a>Specifically, we compute a line that minimizes the sum of squares of the orthogonal (perpendicular) projections of data points onto it; we call this the principal component line (purple).</span>
+<span id="cb67-404"><a href="#cb67-404" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-405"><a href="#cb67-405" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, include = FALSE}</span></span>
+<span id="cb67-406"><a href="#cb67-406" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-407"><a href="#cb67-407" aria-hidden="true" tabindex="-1"></a><span class="in">X = cbind(scaledathletes$disc, scaledathletes$weight)</span></span>
+<span id="cb67-408"><a href="#cb67-408" aria-hidden="true" tabindex="-1"></a><span class="in">svda = svd(X)</span></span>
+<span id="cb67-409"><a href="#cb67-409" aria-hidden="true" tabindex="-1"></a><span class="in">pc = X %*% svda$v[, 1] %*% t(svda$v[, 1])</span></span>
+<span id="cb67-410"><a href="#cb67-410" aria-hidden="true" tabindex="-1"></a><span class="in">bp = svda$v[2, 1] / svda$v[1, 1]</span></span>
+<span id="cb67-411"><a href="#cb67-411" aria-hidden="true" tabindex="-1"></a><span class="in">ap = mean(pc[, 2]) - bp * mean(pc[, 1])</span></span>
+<span id="cb67-412"><a href="#cb67-412" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-413"><a href="#cb67-413" aria-hidden="true" tabindex="-1"></a><span class="in">p + geom_segment(xend = pc[, 1], yend = pc[, 2], arrow = arrow(length = unit(0.15, &quot;cm&quot;))) + </span></span>
+<span id="cb67-414"><a href="#cb67-414" aria-hidden="true" tabindex="-1"></a><span class="in">  geom_abline(intercept = ap, slope = bp, col = &quot;purple&quot;, lwd = 1.5) + </span></span>
+<span id="cb67-415"><a href="#cb67-415" aria-hidden="true" tabindex="-1"></a><span class="in">  coord_fixed()</span></span>
+<span id="cb67-416"><a href="#cb67-416" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-417"><a href="#cb67-417" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb67-418"><a href="#cb67-418" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-419"><a href="#cb67-419" aria-hidden="true" tabindex="-1"></a>Now let&#39;s see how we can use the learned on a higher-dimensional data set. </span>
+<span id="cb67-420"><a href="#cb67-420" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-421"><a href="#cb67-421" aria-hidden="true" tabindex="-1"></a><span class="fu">## Turtle PCA</span></span>
+<span id="cb67-422"><a href="#cb67-422" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-423"><a href="#cb67-423" aria-hidden="true" tabindex="-1"></a>To start we will come back to the turtles data set. First, we need to make sure we understand the basic features of the data and preprocess it in a way that its in the correct &quot;shape&quot; for running the PCA analysis. </span>
+<span id="cb67-424"><a href="#cb67-424" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-425"><a href="#cb67-425" aria-hidden="true" tabindex="-1"></a>::: {.callout-note collapse=&quot;false&quot;}</span>
+<span id="cb67-426"><a href="#cb67-426" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-427"><a href="#cb67-427" aria-hidden="true" tabindex="-1"></a><span class="fu">## Questions</span></span>
+<span id="cb67-428"><a href="#cb67-428" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-429"><a href="#cb67-429" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>What are the mean values and standard deviation, of each of the 3 features: length, width and height. </span>
+<span id="cb67-430"><a href="#cb67-430" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Scale the data. </span>
+<span id="cb67-431"><a href="#cb67-431" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Explore the correlations between the 3 variables after scaling the data. What do you see? </span>
+<span id="cb67-432"><a href="#cb67-432" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-435"><a href="#cb67-435" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb67-436"><a href="#cb67-436" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: questions-turtle-answers</span></span>
+<span id="cb67-437"><a href="#cb67-437" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: !expr params$include_answers</span></span>
+<span id="cb67-438"><a href="#cb67-438" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: !expr params$include_answers</span></span>
+<span id="cb67-439"><a href="#cb67-439" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-width: 4</span></span>
+<span id="cb67-440"><a href="#cb67-440" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-height: 4</span></span>
+<span id="cb67-441"><a href="#cb67-441" aria-hidden="true" tabindex="-1"></a><span class="co">#| out-width: &quot;60%&quot;</span></span>
+<span id="cb67-442"><a href="#cb67-442" aria-hidden="true" tabindex="-1"></a><span class="co">#1 </span></span>
+<span id="cb67-443"><a href="#cb67-443" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(turtles[, <span class="sc">-</span><span class="dv">1</span>], <span class="dv">2</span>, mean)</span>
+<span id="cb67-444"><a href="#cb67-444" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(turtles[, <span class="sc">-</span><span class="dv">1</span>], <span class="dv">2</span>, sd)</span>
+<span id="cb67-445"><a href="#cb67-445" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-446"><a href="#cb67-446" aria-hidden="true" tabindex="-1"></a><span class="co">#2</span></span>
+<span id="cb67-447"><a href="#cb67-447" aria-hidden="true" tabindex="-1"></a>turtlesc <span class="ot">=</span> <span class="fu">scale</span>(turtles[, <span class="sc">-</span><span class="dv">1</span>])</span>
+<span id="cb67-448"><a href="#cb67-448" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-449"><a href="#cb67-449" aria-hidden="true" tabindex="-1"></a><span class="co">#3</span></span>
+<span id="cb67-450"><a href="#cb67-450" aria-hidden="true" tabindex="-1"></a>corrs <span class="ot">=</span> <span class="fu">cor</span>(turtlesc)</span>
+<span id="cb67-451"><a href="#cb67-451" aria-hidden="true" tabindex="-1"></a>corrs <span class="sc">|&gt;</span> <span class="fu">round</span>(<span class="dv">3</span>)</span>
+<span id="cb67-452"><a href="#cb67-452" aria-hidden="true" tabindex="-1"></a><span class="fu">pheatmap</span>(corrs, <span class="at">cellwidth =</span> <span class="dv">40</span>, <span class="at">cellheight =</span> <span class="dv">40</span>, <span class="at">color =</span> mycolors)</span>
+<span id="cb67-453"><a href="#cb67-453" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb67-454"><a href="#cb67-454" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-455"><a href="#cb67-455" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb67-456"><a href="#cb67-456" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-457"><a href="#cb67-457" aria-hidden="true" tabindex="-1"></a>From the correlations, you see that all 3 variables are strongly correlated. (In the heatmap, note that the color scale already starts with a high value at its lower end.) Hence we expect that the data can be well approximated by a single variable. Let&#39;s do the PCA:</span>
+<span id="cb67-458"><a href="#cb67-458" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-461"><a href="#cb67-461" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb67-462"><a href="#cb67-462" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: pcaturtles</span></span>
+<span id="cb67-463"><a href="#cb67-463" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-width: 4</span></span>
+<span id="cb67-464"><a href="#cb67-464" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-height: 4</span></span>
+<span id="cb67-465"><a href="#cb67-465" aria-hidden="true" tabindex="-1"></a><span class="co">#| out-width: &quot;60%&quot;</span></span>
+<span id="cb67-466"><a href="#cb67-466" aria-hidden="true" tabindex="-1"></a><span class="co">#| message: false</span></span>
+<span id="cb67-467"><a href="#cb67-467" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;factoextra&quot;</span>)</span>
+<span id="cb67-468"><a href="#cb67-468" aria-hidden="true" tabindex="-1"></a>pca1 <span class="ot">=</span> <span class="fu">princomp</span>(turtlesc)</span>
+<span id="cb67-469"><a href="#cb67-469" aria-hidden="true" tabindex="-1"></a>pca1</span>
+<span id="cb67-470"><a href="#cb67-470" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb67-471"><a href="#cb67-471" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-472"><a href="#cb67-472" aria-hidden="true" tabindex="-1"></a>To look at the relative importance of the principal components, we can look at their variances: the screeplot. The screeplot shows the eigenvalues for the standardized data. </span>
+<span id="cb67-473"><a href="#cb67-473" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-474"><a href="#cb67-474" aria-hidden="true" tabindex="-1"></a><span class="in">```{r scree}</span></span>
+<span id="cb67-475"><a href="#cb67-475" aria-hidden="true" tabindex="-1"></a><span class="in">#| label: screeturtles</span></span>
+<span id="cb67-476"><a href="#cb67-476" aria-hidden="true" tabindex="-1"></a><span class="in">#| fig-width: 4</span></span>
+<span id="cb67-477"><a href="#cb67-477" aria-hidden="true" tabindex="-1"></a><span class="in">#| fig-height: 4</span></span>
+<span id="cb67-478"><a href="#cb67-478" aria-hidden="true" tabindex="-1"></a><span class="in">#| out-width: &quot;60%&quot;</span></span>
+<span id="cb67-479"><a href="#cb67-479" aria-hidden="true" tabindex="-1"></a><span class="in">fviz_eig(pca1, geom = &quot;bar&quot;, width = 0.4)</span></span>
+<span id="cb67-480"><a href="#cb67-480" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb67-481"><a href="#cb67-481" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-482"><a href="#cb67-482" aria-hidden="true" tabindex="-1"></a>Note: Here we see one very large component in this case and two very small ones. In this case the data are (almost) one dimensional.</span>
+<span id="cb67-483"><a href="#cb67-483" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-484"><a href="#cb67-484" aria-hidden="true" tabindex="-1"></a>::: {.callout-note collapse=&quot;false&quot;}</span>
+<span id="cb67-485"><a href="#cb67-485" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-486"><a href="#cb67-486" aria-hidden="true" tabindex="-1"></a><span class="fu">## Questions</span></span>
+<span id="cb67-487"><a href="#cb67-487" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-488"><a href="#cb67-488" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>What is the percentage of variance explained by the first PC? How can you obtain this value from the pca1 object? </span>
+<span id="cb67-489"><a href="#cb67-489" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>How many PCs are you using if you want to project the turtles data set? </span>
+<span id="cb67-490"><a href="#cb67-490" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-493"><a href="#cb67-493" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb67-494"><a href="#cb67-494" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: questions-summarypcaturtle</span></span>
+<span id="cb67-495"><a href="#cb67-495" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: !expr params$include_answers</span></span>
+<span id="cb67-496"><a href="#cb67-496" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: !expr params$include_answers</span></span>
+<span id="cb67-497"><a href="#cb67-497" aria-hidden="true" tabindex="-1"></a><span class="co">#1</span></span>
+<span id="cb67-498"><a href="#cb67-498" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(pca1)</span>
+<span id="cb67-499"><a href="#cb67-499" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-500"><a href="#cb67-500" aria-hidden="true" tabindex="-1"></a><span class="co">#2</span></span>
+<span id="cb67-501"><a href="#cb67-501" aria-hidden="true" tabindex="-1"></a><span class="co"># One PC would be sufficient.</span></span>
+<span id="cb67-502"><a href="#cb67-502" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb67-503"><a href="#cb67-503" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-504"><a href="#cb67-504" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb67-505"><a href="#cb67-505" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-506"><a href="#cb67-506" aria-hidden="true" tabindex="-1"></a>Now, lets plot the samples with their PC1 and PC2 coordinates, together with the variables. The representation of both, the samples and the variables is called a biplot.  </span>
+<span id="cb67-507"><a href="#cb67-507" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-508"><a href="#cb67-508" aria-hidden="true" tabindex="-1"></a><span class="in">```{r turtlesbiplot}</span></span>
+<span id="cb67-509"><a href="#cb67-509" aria-hidden="true" tabindex="-1"></a><span class="in">fviz_pca_biplot(pca1, label = &quot;var&quot;) </span></span>
+<span id="cb67-510"><a href="#cb67-510" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb67-511"><a href="#cb67-511" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-512"><a href="#cb67-512" aria-hidden="true" tabindex="-1"></a>::: {.callout-note collapse=&quot;false&quot;}</span>
+<span id="cb67-513"><a href="#cb67-513" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-514"><a href="#cb67-514" aria-hidden="true" tabindex="-1"></a><span class="fu">## Questions</span></span>
+<span id="cb67-515"><a href="#cb67-515" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-516"><a href="#cb67-516" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Can you extend this plotting code to color the female samples differently than the male samples? </span>
+<span id="cb67-517"><a href="#cb67-517" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Did the males or female turtles tend to be larger?</span>
+<span id="cb67-518"><a href="#cb67-518" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-521"><a href="#cb67-521" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb67-522"><a href="#cb67-522" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: questions-fviz_pca_biplot-turtles</span></span>
+<span id="cb67-523"><a href="#cb67-523" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: !expr params$include_answers</span></span>
+<span id="cb67-524"><a href="#cb67-524" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: !expr params$include_answers</span></span>
+<span id="cb67-525"><a href="#cb67-525" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-width: 4</span></span>
+<span id="cb67-526"><a href="#cb67-526" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-height: 4</span></span>
+<span id="cb67-527"><a href="#cb67-527" aria-hidden="true" tabindex="-1"></a><span class="co">#| out-width: &quot;60%&quot;</span></span>
+<span id="cb67-528"><a href="#cb67-528" aria-hidden="true" tabindex="-1"></a><span class="co">#6</span></span>
+<span id="cb67-529"><a href="#cb67-529" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_pca_biplot</span>(pca1, <span class="at">label =</span> <span class="st">&quot;var&quot;</span>, <span class="at">col.ind =</span> turtles[,<span class="dv">1</span>]) </span>
+<span id="cb67-530"><a href="#cb67-530" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-531"><a href="#cb67-531" aria-hidden="true" tabindex="-1"></a><span class="co">#7</span></span>
+<span id="cb67-532"><a href="#cb67-532" aria-hidden="true" tabindex="-1"></a><span class="co"># Females </span></span>
+<span id="cb67-533"><a href="#cb67-533" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb67-534"><a href="#cb67-534" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-535"><a href="#cb67-535" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb67-536"><a href="#cb67-536" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-537"><a href="#cb67-537" aria-hidden="true" tabindex="-1"></a><span class="fu">## Back to the athletes</span></span>
+<span id="cb67-538"><a href="#cb67-538" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-539"><a href="#cb67-539" aria-hidden="true" tabindex="-1"></a>Now let us try to run the PCA on a larger data set and interpret the corresponding scree plot. In this case we are using a different library, with a slightly different output of the PCA computation. But the principle is the same. </span>
+<span id="cb67-540"><a href="#cb67-540" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-543"><a href="#cb67-543" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb67-544"><a href="#cb67-544" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: pac.ath</span></span>
+<span id="cb67-545"><a href="#cb67-545" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;ade4&quot;</span>)</span>
+<span id="cb67-546"><a href="#cb67-546" aria-hidden="true" tabindex="-1"></a><span class="co"># The dudi.pca function by default already centers and scales the data by itself</span></span>
+<span id="cb67-547"><a href="#cb67-547" aria-hidden="true" tabindex="-1"></a>pca.ath <span class="ot">=</span> <span class="fu">dudi.pca</span>(athletes, <span class="at">scannf =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb67-548"><a href="#cb67-548" aria-hidden="true" tabindex="-1"></a>pca.ath<span class="sc">$</span>eig</span>
+<span id="cb67-549"><a href="#cb67-549" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb67-550"><a href="#cb67-550" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-551"><a href="#cb67-551" aria-hidden="true" tabindex="-1"></a>::: {.callout-note collapse=&quot;false&quot;}</span>
+<span id="cb67-552"><a href="#cb67-552" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-553"><a href="#cb67-553" aria-hidden="true" tabindex="-1"></a><span class="fu">## Questions</span></span>
+<span id="cb67-554"><a href="#cb67-554" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-555"><a href="#cb67-555" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Just like in the above turtle data set. Can you produce a scree plot? </span>
+<span id="cb67-556"><a href="#cb67-556" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>How many PCs are you using if you want to project the athletes data set? </span>
+<span id="cb67-557"><a href="#cb67-557" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Can you plot the samples with their PC1 and PC2 coordinates, together with the variables in a biplot? </span>
+<span id="cb67-558"><a href="#cb67-558" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Can you plot the numbers of the athletes onto the samples. What do you notice about the numbers?</span>
+<span id="cb67-559"><a href="#cb67-559" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-562"><a href="#cb67-562" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb67-563"><a href="#cb67-563" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: questions-athletets</span></span>
+<span id="cb67-564"><a href="#cb67-564" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: !expr params$include_answers</span></span>
+<span id="cb67-565"><a href="#cb67-565" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: !expr params$include_answers</span></span>
+<span id="cb67-566"><a href="#cb67-566" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-width: 4</span></span>
+<span id="cb67-567"><a href="#cb67-567" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-height: 4</span></span>
+<span id="cb67-568"><a href="#cb67-568" aria-hidden="true" tabindex="-1"></a><span class="co">#| out-width: &quot;60%&quot;</span></span>
+<span id="cb67-569"><a href="#cb67-569" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-570"><a href="#cb67-570" aria-hidden="true" tabindex="-1"></a><span class="co">#1</span></span>
+<span id="cb67-571"><a href="#cb67-571" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_eig</span>(pca.ath, <span class="at">geom =</span> <span class="st">&quot;bar&quot;</span>, <span class="at">bar_width =</span> <span class="fl">0.3</span>) <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">&quot;&quot;</span>)</span>
+<span id="cb67-572"><a href="#cb67-572" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-573"><a href="#cb67-573" aria-hidden="true" tabindex="-1"></a><span class="co">#2</span></span>
+<span id="cb67-574"><a href="#cb67-574" aria-hidden="true" tabindex="-1"></a><span class="co">#     Somewhere between 2 and 4 </span></span>
+<span id="cb67-575"><a href="#cb67-575" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-576"><a href="#cb67-576" aria-hidden="true" tabindex="-1"></a><span class="co">#3</span></span>
+<span id="cb67-577"><a href="#cb67-577" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_pca_biplot</span>(pca.ath, <span class="at">label =</span> <span class="st">&quot;var&quot;</span>) </span>
+<span id="cb67-578"><a href="#cb67-578" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-579"><a href="#cb67-579" aria-hidden="true" tabindex="-1"></a><span class="co">#4</span></span>
+<span id="cb67-580"><a href="#cb67-580" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_pca_ind</span>(pca.ath) <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">&quot;&quot;</span>) <span class="sc">+</span> <span class="fu">ylim</span>(<span class="fu">c</span>(<span class="sc">-</span><span class="fl">2.5</span>, <span class="fl">5.7</span>))</span>
+<span id="cb67-581"><a href="#cb67-581" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb67-582"><a href="#cb67-582" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-583"><a href="#cb67-583" aria-hidden="true" tabindex="-1"></a>:::</span>
 </code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
