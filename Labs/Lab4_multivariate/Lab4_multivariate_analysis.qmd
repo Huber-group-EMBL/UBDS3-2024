@@ -106,7 +106,7 @@ with(athletes, table(m100 > mean(m100), m1500 > mean(m1500)))
 
 :::
 
-## Low dimensional data summaries and preparation
+# Low dimensional data summaries and preparation
 
 It is instructive to first consider 2-dimensional summaries of the data. The function `ggpairs` from the `GGally` package gives a nice summary of the features and how they are correlated with each other. 
 
@@ -160,7 +160,7 @@ pheatmap(cor(athletes), cellwidth = 20, cellheight = 20,
 
 :::
 
-## Preprocessing the data
+# Preprocessing the data
 
 In many cases, different variables are measured in different units and at different scales. As discussed in the lecture, we have various options to transform the data. Here, we elect to standardize the data to a common standard deviation. This rescaling is done using the `scale` function, which subtracts the mean and divides by the standard deviation, so that every column has a unit standard deviation and mean zero.
 
@@ -200,7 +200,7 @@ ggplot(scaledTurtles,aes(x = width,y = height, group = sex)) +
 
 What is the purpose of the `coord_fixed()` modifier here?
 
-## Dimensionality reduction
+# Dimensionality reduction
 
 In this part, we will use geometrical projections of points in a higher dimensional space and project them down to lower dimensions. 
 
@@ -254,7 +254,7 @@ sd(scaledathletes$disc)
 
 :::
 
-## Summarize 2D-data by a line
+# Summarize 2D-data by a line
 
 In the above example when projecting the 2-dimensional points to the `weight` axis, we lost the `disc` information. In order to keep more information, we will now project the 2 dimensional point cloud onto another line.  
 
@@ -360,7 +360,7 @@ ggplot(scaledathletes, aes(x = disc, y = weight)) + geom_point(shape = 1) +
 :::
 
 
-## A line that minimizes distances in both directions
+# A line that minimizes distances in both directions
 
 Below we are plotting a line chosen to minimize the error in both the horizontal and vertical directions. This results in minimizing the diagonal projections onto the line.  
 
@@ -382,7 +382,7 @@ p + geom_segment(xend = pc[, 1], yend = pc[, 2], arrow = arrow(length = unit(0.1
 
 Now let's see how we can use the learned on a higher-dimensional data set. 
 
-## Turtle PCA
+# Turtle PCA
 
 To start we will come back to the turtles data set. First, we need to make sure we understand the basic features of the data and preprocess it in a way that its in the correct "shape" for running the PCA analysis. 
 
@@ -490,7 +490,7 @@ fviz_pca_biplot(pca1, label = "var", col.ind = turtles[,1])
 
 :::
 
-## Back to the athletes
+# Back to the athletes
 
 Now let us try to run the PCA on a larger data set and interpret the corresponding scree plot. In this case we are using a different library, with a slightly different output of the PCA computation. But the principle is the same. 
 
@@ -556,6 +556,7 @@ library(ExperimentHub)
 ```
 
 ## Data retrieval
+
 This is what we did yesterday, open the Rmarkdown document that you saved yesterday and run them again. 
 ```{r load-data}
 eh <- ExperimentHub()
@@ -604,7 +605,7 @@ fd <- df |>
     slice_max(bio, n=2e3)
 ```
 
-> Reproduce the below scatter plot (`geom_point()`) of gene expression `mean`s vs. `total` variance estimates. You will need a 2nd layer to highlight the top-2,000 genes selected above (red points), and a 3rd layer to add the `tech`nical variance estimate (blue dashed line).
+Reproduce the below scatter plot (`geom_point()`) of gene expression `mean`s vs. `total` variance estimates. You will need a 2nd layer to highlight the top-2,000 genes selected above (red points), and a 3rd layer to add the `tech`nical variance estimate (blue dashed line).
 
 ```{r mv-tot, fig.width=4, fig.height=4}
 #| eval: true
