@@ -228,7 +228,7 @@ n = nrow(scaledathletes)
 # First, p is a 2-dimensional plot of the points defined by weight (x) and disc (y)
 p = ggplot(scaledathletes, aes(x = weight, y = disc)) + geom_point(shape = 1)
 
-# Then we add the projected points (red) & the projection lines (dashed)
+# Then we add the projected points and the projection lines (dashed)
 p + geom_point(aes(y = rep(0, n)), color = "#0056B9") +
     geom_segment(aes(xend = weight, yend = rep(0, n)), linetype = "dashed")
 ```
@@ -273,15 +273,15 @@ reg1 = lm(disc ~ weight, data = scaledathletes)
 
 # Extract intercept and slope values   
 ```{r}
-#| label: reg2
-a = reg1$coefficients[1] # Intercept
-b = reg1$coefficients[2] # slope
+#| label: extractab
+a1 = reg1$coefficients[1] # Intercept
+b1 = reg1$coefficients[2] # slope
 ```
 
 Plot the points p (computed in the code section before) and the regression line. 
 ```{r}
 #| label: reg3
-pline = p + geom_abline(intercept = a, slope = b, col = "blue", lwd = 1.5) + coord_fixed()
+pline = p + geom_abline(intercept = a1, slope = b1, col = "#0056B9", lwd = 1.5) + coord_fixed()
 ```
 
 Add the projection lines (from the point to its fitted value)
@@ -312,18 +312,17 @@ Can you regress `weight` on `discs` and generate a similar plot?
 reg2 = lm(weight ~ disc, data = scaledathletes)
 
 # Extract the intercept and slope values   
-a = reg2$coefficients[1] # Intercept
-b = reg2$coefficients[2] # slope
+a2 = reg2$coefficients[1] # Intercept
+b2 = reg2$coefficients[2] # slope
 
 # Plot the points p (computed in the code section before) & the regression line 
-
 p = ggplot(scaledathletes, aes(x = disc, y = weight)) + geom_point(shape = 1) + coord_fixed()
-newline = p + geom_abline(intercept = a, slope = b, col = "#0056B9")
+newline = p + geom_abline(intercept = a2, slope = b2, col = "#FFD800")
 
 # Add the projection lines (from the point to its fitted value)
 newline + geom_segment(
   aes(y = weight, x = disc, yend = reg2$fitted, xend = disc), 
-  color = "#FFD800", 
+  color = "#0056B9", 
   arrow = arrow(length = unit(0.15, "cm"))) + coord_flip()
 ```
 
@@ -353,14 +352,10 @@ x&=-\\frac{a}{b}+\\frac{1}{b}y
 #| fig-width: 4
 #| fig-height: 4
 #| out-width: "80%"
-a1 = reg1$coefficients[1]
-b1 = reg1$coefficients[2]
-a2 = reg2$coefficients[1]
-b2 = reg2$coefficients[2]
 ggplot(scaledathletes, aes(x = disc, y = weight)) + geom_point(shape = 1) + 
   coord_fixed() + 
-  geom_abline(intercept = a1, slope = b1 , col = "#0056B9") +
-  geom_abline(intercept = -a2/b2, slope = 1/b1, col = "#FFD800")
+  geom_abline(intercept =     a1, slope =   b1, col = "#0056B9") +
+  geom_abline(intercept = -a2/b2, slope = 1/b2, col = "#FFD800")
 ```
 
 :::
@@ -370,7 +365,7 @@ ggplot(scaledathletes, aes(x = disc, y = weight)) + geom_point(shape = 1) +
 
 Below we are plotting a line chosen to minimize the error in both the horizontal and vertical directions. This results in minimizing the diagonal projections onto the line.  
 
-Specifically, we compute a line that minimizes the sum of squares of the orthogonal (perpendicular) projections of data points onto it; we call this the principal component line (purple).
+Specifically, we compute a line that minimizes the sum of squares of the orthogonal (perpendicular) projections of data points onto it. We call this the principal component line.
 
 ```{r, include = TRUE}
 
@@ -381,7 +376,7 @@ bp = svda$v[2, 1] / svda$v[1, 1]
 ap = mean(pc[, 2]) - bp * mean(pc[, 1])
 
 p + geom_segment(xend = pc[, 1], yend = pc[, 2], arrow = arrow(length = unit(0.15, "cm"))) + 
-  geom_abline(intercept = ap, slope = bp, col = "purple", lwd = 1.5) + 
+  geom_abline(intercept = ap, slope = bp, col = "#606060", lwd = 1.5) + 
   coord_fixed()
 
 ```
