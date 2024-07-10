@@ -50,19 +50,32 @@ if (length(letsinstall) > 0) {
 # Hierarchical clustering
 
 The Morder data are gene expression measurements for 156 genes on T cells of 
-3 types (naïve, effector, memory) from 10 patients (Holmes et al. 2005).
+3 types (naïve, effector, memory) from 10 patients (Holmes et al. 2005).  
+
 Here we load the `Morder` data.frame from the online directory.
 
 ```{r}
-#| label: load_data_hclust
-#| eval: !expr (! isTRUE(params$skip_execution))
+#| label: load_data_hclust_online
+#| eval: FALSE
+
 load(url("http://web.stanford.edu/class/bios221/data/Morder.RData"))
-dim(Morder)
+
+# if download fails with timeout error, try increasing it
+# options(timeout = 1000)
+```
+
+If you downloaded the file before, you can load it from the local directory.
+
+```{r}
+#| label: load_data_hclust_local
+#| eval: !expr (! isTRUE(params$skip_execution))
+
+load("Morder.RData")
 ```
 
 ::: {.callout-note collapse="true"}
 ## Question
-How many samples of each T cell type (naïve, effector, memory) are there in the data?
+Inspect the data. How many samples of each T cell type (naïve, effector, memory) are there in the data?
 
 ```{r}
 #| label: question_cell_types
@@ -273,7 +286,7 @@ library(flowPeaks)
 library(ggcyto)
 ```
 
-Then we download and load this data in R using flowCore package.
+Here we download the data.
 
 ```{r}
 #| label: cytometry_download
@@ -288,6 +301,9 @@ download.file(
 # if download fails with timeout error, try increasing it
 # options(timeout = 1000)
 ```
+
+Load this data in R using flowCore package.
+
 ```{r}
 #| label: cytometry_load
 #| eval: !expr (! isTRUE(params$skip_execution))
@@ -328,19 +344,42 @@ Different slots of the `flowFrame` objects can be accessed with `exprs(fcsB)`, `
 
 ## Data preprocessing
 
-First we load the data table that reports the mapping between isotopes and 
-markers (antibodies); then, we replace the isotope names in the column 
-names of `fcsB` with the marker names. This is simply to make the subsequent 
-analysis and plotting code more readable.
+First we get the data table that reports the mapping between isotopes and 
+markers (antibodies).
+
+Here we download the table.
+
+```{r}
+#| label: fcB_markers_download
+#| eval: FALSE
+#| message: FALSE
+#| warning: FALSE
+#| 
+# download data from the web
+markersB = read_csv(url("http://web.stanford.edu/class/bios221/data/Bendall_2011_markers.csv"))
+```
+
+If you already downloaded the data you can load it locally.
+
+```{r}
+#| label: fcB_markers_local
+#| eval: !expr (! isTRUE(params$skip_execution))
+#| message: FALSE
+#| warning: FALSE
+
+# load data
+markersB = read_csv("Bendall_2011_markers.csv")
+```
+
+Now we replace the isotope names in the column names of `fcsB` with the marker 
+names. This is simply to make the subsequent analysis and plotting code more 
+readable.
 
 ```{r}
 #| label: fcB_markers
 #| eval: !expr (! isTRUE(params$skip_execution))
 #| message: FALSE
 #| warning: FALSE
-# download data from the web
-markersB = read_csv(url("http://web.stanford.edu/class/bios221/data/Bendall_2011_markers.csv"))
-
 # match isotope names to marker names
 mt = match(markersB$isotope, colnames(fcsB))
 

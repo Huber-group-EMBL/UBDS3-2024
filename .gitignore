@@ -1,5 +1,7 @@
 Labs/Lab*/*_cache
 Labs/Lab*/*_files
-Labs/Lab5_clustering/Bendall_2011.fcs
+Labs/Lab*/*.RData
+Labs/Lab*/*fcs
+Labs/Lab*/*csv
 
 
