@@ -154,7 +154,8 @@ ggpairs(athletes, axisLabels = "none")
 #3
 library("pheatmap")
 mycolors = colorRampPalette(c("#FFD800", "#0056B9"))(100)
-pheatmap(cor(athletes), cellwidth = 20, cellheight = 20, color = mycolors)
+pheatmap(cor(athletes), cellwidth = 20, cellheight = 20,
+         color = mycolors, breaks = seq(-1, +1, length.out = length(mycolors) + 1))
 ```
 
 :::
