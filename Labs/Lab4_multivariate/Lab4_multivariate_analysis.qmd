@@ -1,6 +1,6 @@
 ---
 title: "Lab: Multivariate Analysis"
-author: "Wolfgang Huber, Susan Holmes, TAs of the Stanford class 'Modern Statistics for Modern Biology', Julia Ruehle"
+author: "Wolfgang Huber, Susan Holmes, TAs of the Stanford class 'Modern Statistics for Modern Biology', Julia Ruehle, Helena Crowell"
 date: "7/10/2024"
 format: 
   html:
@@ -233,9 +233,9 @@ p + geom_point(aes(y = rep(0, n)), color = "#0056B9") +
 
 Now try to do the following:
 
-1. Calculate the standard deviation of the red points (their $x$-coordinates) in the above figure.
+1. Calculate the standard deviation of the blue points (their $x$-coordinates) in the above figure.
 
-2. Make a similar plot showing projection lines onto the $y$-axis and show projected points in blue. What is the variance of the projected points now?
+2. Make a similar plot showing projection lines onto the $y$-axis and show projected points in yellow. What is the variance of the projected points now?
 
 ```{r}
 #| label: questions-11-answers
@@ -343,6 +343,7 @@ x&=-\\frac{a}{b}+\\frac{1}{b}y
 ```{r}
 #| label: questions-reg1-answers3
 #| eval: !expr params$include_answers
+#| echo: !expr params$include_answers
 #| fig-width: 4
 #| fig-height: 4
 #| out-width: "80%"
@@ -365,7 +366,7 @@ Below we are plotting a line chosen to minimize the error in both the horizontal
 
 Specifically, we compute a line that minimizes the sum of squares of the orthogonal (perpendicular) projections of data points onto it; we call this the principal component line (purple).
 
-```{r, include = FALSE}
+```{r, include = TRUE}
 
 X = cbind(scaledathletes$disc, scaledathletes$weight)
 svda = svd(X)
@@ -532,3 +533,161 @@ fviz_pca_ind(pca.ath) + ggtitle("") + ylim(c(-2.5, 5.7))
 ```
 
 :::
+
+
+
+
+******
+
+```{r setup2, include=FALSE}
+knitr::opts_chunk$set(cache=TRUE, message=FALSE, warning=FALSE)
+```
+
+# Back to the single cell dataset
+
+## Dependencies
+
+```{r load-libs}
+library(dplyr)
+library(scran)
+library(scater)
+library(ggplot2)
+library(ExperimentHub)
+```
+
+## Data retrieval
+This is what we did yesterday, open the Rmarkdown document that you saved yesterday and run them again. 
+```{r load-data}
+eh <- ExperimentHub()
+q <- query(eh, "Kang18")
+(sce <- eh[[q$ah_id]])
+```
+
+## Quality control
+
+```{r qc}
+sce <- sce[rowSums(counts(sce) > 0) > 0, ]
+sce <- addPerCellQC(sce)
+sce <- sce[, !isOutlier(sce$detected, nmads=2, log=TRUE)]
+sce <- sce[rowSums(counts(sce) > 1) >= 10, ]
+```
+
+
+# Analysis continued
+Now we start with the new part
+
+## Feature selection
+
+For each gene, we compute the variance and mean of the log-expression values. A trend is fitted to the variance against the mean for all genes. The fitted value for each gene is used as a proxy for the technical component of variation for each gene, under the assumption that most genes exhibit a low baseline level of variation that is not biologically interesting. The biological component of variation for each gene is defined as the the residual from the trend. (see `?modelGeneVar`)
+
+```{r sel}
+# log-library size normalization
+sce <- logNormCounts(sce) 
+# model gene expr. mean vs. var.
+df <- modelGeneVar(sce) 
+head(df)
+```
+
+> Use `dplyr` to filter the above gene-level statistics (`df`) for genes the 2,000 genes with the highest `bio`logical variance component.
+
+```{r fil}
+#| eval: true
+#| echo: !expr params$include_answers
+
+fd <- df |>
+    data.frame() |>
+    arrange(bio) |>
+    tail(n=2e3)
+# or...
+fd <- df |>
+    data.frame() |>
+    slice_max(bio, n=2e3)
+```
+
+> Reproduce the below scatter plot (`geom_point()`) of gene expression `mean`s vs. `total` variance estimates. You will need a 2nd layer to highlight the top-2,000 genes selected above (red points), and a 3rd layer to add the `tech`nical variance estimate (blue dashed line).
+
+```{r mv-tot, fig.width=4, fig.height=4}
+#| eval: true
+#| echo: !expr params$include_answers
+ggplot(df, aes(x=mean, y=total)) +
+    geom_point() +
+    geom_point(data=fd, col="red") +
+    geom_line(aes(y=tech), col="blue", lty=2)
+```
+
+The genes selected above correspond to genes with a large deviation from the baseline level of (technical) variation, i.e., they tend to have a large biological variance component:
+
+```{r mv-var, fig.width=4, fig.height=4}
+#| eval: true
+#| echo: !expr params$include_answers
+ggplot(df, aes(x=mean, y=bio)) +
+    geom_point() +
+    geom_point(data=fd, col="red") +
+    geom_hline(yintercept=0, col="blue", lty=2)
+```
+
+## Dimension reduction
+
+In standard scRNA-seq data anlysis pipelines, these "highly variable features" are subjected to principal component analysis (PCA) in order to identify major axes of variation. We can perform PCA on a `SingleCellExperiment` using `runPCA()` (`scater` package), where we specify the subset of features to use via argument `subset_row`:
+
+```{r pca-calc}
+# get selected features
+length(sel <- rownames(fd))
+# perform principal component analysis
+sce <- runPCA(sce, subset_row=sel)
+```
+
+By default, `runPCA()` computes 50 PCs that are stored in the input object as a `reducedDim()` slot:
+
+```{r pca-show}
+# rows=cells, columns=PCs
+pcs <- reducedDim(sce, "PCA")
+pcs[1:5, 1:5]
+dim(pcs) 
+```
+
+> Construct a `data.frame` that includes both, PCs and cell-level metdata (`colData`). Generate a scatter plot of PCs 1 and 2 as shown below, with cells colored by experimental condition and `cell` subpopulation, respectively; x and y axes should have a fixed aspect ratio! 
+
+```{r plt-pca-stim, fig.width=5, fig.height=4}
+#| eval: true
+#| echo: !expr params$include_answers
+df <- data.frame(pcs, colData(sce))
+ggplot(df, aes(PC1, PC2, col=stim)) +
+    geom_point(size=0.2) + coord_equal() +
+    guides(col=guide_legend(override.aes=list(size=2))) 
+```
+
+```{r plt-pca-cell, fig.width=6, fig.height=4}
+#| eval: true
+#| echo: !expr params$include_answers
+ggplot(df, aes(PC1, PC2, col=cell)) + 
+    geom_point(size=0.2) + coord_equal() +
+    guides(col=guide_legend(override.aes=list(size=2)))
+```
+
+It's pretty clear from the plots above that experimental condition (`stim`) and `cell` subpopulations seem to be considerable drivers of gene expression variability. But what is driving these differences? We can explore this visually by coloring cells by other cell metadata, e.g., library size (total sum of counts). 
+
+> Generate a scatter plot of PCs 1 and 2 with cells colored by log-library size. Taking into consideration the plots generated above, what is the main driver of gene expression variation (PC1)?
+
+```{r, plt-pcs-ls}
+#| eval: !expr params$include_answers
+#| echo: !expr params$include_answers
+ggplot(df, aes(PC1, PC2, col=log10(sum))) +
+    geom_point(size=0.2) + coord_equal() +
+    scale_color_viridis_c()
+```
+
+Finally, note that the dataset retrieved from `ExperimentHub` already contains a non-linear embedding, t-SNE, that has been pre-computed by the original authors. We can access this representation as follows, and you are welcomed to explore visually exploring the data on your own, e.g., 
+
+- color cells by gene expression (`logcounts()`)
+- plot PCs (linear) again t-SNE dimensions (non-linear)
+- `facet_wrap()` by `stim/ind/cell` to split plots according to some metadata variable
+
+```{r eval=FALSE}
+#| eval: false
+#| echo: true
+
+map <- reducedDim(sce, "TSNE")
+df <- cbind(df, map)
+ggplot(df, ...)
+```
