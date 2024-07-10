@@ -98,10 +98,16 @@ hist(athletes$m100)
 av100  = mean(athletes$m100)
 av1500 = mean(athletes$m1500)
 
-sum( (athletes$m100 > av100) & (athletes$m1500 > av1500) )
+sum( (athletes$m100 < av100) & (athletes$m1500 < av1500) )
 
 #5 alternative solution
-with(athletes, table(m100 > mean(m100), m1500 > mean(m1500)))
+with(athletes, table(m100 < mean(m100), m1500 < mean(m1500)))
+
+#5 yet another solution
+dplyr::filter(athletes,
+              m100 < mean(m100), 
+              m1500 < mean(m1500)) |> 
+  nrow()
 ```
 
 :::
