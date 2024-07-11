@@ -28,22 +28,33 @@ include hierarchical clustering, K means and density clustering.
 
 # Packages
 
-Install and load packages.
+Install packages.
 
 ```{r}
 #| label: install_packages
 #| output: false
 #| eval: FALSE
 pkgs_needed = c(
-  "tidyverse",
-  "dbscan", "GGally", "pheatmap",
-  "flowCore","flowViz","flowPeaks", "ggcyto"
+  "tidyverse", "pheatmap", "ggfortify"
 )
 letsinstall = setdiff(pkgs_needed, installed.packages()) 
 if (length(letsinstall) > 0) {
   for (pkg in letsinstall)
     BiocManager::install(pkg)
 }
+```
+
+Load packages.
+
+```{r}
+#| label: load_packages
+#| output: FALSE
+#| warning: FALSE
+#| message: FALSE
+#| eval: !expr (! isTRUE(params$skip_execution))
+library("tidyverse")
+library("pheatmap")
+library("ggfortify")
 ```
 
 # Hierarchical clustering
@@ -263,472 +274,120 @@ pheatmap(
 
 :::
 
-# Mass cytometry (CyTOF)
+# K means
 
-Cytometry is a biophysical technology that allows you to measure
-physical and chemical characteristics of cells. Modern flow and mass 
-cytometry allows for simultaneous multiparametric analysis of thousands of 
-particles per second.
-
-[Flow cytometry](https://en.wikipedia.org/wiki/Flow_cytometry) enables the 
-simultaneous measurement of 15, whereas 
-[mass cytometry (CyTOF)](https://en.wikipedia.org/wiki/Mass_cytometry) of as 
-many as 40 proteins per single cell.
-
-We will be working with the CyTOF dataset from a single-cell mass cytometry 
-study by [Bendall et al.](http://science.sciencemag.org/content/332/6030/687.full)
-on differential immune drug responses across human hematopoietic cells over time.
-
-First we load the necessary packages.
+Next we will do k-means clustering on the same dataset.
+First thing we need to do is select the number of clusters. In this dataset, we 
+expect to have three clussters (naïve, effector, memory T cells). 
+We will use the `kmeans` function to cluster the data into 3 groups.
 
 ```{r}
-#| label: load_packages
-#| output: false
+#| label: kmeans
 #| eval: !expr (! isTRUE(params$skip_execution))
-library("tidyverse")
-library("flowCore")
-library("flowViz")
-library("flowPeaks")
-library("ggcyto")
-```
 
-Here we download the data.
+# convert to data.frame
+Morder_df <- as.data.frame(Morder)
 
-```{r}
-#| label: cytometry_download
-#| eval: FALSE
+# add cell type  column - wee will use this for plotting
+Morder_df$cell_type <- stringr::str_extract(rownames(Morder), "EFF|MEM|NAI")
+Morder_df$condition <- stringr::str_extract(rownames(Morder), "HEA|MEL")
 
-# download file from web (14.3 Mb)
-download.file(
-  url = "http://web.stanford.edu/class/bios221/data/Bendall_2011.fcs",
-  destfile = "Bendall_2011.fcs",
-  mode = "wb"
-)
-# If download fails with timeout error, try increasing it
-# options(timeout = 1000)
-# On Linux and MacOS, you can also try to use the 'wget' command in the Unix terminal instead
-```
+# k means
+set.seed(1950)
+km <- kmeans(x = Morder[, -match(c("cell_type","condition"), colnames(Morder_df))], centers = 3)
 
-Load this data in R using flowCore package.
-
-```{r}
-#| label: cytometry_load
-#| eval: !expr (! isTRUE(params$skip_execution))
-#| message: FALSE
-#| warning: FALSE
-# load file in R - here we use a function from flowCore package
-fcsB = flowCore::read.FCS("Bendall_2011.fcs")
+# we can visualize the results
+autoplot(km, Morder_df, frame = TRUE, size = 4, alpha = 0.6) + coord_equal()
 ```
 
 ::: {.callout-note collapse="false"}
 ## Question
-Look at the structure of the `fcsB` object. How many variables and how many 
-cells were measured? 
+Check how different cell types are distributed in the three clusters, i.e. are 
+the samples clustering by the cell types?
+Hint: use "shape" argument of the `autoplot` function to indicate cell types.
 
 ```{r}
-#| label: fcB_vars
+#| label: kmeans_cell_types
 #| eval: !expr (! params$skip_execution & ! params$skip_answers)
 #| echo: !expr (! params$skip_answers)
-fcsB
 
-# variables
-length(colnames(fcsB))
-
-# cells
-nrow(exprs(fcsB))
+autoplot(km, Morder_df, frame = TRUE,  shape = "cell_type", size = 4, alpha = 0.6) + coord_equal()
 ```
 :::
 
-Inspect slots of the flowFrame object:
-
-```{r}
-#| label: fcB_slots
-#| eval: !expr (! params$skip_execution)
-slotNames(fcsB)
-```
-
-Different slots of the `flowFrame` objects can be accessed with `exprs(fcsB)`, `parameters(fcsB)` and `description(fcsB)` functions.
-
-## Data preprocessing
-
-First we get the data table that reports the mapping between isotopes and 
-markers (antibodies).
-
-Here we download the table.
-
-```{r}
-#| label: fcB_markers_download
-#| eval: FALSE
-#| message: FALSE
-#| warning: FALSE
-#| 
-# download data from the web
-markersB = read_csv(url("http://web.stanford.edu/class/bios221/data/Bendall_2011_markers.csv"))
-```
-
-If you already downloaded the data you can load it locally.
-
-```{r}
-#| label: fcB_markers_local
-#| eval: !expr (! isTRUE(params$skip_execution))
-#| message: FALSE
-#| warning: FALSE
-
-# load data
-markersB = read_csv("Bendall_2011_markers.csv")
-```
-
-Now we replace the isotope names in the column names of `fcsB` with the marker 
-names. This is simply to make the subsequent analysis and plotting code more 
-readable.
-
-```{r}
-#| label: fcB_markers
-#| eval: !expr (! isTRUE(params$skip_execution))
-#| message: FALSE
-#| warning: FALSE
-# match isotope names to marker names
-mt = match(markersB$isotope, colnames(fcsB))
-
-# check that all isotope names were matched
-stopifnot(!any(is.na(mt)))
-
-# replace isotope names with marker names
-colnames(fcsB)[mt] = markersB$marker
-```
-
-Below, we show how to plot the joint distribution of the cell lengths and 
-the `DNA191` (this variable indicates the activity of the cell, i.e. whether the
-cell is dead or alive):
-
-```{r}
-#| label: ggplottheme
-#| echo: false
-#| eval: false
-# this does not currently work
-library("ggplot2")
-currenttheme = theme_get()
-theme_update(
-  line = element_line(size = 0.5, linetype = "solid", color = "#0056B9"),
-  rect = element_rect(fill = "#0056B9", colour = "#0056B9"),
-  panel.background = element_rect(fill = "#FFD800", colour = "#FFD800"),
-  panel.grid.major = element_line(size = 0.5, linetype = "solid", color = "#FFE830"), 
-  panel.grid.minor = element_line(size = 0.25, linetype = "solid", color = "#FFE830")
-)
-```
-
-```{r}
-#| label: flowPlot
-#| eval: !expr (! isTRUE(params$skip_execution))
-#| fig.width: 6
-#| fig.height: 6
-flowPlot(fcsB, plotParameters = c("Cell_length", "DNA191"), logy = TRUE)
-```
-
-It is standard to transform both flow and mass cytometry data using one of 
-several special functions, we take the example of the inverse hyperbolic sine 
-(arcsinh), which serves as a variance stabilizing transformation.  
-
-First, we show the distribution on untransformed raw data:
-
-```{r}
-#| label: densityplot
-#| eval: !expr (! isTRUE(params$skip_execution))
-#| fig.width: 4
-#| fig.height: 3.75
-#| out-width: "60%"
-densityplot(~`CD3all`, fcsB)
-```
-
-To apply the transformation and to plot the data you can use functions
-from the `flowCore` package. After the transformation the cells seem to 
-form two clusters. Based solely on one dimension (CD3all) we see two cell
-subsets (the two modes).
-
-```{r}
-#| label: fcsB_transform
-#| eval: !expr (! isTRUE(params$skip_execution))
-#| fig.width: 4
-#| fig.height: 3.75
-#| out-width: "60%"
-asinhT = arcsinhTransform(a = 0.1, b = 1)
-cols_to_transform = setdiff(colnames(fcsB), c("Time", "Cell_length", "absoluteEventNumber"))
-trans1 = transformList(cols_to_transform, asinhT)
-fcsBT = transform(fcsB, trans1)
-densityplot(~`CD3all`, fcsBT)
-```
-
-# $k$-means
-
-Let's cluster cells into two groups using one-dimensional $k$-means filter.
-To learn more about the arguments of the functions type `?kmeansFilter`
-and `?flowCore::filter`
-
-```{r}
-#| label: kmeansFilter
-#| eval: !expr (! isTRUE(params$skip_execution))
-kf = kmeansFilter("CD3all"=c("Pop1","Pop2"), filterId="myKmFilter")
-fres = flowCore::filter(fcsBT, kf)
-summary(fres)
-```
-
-Split two data clusters into two separate flowFrame objects:
-
-```{r}
-#| label: flowFrame_split
-#| eval: !expr (! isTRUE(params$skip_execution))
-fcsBT1 = split(fcsBT, fres, population="Pop1")
-fcsBT2 = split(fcsBT, fres, population="Pop2")
-```
-
-We can also cluster cells using k-means with the `flowPeaks` function from 
-`flowPeaks` package. The algorithm for this clustering algorithm is specified
-in detail in a paper by
-[Ge Y. et al (2012)](https://academic.oup.com/bioinformatics/article/28/15/2052/236255).
-
-
-```{r}
-#| label: flowPeaks
-#| eval: !expr (! isTRUE(params$skip_execution))
-#| fig.width: 4
-#| fig.height: 4
-#| out-width: "60%"
-dat = data.frame(exprs(fcsBT)[ , c("CD56", "CD3all")])
-fp = flowPeaks(dat)
-plot(fp)
-```
-
 ::: {.callout-note collapse="false"}
 ## Question
-How many dimensions (markers) does the above code use to split the data into 
-4 cell subsets using kmeans?
+Notice that one cluster contains samples from different cell types. If you repeat k means
+with k=4, do they separate?
 
 ```{r}
-#| label: flowpeaks_kmeans
-#| eval: !expr (! params$skip_execution & ! params$skip_answers)
-#| echo: false
-#| results: 'asis'
-cat("2 dimensions, based on `CD56` and `CD3all`")
-```
-:::
-
-Note that here `fcsB` or `fcsBT` are not 'data.frames' but objects of class 'flowFrame'. This meansthat  you cannot use `fcsB` and `fcsBT`  (without conversion to data.frame) as inputs to `ggplot`. However, 'flowFrame' objects hold marker expression data together with sample information data, so you could access any variables you need for plotting directly from these objects (and this would be lost by converting them to `data.frame`). This is why for plottimg now we use a Bioconductor package `ggcyto`, built on top of `ggplot2`. This package includes functions for generating visualizations specifically for cytometry data, starting from 'flowFrame' objects.
-
-We can look at distributions of measured markers, e.g CD4, by plotting the histogram:
-
-```{r}
-#| label: ggcyto_CD4CD8__transform_hist
-#| eval: !expr (! isTRUE(params$skip_execution))
-#| fig.width: 4
-#| fig.height: 4
-#| out-width: "60%"
-library("ggcyto")
-# Untransformed data
-ggcyto(fcsB,aes(x = CD4)) + geom_histogram(bins = 90) 
-# Transformed data
-ggcyto(fcsBT, aes(x = CD4)) + geom_histogram(bins = 90) 
-```
-
-`autoplot` function plots the density of selected markers.
-
-```{r}
-#| label: ggcyto_autoplot_cd4
-#| eval: !expr (! isTRUE(params$skip_execution))
-#| fig.width: 4
-#| fig.height: 4
-#| out-width: "60%"
-# ggcyto automatic plotting
-autoplot(fcsBT, "CD4")
-```
-
-We can compare the distributions of two markers, e.g. CD4 and CD8.
-
-```{r}
-#| label: ggcyto_density2d
-#| eval: !expr (! isTRUE(params$skip_execution))
-#| fig.width: 6
-#| fig.height: 6
-# 2d density plot
-ggcyto(fcsBT, aes(x = CD4, y = CD8)) + geom_density2d(colour="black") 
-# hexbin plot
-ggcyto(fcsBT, aes(x = CD4, y = CD8)) + geom_hex(bins = 50) 
-```
-
-The same can be achieved with `autoplot` for two variables.
-
-```{r}
-#| label: ggcyto_autoplot_cd4_cd8
-#| eval: !expr (! isTRUE(params$skip_execution))
-#| fig.width: 6
-#| fig.height: 6
-# ggcyto automatic plotting
-autoplot(fcsBT, "CD4", "CD8", bins = 50)
-```
-
-For more details on capabilities of `ggcyto` refer to the following
-[link](https://bioconductor.org/packages/release/bioc/vignettes/ggcyto/inst/doc/autoplot.html)
-
-# Density based clustering
-
-Data sets such as flow cytometry containing only a few variables (markers) and a 
-large number of observations (cells) are amenable to density clustering. 
-DBSCAN algorithm looks for regions of high density separated by sparse emptier 
-regions. This method has the advantage of being able to cope with clusters that 
-are not necessarily convex (i.e. not blob-shaped). One implementation of such a
-method is called ``dbscan``, let us look at an example by running the code below.
-
-```{r dbscanfcs5}
-#| label: dbscan
-#| eval: !expr (! isTRUE(params$skip_execution))
-#| warning: FALSE
-#| message: FALSE
-library("dbscan")
-# Select a small subset of 5 protein markers
-mc5 = exprs(fcsBT)[, c("CD4", "CD8", "CD20", "CD3all", "CD56")]
-res5 = dbscan::dbscan(mc5, eps = .65, minPts = 30)
-mc5df = data.frame(mc5)
-mc5df$cluster = as.factor(res5$cluster)
-```
-
-::: {.callout-note collapse="false"}
-## Question
-How many clusters did `dbscan` find?
-
-```{r}
-#| label: dbscan_clusters
+#| label: kmeans_4
 #| eval: !expr (! params$skip_execution & ! params$skip_answers)
 #| echo: !expr (! params$skip_answers)
-table(mc5df$cluster)
-```
-```{r}
-#| label: dbscan_clusters_num
-#| eval: !expr (! params$skip_execution & ! params$skip_answers)
-#| echo: false
-#| results: 'asis'
-cat(
-  table(mc5df$cluster) |> length() - 1,
-  " clusters were found (0 are unclustered observations)."
-)
+# k means
+set.seed(1950)
+km <- kmeans(x = Morder[, -match(c("cell_type","condition"), colnames(Morder_df))], centers = 4)
+# plot
+autoplot(km, Morder_df, frame = TRUE, shape = "cell_type", size = 4, alpha = 0.6)
 ```
 :::
-
-Note that we do not count the `0` as a cluster, since it contains all cells that 
-were not assigned to any cluster. Looking up the documentation  of `dbscan` 
-(`?dbscan`) we find that "Points which cannot be assigned to a cluster will be 
-reported as members of the noise cluster 0."
 
 ::: {.callout-note collapse="false"}
 ## Question
-How many cells were clustered into cluster 3 by `dbscan`?
+The data are coming from two conditions: healthy and melanoma. Repeat k-menas 
+clustering with k=2 and see if the clusters now correspond to these conditions?
 
 ```{r}
-#| label: dbscan_count
+#| label: kmeans_2
 #| eval: !expr (! params$skip_execution & ! params$skip_answers)
 #| echo: !expr (! params$skip_answers)
-sum(mc5df$cluster == 3)
+# k means
+set.seed(1950)
+km <- kmeans(x = Morder[, -match(c("cell_type","condition"), colnames(Morder_df))], centers = 2)
+# plot
+autoplot(km, Morder_df, frame = TRUE, shape = "condition", size = 4, alpha = 0.6)
 ```
 :::
 
-We can now generate a CD8-vs-CD4 2d-density plot for the cells colored
-by their assigned cluster labels, computed by `dbscan`:
+Choosing the number of clusters for k-means is important and at the same time 
+not trivial, because usually we don't know the number of clusters in the data 
+_a priori_.  
 
-```{r}
-#| label: cd8_cd4_density
-#| eval: !expr (! isTRUE(params$skip_execution))
-#| fig.width: 8
-#| fig.height: 8
-#| warning: FALSE
-ggplot(mc5df, aes(x = CD4, y = CD8, colour = cluster)) + geom_density2d()
-```
+How can we choose appropriate value of 'k'?  
+One way to choose the number of clusters is to use of the "wss" 
+(within sum of squares) statistic.
 
-And do the same for CD3all and CD20 markers:
-
-```{r}
-#| label: cd3all_cd20_density
-#| eval: !expr (! isTRUE(params$skip_execution))
-#| fig.width: 8
-#| fig.height: 8
-#| warning: FALSE
-ggplot(mc5df,aes(x = CD3all, y = CD20, colour = cluster))+ geom_density2d()
-```
-
-Observe that **the nature nature of the clustering is multidimensional**,
-as the projections into two dimensions show overlapping clusters.
-
-# Validating and choosing the number of clusters
-
-The clustering methods we have described are tailored to deliver the best 
-grouping of the data under various constrains, however they will always deliver 
-groups, even if there are none. This is important, e.g. when performing
-kmeans clustering, as we have to set the 'k' parameter (for the number
-of clusters to group observations into) ahead of time. What choice of 'k'
-is valid though?
-
-Here we want to illustate the use of the "wss" (within sum of squares) statistic 
-to evaluate the quality of a clustering. Note that as $k$ (number of cluster for 
-k-means algorithm) increases, wss will also decrease. We simulate data coming 
-from 4 groups. In particular, we generate 2-dimensional observations
-(as if there were only 2 proteins measured for each cell). The four groups
-are generated from 2-d multivariate normals with centers at
-$\mu_1 = (0, 0)$, $\mu_2 = (0, 8)$, $\mu_3 = (8, 0)$, $\mu_4 = (8, 8)$.
-In this simulation, we know the ground truth (4 groups), but we will
-try to cluster the data using the `kmeans` argorithm with different choices for
-the `k` parameter. We will see how the wss statistic varies as we vary `k`.
-
-We have  used the `|>` operator (if you do not understand the code, try to see
-what `simul4` contains and repeat the same using code that does not use the `|>`
-operator).
-
-```{r Fake4}
-#| label: wss
-#| eval: !expr (! isTRUE(params$skip_execution))
-#| fig.width: 8
-#| fig.height: 8
-simul4 = lapply(c(0,8), \(mx) {
-  lapply(c(0, 8), \(my) {
-    tibble(x = rnorm(100, mx, 2),
-           y = rnorm(100, my, 2), 
-           class = paste0(mx, my)
-    )
-  }) |> bind_rows()
-}) |> bind_rows()
-```
-
-```{r}
-#| label: wss_point
-#| eval: !expr (! isTRUE(params$skip_execution))
-#| fig.width: 6
-#| fig.height: 6
-ggplot(simul4, aes(x = x, y = y)) +
-  geom_point(aes(color = class), size = 2)
-```
+`kmeans()` function reports wss for every cluster in the results (check 
+`km$withinss`). Here we implement the function that computes the wss statistic 
+for different number of clusters in kmeans.
 
 ```{r}
 #| label: wss_plot
 #| eval: !expr (! isTRUE(params$skip_execution))
 #| fig.width: 6
 #| fig.height: 6
-# Compute the kmeans within group wss for k=1 to 12
-wss = rep(0,8)
-# for a single cluster the WSS statistic is just sum of squares of centered data
-wss[1] = sum(apply(scale(simul4[,1:2], scale = F), 2, function(x){ x^2 }))
-# for k = 2, 3, ... we perform kmeans clustering and compute the associated WSS statistic
-for (k in 2:8) {
-  km4 = kmeans(simul4[,1:2],k)
-    wss[k] =  sum(km4$withinss)
+
+wssplot <- function(data, nc=10, seed=1950){
+  wss <- (nrow(data)-1)*sum(apply(data,2,var))
+  for (i in 2:nc){
+    set.seed(seed)
+    wss[i] <- sum(kmeans(data, centers=i)$withinss)}
+  plot(1:nc, wss, type="b", xlab="Number of Clusters",
+       ylab="Within groups sum of squares")
+  wss
 }
-# Now, we are ready to plot the computed statistic:
-ggplot(data.frame(k = 1:length(wss), wss = wss)) +
-  geom_point(aes(x = k, y = wss), color = "blue", size= 3) +
-  xlab('k') + ylab('WSS(k)')
+```
+
+Inspect how wss looks for different number of clusters in our `Morder` data.
+
+```{r}
+wssplot(Morder)
 ```
 
 Within sum of squares (wss) statistic, we see that the last substantial decrease
-of the statistic occurres before $k=4$, and for values $k = 5, 6, \dots$
-the quantity 'levels-off'. In practice, we would choose $k=4$, a value
-happening at the 'elbow' of the plot (elbow-rul). Of course this choice is 
-still somewhat subjective. The book chapter describes additional ways of
-choosing `k` (e.g. the gap statistic).
+of the statistic occurres before $k=3$, and for values $k = 4, 5, 6, \dots$
+the quantity 'levels-off'. In practice, we would choose $k=3$, a value
+happening at the 'elbow' of the plot (elbow-rule).
 
 # Session info
 
