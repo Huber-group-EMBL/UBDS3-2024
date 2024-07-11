@@ -12,8 +12,7 @@ format:
     code-line-numbers: false 
 params:
   skip_execution: false
-  skip_slow_chunks: true
-  skip_answers: true
+  skip_answers: false
 ---
 
 ```{r}
@@ -198,7 +197,7 @@ cat(sprintf(
 ```
 :::
 
-Now that you know how to perform hierarchical clustering, use `pheatmap()`
+Now that you know how to perform hierarchical clustering, use `pheatmap`
 to generate a heatmap with clustered rows and columns. 
 
 ```{r}
@@ -206,10 +205,13 @@ to generate a heatmap with clustered rows and columns.
 #| eval: !expr (! isTRUE(params$skip_execution))
 #| fig.height: 8
 #| fig.width: 8
-library(pheatmap)
+library("pheatmap")
+mycolors = colorRampPalette(c("#FFD800", "#0056B9"))(100)
 pheatmap(
   mat = Morder,
-  fontsize_col = 6, fontsize_row = 10
+  fontsize_col = 6, fontsize_row = 10, 
+  color = mycolors, 
+  breaks = max(abs(Morder)) * seq(-1, +1, length.out = length(mycolors) + 1)
 ) 
 ```
 
@@ -256,8 +258,7 @@ pheatmap(
 
 :::
 
-# Density based clustering
-## Mass cytometry (CyTOF)
+# Mass cytometry (CyTOF)
 
 Cytometry is a biophysical technology that allows you to measure
 physical and chemical characteristics of cells. Modern flow and mass 
@@ -279,11 +280,11 @@ First we load the necessary packages.
 #| label: load_packages
 #| output: false
 #| eval: !expr (! isTRUE(params$skip_execution))
-library(tidyverse)
-library(flowCore)
-library(flowViz)
-library(flowPeaks)
-library(ggcyto)
+library("tidyverse")
+library("flowCore")
+library("flowViz")
+library("flowPeaks")
+library("ggcyto")
 ```
 
 Here we download the data.
@@ -433,7 +434,7 @@ fcsBT = transform(fcsB, trans1)
 densityplot(~`CD3all`, fcsBT)
 ```
 
-## K-means
+# K-means
 
 Let's cluster cells into two groups using one-dimensional k-means filter.
 To learn more about the arguments of the functions type `?kmeansFilter`
@@ -542,7 +543,7 @@ autoplot(fcsBT, "CD4", "CD8", bins = 50)
 For more details on capabilities of `ggcyto` refer to the following
 [link](https://bioconductor.org/packages/release/bioc/vignettes/ggcyto/inst/doc/autoplot.html)
 
-## Density based clustering
+# Density based clustering
 
 Data sets such as flow cytometry containing only a few variables (markers) and a 
 large number of observations (cells) are amenable to density clustering. 
@@ -556,7 +557,7 @@ method is called ``dbscan``, let us look at an example by running the code below
 #| eval: !expr (! isTRUE(params$skip_execution))
 #| warning: FALSE
 #| message: FALSE
-library(dbscan)
+library("dbscan")
 # Select a small subset of 5 protein markers
 mc5 = exprs(fcsBT)[, c("CD4", "CD8", "CD20", "CD3all", "CD56")]
 res5 = dbscan::dbscan(mc5, eps = .65, minPts = 30)
