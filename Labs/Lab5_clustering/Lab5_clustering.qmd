@@ -72,7 +72,7 @@ If you downloaded the file before, you can load it from the local directory.
 load("Morder.RData")
 ```
 
-::: {.callout-note collapse="true"}
+::: {.callout-note collapse="false"}
 ## Question
 Inspect the data. How many samples of each T cell type (naïve, effector, memory) are there in the data?
 
@@ -87,7 +87,7 @@ rownames(Morder) |>
 ```
 :::
 
-In base R the function to perform hierarchical clustering is `hclust()`.
+In base R the function to perform hierarchical clustering is `hclust`.
 To cluster the genes with hierarchical clustering you first need
 to compute a distance matrix storing all pairwise (gene-to-gene)
 dissimilarities. This is how to do it:
@@ -95,19 +95,19 @@ dissimilarities. This is how to do it:
 ```{r}
 #| label: hclust_genes
 #| eval: !expr (! isTRUE(params$skip_execution))
-#| fig.width: 15
+#| fig.width: 18
 #| fig.height: 8
 # distance calculation
-D <- dist(t(Morder))
+D = dist(t(Morder))
 # clustering
-gene_clust <- hclust(d = D)
-# plot dendogram
+gene_clust = hclust(d = D)
+# plot dendrogram
 plot(gene_clust)
 ```
 
-::: {.callout-note collapse="true"}
+::: {.callout-note collapse="false"}
 ## Question
-Why in the provided code the input to `dist()` function is `t(Morder)`? 
+Why in the provided code the input to `dist` function is `t(Morder)`? 
 
 ```{r}
 #| label: question_transpose
@@ -115,18 +115,18 @@ Why in the provided code the input to `dist()` function is `t(Morder)`?
 #| echo: false
 #| results: 'asis'
 cat(
-  "Because dist() cmputes distances between rows, we need to use t() to transposes the expression matrix Morder, so that we cluster genes, and not samples."
+  "Because `dist` computes distances between rows, we need to use `t` to transposes the expression matrix Morder, so that we cluster genes, and not samples."
 )
 ```
 :::
 
 In hierarchical clustering one needs to choose the method for agglomerating the 
-clusters. By default `hclust()` uses a "complete" linkage method (see `?hclust()` 
+clusters. By default `hclust` uses a "complete" linkage method (see `?hclust` 
 for info). 
 
-::: {.callout-note collapse="true"}
+::: {.callout-note collapse="false"}
 ## Question
-Redo hierarchical clustering with "ward.D2" method and plot the dendogram.
+Redo hierarchical clustering with the `ward.D2` method and plot the dendrogram.
 
 ```{r}
 #| label: hclust_genes_ward.D2
@@ -134,11 +134,11 @@ Redo hierarchical clustering with "ward.D2" method and plot the dendogram.
 #| echo: !expr (! params$skip_answers)
 #| fig.width: 15
 #| fig.height: 8
-gene_clust_wd2 <- hclust(d = dist(t(Morder)), method = "ward.D2")
+gene_clust_wd2 = hclust(d = dist(t(Morder)), method = "ward.D2")
 plot(gene_clust_wd2)
 ```
 
-Notice that the values on the y axis of hclust dendogram changed.
+Notice that the values on the y axis of hclust dendrogram changed.
 What do they correspond to?
 
 ```{r}
@@ -152,13 +152,13 @@ cat(
 ```
 :::
 
-Note that in the `hclust()` there are "ward.D" and "ward.D2" methods available. 
+Note that in the `hclust` there are the `ward.D` and `ward.D2` methods available. 
 Please call `?hclust` to read about the difference between the two methods.
 
 Next, instead of clustering genes, we will apply hierarchical clustering for 
 samples (observations)
 
-::: {.callout-note collapse="true"}
+::: {.callout-note collapse="false"}
 ## Question
 Use dist and hclust (with default linkage method) to cluster samples.
 
@@ -169,12 +169,12 @@ Use dist and hclust (with default linkage method) to cluster samples.
 #| fig.width: 15
 #| fig.height: 8
 # we don't transpose the matrix now (samples are rows)
-D_samples <- dist(Morder)
-sample_clust <- hclust(d = D_samples)
+D_samples = dist(Morder)
+sample_clust = hclust(d = D_samples)
 ```
 
 How many clusters of samples are there at the dendrogram height of 12? Hint: 
-the `abline()` function might be helpful.
+the `abline` function might be helpful.
 
 ```{r}
 #| label: hclust_samples_abline
@@ -198,24 +198,26 @@ cat(sprintf(
 :::
 
 Now that you know how to perform hierarchical clustering, use `pheatmap`
-to generate a heatmap with clustered rows and columns. 
+to generate a heatmap with clustered rows and columns. Below, we do some extra work compared 
+to the default parameters to make sure that 0 is in the center of the color scale, and 
+use beautiful colors.
 
 ```{r}
 #| label: pheatmap
 #| eval: !expr (! isTRUE(params$skip_execution))
-#| fig.height: 8
-#| fig.width: 8
+#| fig.height: 6
+#| fig.width: 10
 library("pheatmap")
 mycolors = colorRampPalette(c("#FFD800", "#0056B9"))(100)
 pheatmap(
   mat = Morder,
-  fontsize_col = 6, fontsize_row = 10, 
+  fontsize_col = 5, fontsize_row = 10, 
   color = mycolors, 
   breaks = max(abs(Morder)) * seq(-1, +1, length.out = length(mycolors) + 1)
 ) 
 ```
 
-::: {.callout-note collapse="true"}
+::: {.callout-note collapse="false"}
 ## Question
 What type of distance and which clustering method does `pheatmap` use by default
 for clustering rows and columns?
@@ -230,7 +232,7 @@ cat(
 )
 ```
 
-Note that these are default values for `dist()` and `hclust()`, too. Look at how
+Note that these are default values for `dist` and `hclust`, too. Look at how
 clustering heatmap changes if you use different distance and clustering methods 
 (e.g. 'ward.D2').
 
@@ -238,21 +240,25 @@ clustering heatmap changes if you use different distance and clustering methods
 #| label: pheatmap_wd2
 #| eval: !expr (! params$skip_execution & ! params$skip_answers)
 #| echo: !expr (! params$skip_answers)
+#| fig.height: 6
+#| fig.width: 10
 # cluster genes
-gene_clust_wd2 <- hclust(d = dist(t(Morder)), method = "ward.D2")
+gene_clust_wd2 = hclust(d = dist(t(Morder)), method = "ward.D2")
 
 # cluster samples
-sample_clust_wd2 <- hclust(d = dist(Morder), method = "ward.D2")
+sample_clust_wd2 = hclust(d = dist(Morder), method = "ward.D2")
 
 # order expression matrix by clustering results
-Morder_clustered <- Morder[sample_clust_wd2$order, gene_clust_wd2$order]
+Morder_clustered = Morder[sample_clust_wd2$order, gene_clust_wd2$order]
 
 # we use pre-computed clustering, so we need to specify that pheatmap should not
 # re-cluster the input data
 pheatmap(
   mat = Morder_clustered,
   cluster_rows = FALSE, cluster_cols = FALSE,
-  fontsize_col = 6, fontsize_row = 10
+  fontsize_col = 5, fontsize_row = 10,
+  color = mycolors, 
+  breaks = max(abs(Morder)) * seq(-1, +1, length.out = length(mycolors) + 1)
 ) 
 ```
 
@@ -299,8 +305,9 @@ download.file(
   destfile = "Bendall_2011.fcs",
   mode = "wb"
 )
-# if download fails with timeout error, try increasing it
+# If download fails with timeout error, try increasing it
 # options(timeout = 1000)
+# On Linux and MacOS, you can also try to use the 'wget' command in the Unix terminal instead
 ```
 
 Load this data in R using flowCore package.
@@ -311,10 +318,10 @@ Load this data in R using flowCore package.
 #| message: FALSE
 #| warning: FALSE
 # load file in R - here we use a function from flowCore package
-fcsB <- flowCore::read.FCS("Bendall_2011.fcs")
+fcsB = flowCore::read.FCS("Bendall_2011.fcs")
 ```
 
-::: {.callout-note collapse="true"}
+::: {.callout-note collapse="false"}
 ## Question
 Look at the structure of the `fcsB` object. How many variables and how many 
 cells were measured? 
@@ -396,6 +403,22 @@ the `DNA191` (this variable indicates the activity of the cell, i.e. whether the
 cell is dead or alive):
 
 ```{r}
+#| label: ggplottheme
+#| echo: false
+#| eval: false
+# this does not currently work
+library("ggplot2")
+currenttheme = theme_get()
+theme_update(
+  line = element_line(size = 0.5, linetype = "solid", color = "#0056B9"),
+  rect = element_rect(fill = "#0056B9", colour = "#0056B9"),
+  panel.background = element_rect(fill = "#FFD800", colour = "#FFD800"),
+  panel.grid.major = element_line(size = 0.5, linetype = "solid", color = "#FFE830"), 
+  panel.grid.minor = element_line(size = 0.25, linetype = "solid", color = "#FFE830")
+)
+```
+
+```{r}
 #| label: flowPlot
 #| eval: !expr (! isTRUE(params$skip_execution))
 #| fig.width: 6
@@ -412,8 +435,9 @@ First, we show the distribution on untransformed raw data:
 ```{r}
 #| label: densityplot
 #| eval: !expr (! isTRUE(params$skip_execution))
-#| fig.width: 6
-#| fig.height: 5
+#| fig.width: 4
+#| fig.height: 3.75
+#| out-width: "60%"
 densityplot(~`CD3all`, fcsB)
 ```
 
@@ -425,18 +449,19 @@ subsets (the two modes).
 ```{r}
 #| label: fcsB_transform
 #| eval: !expr (! isTRUE(params$skip_execution))
-#| fig.width: 6
-#| fig.height: 5
+#| fig.width: 4
+#| fig.height: 3.75
+#| out-width: "60%"
 asinhT = arcsinhTransform(a = 0.1, b = 1)
-cols_to_transform <- setdiff(colnames(fcsB), c("Time", "Cell_length", "absoluteEventNumber"))
+cols_to_transform = setdiff(colnames(fcsB), c("Time", "Cell_length", "absoluteEventNumber"))
 trans1 = transformList(cols_to_transform, asinhT)
 fcsBT = transform(fcsB, trans1)
 densityplot(~`CD3all`, fcsBT)
 ```
 
-# K-means
+# $k$-means
 
-Let's cluster cells into two groups using one-dimensional k-means filter.
+Let's cluster cells into two groups using one-dimensional $k$-means filter.
 To learn more about the arguments of the functions type `?kmeansFilter`
 and `?flowCore::filter`
 
@@ -457,7 +482,7 @@ fcsBT1 = split(fcsBT, fres, population="Pop1")
 fcsBT2 = split(fcsBT, fres, population="Pop2")
 ```
 
-We can also cluster cells using k-means with the `flowPeaks()` function from 
+We can also cluster cells using k-means with the `flowPeaks` function from 
 `flowPeaks` package. The algorithm for this clustering algorithm is specified
 in detail in a paper by
 [Ge Y. et al (2012)](https://academic.oup.com/bioinformatics/article/28/15/2052/236255).
@@ -466,14 +491,15 @@ in detail in a paper by
 ```{r}
 #| label: flowPeaks
 #| eval: !expr (! isTRUE(params$skip_execution))
-#| fig.width: 6
-#| fig.height: 6
+#| fig.width: 4
+#| fig.height: 4
+#| out-width: "60%"
 dat = data.frame(exprs(fcsBT)[ , c("CD56", "CD3all")])
 fp = flowPeaks(dat)
 plot(fp)
 ```
 
-::: {.callout-note collapse="true"}
+::: {.callout-note collapse="false"}
 ## Question
 How many dimensions (markers) does the above code use to split the data into 
 4 cell subsets using kmeans?
@@ -487,17 +513,16 @@ cat("2 dimensions, based on `CD56` and `CD3all`")
 ```
 :::
 
-Note that here `fcsB` or `fcsBT` are not 'data.frames' but objects of class 'flowFrame'. This meansthat  you cannot use `fcsB` and `fcsBT`  (without conversion to data.frame) as inputs to `ggplot()`.
-However, 'flowFrame' objects hold marker expression data together with sample information data, so you could access any variables you need for plotting directly from these objects (and this would be lost by converting them to 'data.frames')
-This is why for plottimg now we use a Bioconductor package ``ggcyto``, built on top of ``ggplot2``. This package includes functions for generating visualizations specifically for cytometry data, starting from 'flowFrame' objects.
+Note that here `fcsB` or `fcsBT` are not 'data.frames' but objects of class 'flowFrame'. This meansthat  you cannot use `fcsB` and `fcsBT`  (without conversion to data.frame) as inputs to `ggplot`. However, 'flowFrame' objects hold marker expression data together with sample information data, so you could access any variables you need for plotting directly from these objects (and this would be lost by converting them to `data.frame`). This is why for plottimg now we use a Bioconductor package `ggcyto`, built on top of `ggplot2`. This package includes functions for generating visualizations specifically for cytometry data, starting from 'flowFrame' objects.
 
 We can look at distributions of measured markers, e.g CD4, by plotting the histogram:
 
 ```{r}
 #| label: ggcyto_CD4CD8__transform_hist
 #| eval: !expr (! isTRUE(params$skip_execution))
-#| fig.width: 8
-#| fig.height: 6
+#| fig.width: 4
+#| fig.height: 4
+#| out-width: "60%"
 library("ggcyto")
 # Untransformed data
 ggcyto(fcsB,aes(x = CD4)) + geom_histogram(bins = 90) 
@@ -505,13 +530,14 @@ ggcyto(fcsB,aes(x = CD4)) + geom_histogram(bins = 90)
 ggcyto(fcsBT, aes(x = CD4)) + geom_histogram(bins = 90) 
 ```
 
-`autoplot()` function plots the density of selected markers.
+`autoplot` function plots the density of selected markers.
 
 ```{r}
 #| label: ggcyto_autoplot_cd4
 #| eval: !expr (! isTRUE(params$skip_execution))
-#| fig.width: 8
-#| fig.height: 6
+#| fig.width: 4
+#| fig.height: 4
+#| out-width: "60%"
 # ggcyto automatic plotting
 autoplot(fcsBT, "CD4")
 ```
@@ -529,7 +555,7 @@ ggcyto(fcsBT, aes(x = CD4, y = CD8)) + geom_density2d(colour="black")
 ggcyto(fcsBT, aes(x = CD4, y = CD8)) + geom_hex(bins = 50) 
 ```
 
-The same can be achieved with `autoplot()` for two variables.
+The same can be achieved with `autoplot` for two variables.
 
 ```{r}
 #| label: ggcyto_autoplot_cd4_cd8
@@ -565,9 +591,9 @@ mc5df = data.frame(mc5)
 mc5df$cluster = as.factor(res5$cluster)
 ```
 
-::: {.callout-note collapse="true"}
+::: {.callout-note collapse="false"}
 ## Question
-How many clusters did `dbscan()` find?
+How many clusters did `dbscan` find?
 
 ```{r}
 #| label: dbscan_clusters
@@ -581,7 +607,7 @@ table(mc5df$cluster)
 #| echo: false
 #| results: 'asis'
 cat(
-  table(mc5df$cluster) |> length()-1,
+  table(mc5df$cluster) |> length() - 1,
   " clusters were found (0 are unclustered observations)."
 )
 ```
@@ -592,9 +618,9 @@ were not assigned to any cluster. Looking up the documentation  of `dbscan`
 (`?dbscan`) we find that "Points which cannot be assigned to a cluster will be 
 reported as members of the noise cluster 0."
 
-::: {.callout-note collapse="true"}
+::: {.callout-note collapse="false"}
 ## Question
-How many cells were clustered into cluster 3 by `dbscan()`?
+How many cells were clustered into cluster 3 by `dbscan`?
 
 ```{r}
 #| label: dbscan_count
@@ -605,7 +631,7 @@ sum(mc5df$cluster == 3)
 :::
 
 We can now generate a CD8-vs-CD4 2d-density plot for the cells colored
-by their assigned cluster labels, computed by `dbscan()`:
+by their assigned cluster labels, computed by `dbscan`:
 
 ```{r}
 #| label: cd8_cd4_density
@@ -689,7 +715,7 @@ wss = rep(0,8)
 wss[1] = sum(apply(scale(simul4[,1:2], scale = F), 2, function(x){ x^2 }))
 # for k = 2, 3, ... we perform kmeans clustering and compute the associated WSS statistic
 for (k in 2:8) {
-  km4 <- kmeans(simul4[,1:2],k)
+  km4 = kmeans(simul4[,1:2],k)
     wss[k] =  sum(km4$withinss)
 }
 # Now, we are ready to plot the computed statistic:
