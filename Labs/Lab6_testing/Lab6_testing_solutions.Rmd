@@ -14,19 +14,22 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Goal
 
-In this lab, we will become familiar with count data in RNA-Seq high-throughput
-sequencing. We will see how we can use how to use DEseq2 R package for hypothesis testing to data from RNA-Seq experiments. 
-We will model counts data and evaluate model fits to detect and quantify systematic changes between 
-conditions, compared to within-condition variability (which we consider noise).
+In this lab, we will look at hypothesis testing, as applied to the detection of differentially expressed genes from RNA-Seq data, using the `DESeq2` package.
+We will focus on the main, fundamental issues around such "multiple testing" scenarios.
+These will also apply to other data types and data sets.
 
 ## Load Packages
 
 Install packages.
 
 ```{r warning=FALSE, message=FALSE, results='hide'}
-pkgs_needed = c("dplyr","ggplot2", "DESeq2","pasilla","genefilter",
-                "pheatmap","readr","tibble","apeglm")
-BiocManager::install(pkgs_needed, dependencies = TRUE)
+install_if_needed = function(x) {
+  p = setdiff(x, installed.packages())
+  if (length(p) > 0) BiocManager::install(p)
+}
+install_if_needed(c("dplyr", "ggplot2", "readr", "tibble", 
+                "DESeq2", "apeglm", "pasilla", "genefilter",
+                "pheatmap"))
 ```
 
 Load packages.
