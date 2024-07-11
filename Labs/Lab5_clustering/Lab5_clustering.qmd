@@ -81,8 +81,7 @@ Inspect the data. How many samples of each T cell type (naïve, effector, memory
 #| eval: !expr (! params$skip_execution & ! params$skip_answers)
 #| echo: !expr (! params$skip_answers)
 rownames(Morder) |> 
-  strsplit(split = "_") |> 
-  sapply(function(x) x[2]) |> 
+  stringr::str_split_i("_", 2) |>
   table()
 ```
 :::
@@ -685,14 +684,14 @@ operator).
 #| eval: !expr (! isTRUE(params$skip_execution))
 #| fig.width: 8
 #| fig.height: 8
-simul4 = lapply(c(0,8), function(x){
-  lapply(c(0,8), function(y){
-    data.frame(x = rnorm(100, x, 2),
-               y = rnorm(100, y, 2), 
-               class = paste(x, y, sep = "")
+simul4 = lapply(c(0,8), \(mx) {
+  lapply(c(0, 8), \(my) {
+    tibble(x = rnorm(100, mx, 2),
+           y = rnorm(100, my, 2), 
+           class = paste0(mx, my)
     )
-  }) |> do.call(what = rbind)
-}) |> do.call(what = rbind)
+  }) |> bind_rows()
+}) |> bind_rows()
 ```
 
 ```{r}
