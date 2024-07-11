@@ -1498,7 +1498,7 @@ variability (which we consider noise).</p>
 <p>Install packages.</p>
 <pre class="r"><code>pkgs_needed = c(&quot;dplyr&quot;,&quot;ggplot2&quot;, &quot;DESeq2&quot;,&quot;pasilla&quot;,&quot;genefilter&quot;,
                 &quot;pheatmap&quot;,&quot;readr&quot;,&quot;tibble&quot;,&quot;apeglm&quot;)
-#BiocManager::install(setdiff(pkgs_needed, installed.packages()), dependencies = TRUE)</code></pre>
+BiocManager::install(pkgs_needed, dependencies = TRUE)</code></pre>
 <p>Load packages.</p>
 <pre class="r"><code>library(&quot;dplyr&quot;)
 library(&quot;ggplot2&quot;)
@@ -1644,7 +1644,7 @@ str(pasillaSampleAnno)</code></pre>
 <code>condition</code>, and the nuisance factor <code>type</code>. <br>
 <strong>Question 6</strong>: How many sample are untreated and
 single-read, untreated and paired-end, treated and single-read, treated
-and paired-end? Tip: Use the <code>table</code> function.</p>
+and paired-end?</p>
 <pre class="r"><code>table(pasillaSampleAnno[,c(&quot;condition&quot;,&quot;type&quot;)])</code></pre>
 <pre><code>##            type
 ## condition   single-read paired-end
@@ -1677,7 +1677,6 @@ mt = match(colnames(counts), rownames(pasillaSampleAnno))
 pasillaSampleAnno = pasillaSampleAnno[mt,]
 
 # Check if the order is the same, that&#39;s critical for running DESeq2
-# TODO
 all(rownames(pasillaSampleAnno) == colnames(counts))</code></pre>
 <pre><code>## [1] TRUE</code></pre>
 <p>Now, we can move on to construct the DeSeqDataSet object. For this we

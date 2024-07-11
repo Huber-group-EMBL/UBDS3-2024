@@ -34,6 +34,7 @@ First, we install and load all the packages that we need for this tutorial.
 ```{r loading packages, include=TRUE, eval=TRUE, results='hide'}
 pkgs_needed = c("tidyverse","dplyr","ggplot2","patchwork","DESeq2")
 letsinstall = setdiff(pkgs_needed, installed.packages()) 
+
 if (length(letsinstall) > 0) {
   for (pkg in letsinstall) {
     BiocManager::install(pkg, dependencies = TRUE)
@@ -65,7 +66,7 @@ The data are stored in a zip file. Please download the .zip file and unpack the 
 Now, set your working directory to the path of the folder that contains the count and the meta data. You can use the function `setwd()` and paste the path to your `data` folder that you just opened. (You don't know where it is? You can check the path using the terminal). 
 
 ```{r read in data, include=TRUE, eval=TRUE}
-
+setwd("~/Desktop/UBDS_2024/UBDS3-2024/Labs/Lab1_introRBioc/")
 counts <- read_csv("./data/bulk_RNA_counts.csv")
 meta <- read_csv("./data/bulk_RNA_metadata.csv")
 
@@ -187,7 +188,7 @@ filter(meta, diagnosis == "COVID-19" & age > 60)
 
 **Select and Filter at the same time:** \
 
-For this, the **pipe symbol %>%** (shortcut: Cmd+Shift+m) comes in very handy.
+For this, the **pipe symbol `%>%` or `|>`** (shortcut: Cmd+Shift+m) comes in very handy. The pipe takes the element on the left and put it as first argument in the function on the right. (If you want to see the logic behind it, you can use the `parse_expr()` function of the `rlang` package, for example `parse_expr(" 4 |> sqrt() ")`, or copy and paste any of the following expression inside the quotes, do you see what happens?)
 
 ```{r , eval = FALSE}
 #coupling the two with bracket subsetting: 
@@ -242,16 +243,30 @@ meta %>%
 * Can you extract all samples (rows) with covid patients that suffered from a super infection?
 * How many samples do we have of patients with "Other Pnemumonia" that are younger than 50?
 * What is the average "days from first intubation" for the covid patients compared to the average "days from first intubation" for the other groups of non-healthy patients?
-* 
+
+```{r}
+filter(meta, diagnosis == "COVID-19")
+meta |> filter(diagnosis == "COVID-19")
+filter(meta, diagnosis == "COVID-19", superinfection == "Superinfection")
+
+meta %>% 
+group_by(diagnosis) %>% 
+dplyr::summarise(mean_days_after_intubation = mean(days_from_first_intubation))
+
+```
+
 
 **Solutions**
 ```{r sol 3, eval= FALSE}
 
 # Can you extract all samples (rows) with Covid patients?
-meta %>% filter(diagnosis == "COVID-19")
+filter(meta, diagnosis == "COVID-19")
+meta |> filter(diagnosis == "COVID-19") # as the line above, using the pipe
 
 #Can you extract all samples with Covid patients that suffered from a superinfection?
-meta %>% filter(diagnosis == "COVID-19") %>% 
+filter(meta, diagnosis == "COVID-19", superinfection == "Superinfection")
+# or using the pipe
+meta |>filter(diagnosis == "COVID-19") |>
   filter(superinfection == "Superinfection")
 
 #How many samples do we have of patients with "Other Pneumonia" that are younger than 50?
@@ -328,7 +343,7 @@ patient_age_plot <- ggplot(meta, aes(x = diagnosis, y = age, fill = diagnosis)) 
 ```{r sol 4b, include = TRUE, eval = TRUE}
 
 sex_to_plot <- meta %>% 
-  group_by(diagnosis, sex) %>% 
+  dplyr::group_by(diagnosis, sex) %>% 
   dplyr::summarise(number_of_patients = n()) %>% 
   mutate(rel_no_of_pats = number_of_patients/sum(number_of_patients))
 
@@ -409,20 +424,49 @@ you should see the row names (first column on the left) and 5 columns:
  + `cell`: cell type annotation
  + `multiplets`: if potentially the measurement is not from a single cell, it is indicated here. And we are going to remove it in some pre processing
 
+```{r livecoding1}
+# storing the genes in a variable 
+gs <- rownames(sce)
+# select the genes that start (^) with CD
+head(grep("^CD", gs, value = T))
+
+# select the genes that start (^) with CD, the result will be a T/F 
+grip <- grepl("^CD", gs) # logical: T/F
+# how many genes start (^) with CD
+table(grip)
+
+# here are the mitochondrial genes
+grep("^MT-", rownames(sce), value = T)
+
+# let's have a look at the head of the metadata in the colData
+head(colData(sce))
+
+# smallest cells in a patient
+sort(table(sce$ind))
+
+# how many cell types do we have for each individual
+table(sce$ind, sce$cell)
+
+# let's have a look at the counts of genes detected for each cell
+sce$sum <- colSums(counts(sce))
+# and now let's plot their distribution, we use a logaritmic scale to have a better visualization; n=100 is the number of bins
+hist(log1p(sce$sum), n=100)
+```
 
 ## Preprocessing
 
-The [*scater*](https://bioconductor.org/packages/3.20/scater) package (McCarthy et al. 2017) provides a variety of tools for preprocessing and quality control of single-cell transcriptomic data. For completeness, we will apply some minimal filtering steps to
+The [*scater*](https://bioconductor.org/packages/release/bioc/html/scater.html) package (McCarthy et al. 2017) provides a variety of tools for preprocessing and quality control of single-cell transcriptomic data. For completeness, we will apply some minimal filtering steps to
 
 + remove undetected genes 
 + remove cells with very few or many detected genes 
 + remove very lowly expressed genes
 + compute normalized expression values for visualization
 
-For more thorough preprocessing, we refer to the [Quality control with *scater*](https://bioconductor.org/packages/release/bioc/vignettes/scater/inst/doc/vignette-qc.html) vignette.
+For more thorough preprocessing, we refer to the Quality control with *scater* vignette (look at the html file on this [page](https://bioconductor.org/packages/release/bioc/vignettes/scater/inst/doc/overview.html)).
 ```{r}
 # remove undetected genes, these are the genes for which we have no counts, 
-# use the `rowSums` function to sum up the counts for one gene, if the total is more than 0, it returns TRUE, if it is less than 0 it returns FALSE. 
+# counts(sce) > 0 returns a true for the cells for which we have detected genes
+# use the `rowSums` function to sum up the counts for one gene (the gene has been detected in at least one cell), if the total is more than 0, it returns TRUE, if it is less than 0 it returns FALSE. 
 # We select only the rows that are TRUE.
 sce <- sce[rowSums(counts(sce) > 0) > 0, ]
 dim(sce)
@@ -434,10 +478,22 @@ library(scater)
 qc <- perCellQCMetrics(sce)
 
 # remove cells with few or many detected genes
+# with the nmads we set the threshold according to the distribution, that will be everthing that is lower or higher than two variances is  
 ol <- isOutlier(metric = qc$detected, nmads = 2, log = TRUE)
+
+ggplot(data.frame(qc), aes(detected)) + 
+  geom_histogram(bins=100) + scale_x_continuous(trans="log10") + 
+  geom_vline(col="red", xintercept = attr(ol,"threshold"))
+
+# let's have a look at them
+table(ol) # to check at outlier
+# with the function attr, you can acces the attributes, in this case we have the attribute "threshold" in which we have stored what is the lower and higher threshold for filtering
+attr(ol, "threshold") 
+
 # the cells are on the columns, and we keep out, using `!` the cells that are outlier and we selected above
 sce <- sce[, !ol]
 dim(sce)
+
 ```
 
 
@@ -453,6 +509,11 @@ Finally, we use `logNormCounts` to calculate log2-transformed normalized express
 # compute sum-factors & normalize
 sce <- computeLibraryFactors(sce)
 sce <- logNormCounts(sce)
+
+# take a look at the distribution of counts one or two genes
+hist(logcounts(sce)["MALAT1",], n=100)
+hist(logcounts(sce)["CD3E",], n=100)
 ```
+
 
 

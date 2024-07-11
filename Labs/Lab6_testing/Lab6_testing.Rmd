@@ -26,7 +26,7 @@ Install packages.
 ```{r warning=FALSE, message=FALSE, results='hide'}
 pkgs_needed = c("dplyr","ggplot2", "DESeq2","pasilla","genefilter",
                 "pheatmap","readr","tibble","apeglm")
-#BiocManager::install(setdiff(pkgs_needed, installed.packages()), dependencies = TRUE)
+BiocManager::install(setdiff(pkgs_needed, installed.packages()), dependencies = TRUE)
 ```
 
 Load packages.
@@ -120,44 +120,42 @@ str(pasillaSampleAnno)
 
 Let's convert the relevant columns of
 ``pasillaSampleAnno`` into factors, overriding the default level ordering 
-(which is alphabetical) by one that makes more sense to us. This is needed to avoid warning messages when constructing the DEseq2 object.
+(which is alphabetical) by one that makes more sense to us. This is needed to avoid warning messages when constructing the DEseq2 object.<br>
+
+**Hands-on**: change `condition` to a factor with levels of all possible conditions; and `type` to a factor with levels of all possible type. Tip: you can use the `factor()` and `mutate()` functions
 
 ```{r factors,  results='hide'}
-pasillaSampleAnno = mutate(
-  pasillaSampleAnno,
-  condition = factor(condition, levels = c("untreated", "treated")),
-  type      = factor(type, levels = c("single-read", "paired-end")))
+# TODO: use some code to solve this
 ```
 
 **Question 5**: Are the "condition" and "type" column still characters?
 ```{r solution5}
-# TODO
+# TODO: use some code to solve this
 
 ```
 
 Let's check if the design is balanced between the factor of interest, 
 ``condition``, and the nuisance factor ``type``. <br>
 **Question 6**: How many sample are untreated and single-read, untreated and paired-end, treated and single-read, treated and paired-end?
-Tip: Use the ``table`` function. 
 
 ```{r solution6}
-# TODO
+# TODO: use some code to solve this
 
 ```
 Now that we have an idea of how the data look like, let's prepare them for the analysis.<br>
 We are going to use ``DESeq2``. To use the functions from this package, first we need to create a ``DESeqDataSet`` using:
 
   1. the ``counts`` matrix with read counts for each gene (gene id are in row names) in each sample (sample id are in column names) 
-  2. the ``pasillaSampleAnno`` sample annotation dataframe , where per each sample we have different information.
+  2. the ``pasillaSampleAnno`` sample annotation dataframe , where per each sample we have different information, here the sample id are stored in the `file` column. This would be the metadata file. 
   
 We can use the constructor function ``DESeqDataSetFromMatrix``.<br>
 The very first step is to make sure the sample id are the same, and in the same order, 
 in the matrix `counts` and the sample annotation dataframe `pasillaSampleAnno`.
 
-**Hands-on:** take a look at the samples id in the two dataset, make them matching. 
+**Hands-on:** take a look at the samples id in the two dataset (remember that in the `pasillaSampleAnno` they are in the `file` ), make them matching. 
 Check that they are in the exact same order, that's critical for running DESeq2.
 ```{r solution hands-on}
-#TODO
+# TODO: use some code to solve this
 ```
 ```{r hands-on, message = FALSE, warning = FALSE, results="hide", echo=F}
 rownames(pasillaSampleAnno) = sub("fb$", "", pasillaSampleAnno$file)
@@ -165,7 +163,6 @@ mt = match(colnames(counts), rownames(pasillaSampleAnno))
 pasillaSampleAnno = pasillaSampleAnno[mt,]
 
 # Check if the order is the same, that's critical for running DESeq2
-# TODO
 all(rownames(pasillaSampleAnno) == colnames(counts))
 ```
 
@@ -194,7 +191,8 @@ also saved some column metadata which we had initially stored in
 `pasillaSampleAnno`. With which function can we extract this information again?
 (Hint: type `?SummarizedExperiment`, look at the example at the end of the help. You can also print `pasilla` and see how it looks like)
 ```{r solution8}
-#TODO
+## TODO: use some code to solve this
+
 ```
 
 
@@ -278,7 +276,7 @@ Looks good. All pvalues are background because there is not difference between c
 
 ```{r solution11, fig.width = 4.5, fig.height = 4.5}
 #a. by simulating two control samples with mean different from the two treated samples, how does the plot look like?
-#TODO
+# TODO: use some code to solve this
 ```
 
 Now let's assume that two samples were processed on the same day 
@@ -291,7 +289,7 @@ samples were shifted. In that case, the histogram is skewed to the right.
 
 ```{r solution12, fig.width = 4.5, fig.height = 4.5}
 #b. Imagine that sample 2 and sample 4 were processed on the same day and for some reason their mean are shifted to the right:
-#TODO
+# TODO: use some code to solve this
 ```
 
 One way to take such batch effects into account is by adding the batch factor 
@@ -314,7 +312,7 @@ Now that we have checked that they distribute as expected, we can look at our re
   3. Most of the time, we are not interested in one single DE gene but we want to get an overview of all of them. Look up the Wikipedia article on [volcano plots](https://en.wikipedia.org/wiki/Volcano_plot_(statistics)). Using the results table, make a volcano plot that shows the log2 fold change on the x-axis, and the -log10 of the p-value on the y-axis. Color-code by whether the gene is significant and give your plot a title. 
 
 ```{r handson solution}
-#TODO
+# TODO: use some code to solve this
 # How many genes are differentially expressed (padj < 0.05)?
 
 # Plot one of the counts across the two groups of one of the top DE genes?
@@ -345,21 +343,20 @@ transformation, the regularized logarithm or ``rlog``.
 **Question 13**: Can you reproduce the PCA plot below using ``plotPCA``?
 Don't forget to transform the data (tip: there's a function for that too `?rlogTransformation`)
 ```{r solution13-PCA, message=FALSE}
-#TODO
+# TODO: use some code to solve this
 ```
 
-```{r PCA, echo=F, message=FALSE}
-#TODO
+```{r PCA, echo=F, message=FALSE, result = FALSE}
+# TODO: use some code to solve this
 pas_rlog = rlogTransformation(pasilla)
 plotPCA(pas_rlog, intgroup=c("condition", "type")) + coord_fixed()
 ```
 
 
-
 **Question 14**: take a look at the plot, how do the sample distribute? Which component are important to explain this distribution?<br>
 
 
-With a PCA we can see that the sequencing ``type``
+With a PCA we can see that the `...`
 has a considerable systematic effect on the data. 
 Our basic analysis did not take this account, but we will do so now. 
 This should help us get a more correct picture of which
@@ -367,10 +364,10 @@ differences in the data are attributable to the treatment, and which are
 confounded --or masked-- by the sequencing type.
 
 **Hands-on:**<br>
-Rerun the differential expression analysis, but this time account for `type` using a multi-factor design. For this, go to the [DESeq2 vignette](https://bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#multi-factor-designs) and read about how to use multi-factor designs.
+Rerun the differential expression analysis, but this time account for `...` using a multi-factor design. For this, go to the [DESeq2 vignette](https://bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#multi-factor-designs) and read about how to use multi-factor designs.
 
 ```{r replaceDesign}
-#TODO
+# TODO: use some code to solve this
 
 ```
 ```{r replaceDesign2, echo=F, message=F}
@@ -401,7 +398,7 @@ compared to the simple comparison between two groups?
 **Question 15**: How many genes are significantly differentially expressed in the new results?<br>
 **Question 16**: How big is the overlap of the DE genes, if you take the covariate sequencing type into account?<br>
 ```{r solution15-16}
-#TODO
+# TODO: use some code to solve this
 
 ```
 
