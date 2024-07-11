@@ -26,7 +26,7 @@ Install packages.
 ```{r warning=FALSE, message=FALSE, results='hide'}
 pkgs_needed = c("dplyr","ggplot2", "DESeq2","pasilla","genefilter",
                 "pheatmap","readr","tibble","apeglm")
-#BiocManager::install(setdiff(pkgs_needed, installed.packages()), dependencies = TRUE)
+BiocManager::install(pkgs_needed, dependencies = TRUE)
 ```
 
 Load packages.
@@ -129,10 +129,9 @@ Let's convert the relevant columns of
 (which is alphabetical) by one that makes more sense to us. This is needed to avoid warning messages when constructing the DEseq2 object.
 
 ```{r factors}
-pasillaSampleAnno = mutate(
-  pasillaSampleAnno,
-  condition = factor(condition, levels = c("untreated", "treated")),
-  type      = factor(type, levels = c("single-read", "paired-end")))
+pasillaSampleAnno = pasillaSampleAnno |> 
+  mutate(condition = factor(condition, levels = c("untreated", "treated")),
+         type      = factor(type, levels = c("single-read", "paired-end")))
 ```
 
 **Question 5**: Are the "condition" and "type" column still characters?
@@ -144,7 +143,6 @@ str(pasillaSampleAnno)
 Let's check if the design is balanced between the factor of interest, 
 ``condition``, and the nuisance factor ``type``. <br>
 **Question 6**: How many sample are untreated and single-read, untreated and paired-end, treated and single-read, treated and paired-end?
-Tip: Use the ``table`` function. 
 
 ```{r solution6}
 table(pasillaSampleAnno[,c("condition","type")])
@@ -171,7 +169,6 @@ mt = match(colnames(counts), rownames(pasillaSampleAnno))
 pasillaSampleAnno = pasillaSampleAnno[mt,]
 
 # Check if the order is the same, that's critical for running DESeq2
-# TODO
 all(rownames(pasillaSampleAnno) == colnames(counts))
 ```
 Now, we can move on to construct the DeSeqDataSet object. For this we will use the `DESeqDataSetFromMatrix()`{.R} function. In this function we specify the countData, the colData and the design. Here, the design argument is classifying the samples into the two groups that we want to test (treated vs untreated).
