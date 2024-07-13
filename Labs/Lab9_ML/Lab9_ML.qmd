@@ -5,7 +5,7 @@ date: today
 format: 
   html:
     code-fold: false
-    code-tools: true
+    code-tools: false
     embed-resources: true
     highlight-style: github
     toc: true 
@@ -236,10 +236,11 @@ mean(ghat != diabetes$group)
 
 Now, let's visualize the LDA result. We are going to plot the prediction regions 
 for each of the three groups. We do this by creating a grid of points and using 
-our prediction rule on each of them. On top of this, we also plot the class 
-centers. Assembling this visualization requires us to write a bit of code, but 
-don't worry too much if you don't understand it - we do this just to illustrate 
-the concepts.
+our prediction rule on each of them (note the parameter `newdata` in the 
+`predict()` function now) On top of this, we also plot the class centers. 
+Assembling this visualization requires us to write a bit of code, but don't 
+worry too much if you don't understand it - we do this just to illustrate the 
+concepts.
 
 ```{r}
 #| label: plot_lda_results
@@ -386,9 +387,9 @@ estimate_mcl_loocv = function(x, grouping) {
   vapply(seq_len(nrow(x)), function(i) {
     # fit a model with i-th observation left-out
     fit  = lda(x = x[-i, ], grouping = grouping[-i])
-    # predict on the left-out i-th observation
+    # predict on the training data
     ptrn = predict(fit, newdata = x[-i,, drop = FALSE])$class
-    # predict on the left-out i-th observation
+    # predict on the test data i,e, left-out i-th observation
     ptst = predict(fit, newdata = x[ i,, drop = FALSE])$class
     # return training and test errors
     c(
@@ -415,9 +416,9 @@ estimate_mcl_loocv = function(x, grouping) {
   vapply(seq_len(nrow(x)), function(i) {
     # fit a model with i-th observation left-out
     fit  = ...
-    # predict on the left-out i-th observation
+    # predict on the training data
     ptrn = ...
-    # predict on the left-out i-th observation
+    # predict on the test data i,e, left-out i-th observation
     ptst = ...
     # return training and test errors
     c(

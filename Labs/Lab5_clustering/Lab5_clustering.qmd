@@ -184,7 +184,7 @@ sample_clust = hclust(d = D_samples)
 ```
 
 How many clusters of samples are there at the dendrogram height of 12? Hint: 
-the `abline` function might be helpful.
+the `abline()` and `cutree()` functions might be helpful.
 
 ```{r}
 #| label: hclust_samples_abline
@@ -194,6 +194,10 @@ the `abline` function might be helpful.
 #| fig.height: 8
 plot(sample_clust)
 abline(a=12, b=0, col="blue")
+
+clusts <- cutree(sample_clust, h = 12)
+table(clusts)
+
 ```
 ```{r}
 #| label: hclust_samples_abline_answer
@@ -278,7 +282,7 @@ pheatmap(
 
 Next we will do k-means clustering on the same dataset.
 First thing we need to do is select the number of clusters. In this dataset, we 
-expect to have three clussters (naïve, effector, memory T cells). 
+expect to have three clusters (naïve, effector, memory T cells). 
 We will use the `kmeans` function to cluster the data into 3 groups.
 
 ```{r}
@@ -326,7 +330,7 @@ with k=4, do they separate?
 #| echo: !expr (! params$skip_answers)
 # k means
 set.seed(1234)
-km <- kmeans(x = Morder[, -match(c("cell_type","condition"), colnames(Morder_df))], centers = 4)
+km <- kmeans(x = Morder_df[, -match(c("cell_type","condition"), colnames(Morder_df))], centers = 4)
 # plot
 autoplot(km, Morder_df, frame = TRUE, shape = "cell_type", size = 4, alpha = 0.6)
 ```
@@ -369,6 +373,7 @@ for different number of clusters in kmeans.
 
 wssplot <- function(data, nc=10, seed=1234){
   wss <- (nrow(data)-1)*sum(apply(data,2,var))
+  print(wss)
   for (i in 2:nc){
     set.seed(seed)
     wss[i] <- sum(kmeans(data, centers=i)$withinss)}
