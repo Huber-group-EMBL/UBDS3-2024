@@ -3131,7 +3131,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title">Machine learning</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+<h1 class="title">Machine learning</h1>
 </div>
 
 
@@ -3360,7 +3360,7 @@ predicted  1  2  3
 <pre><code>[1] 0.1736111</code></pre>
 </div>
 </div>
-<p>Now, let’s visualize the LDA result. We are going to plot the prediction regions for each of the three groups. We do this by creating a grid of points and using our prediction rule on each of them. On top of this, we also plot the class centers. Assembling this visualization requires us to write a bit of code, but don’t worry too much if you don’t understand it - we do this just to illustrate the concepts.</p>
+<p>Now, let’s visualize the LDA result. We are going to plot the prediction regions for each of the three groups. We do this by creating a grid of points and using our prediction rule on each of them (note the parameter <code>newdata</code> in the <code>predict()</code> function now) On top of this, we also plot the class centers. Assembling this visualization requires us to write a bit of code, but don’t worry too much if you don’t understand it - we do this just to illustrate the concepts.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># helper function to make 1D grid</span></span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>make1Dgrid <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
@@ -3485,9 +3485,9 @@ Question
 <span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">vapply</span>(<span class="fu">seq_len</span>(<span class="fu">nrow</span>(x)), <span class="cf">function</span>(i) {</span>
 <span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># fit a model with i-th observation left-out</span></span>
 <span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>    fit  <span class="ot">=</span> <span class="fu">lda</span>(<span class="at">x =</span> x[<span class="sc">-</span>i, ], <span class="at">grouping =</span> grouping[<span class="sc">-</span>i])</span>
-<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># predict on the left-out i-th observation</span></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># predict on the training data</span></span>
 <span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>    ptrn <span class="ot">=</span> <span class="fu">predict</span>(fit, <span class="at">newdata =</span> x[<span class="sc">-</span>i,, <span class="at">drop =</span> <span class="cn">FALSE</span>])<span class="sc">$</span>class</span>
-<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># predict on the left-out i-th observation</span></span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># predict on the test data i,e, left-out i-th observation</span></span>
 <span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>    ptst <span class="ot">=</span> <span class="fu">predict</span>(fit, <span class="at">newdata =</span> x[ i,, <span class="at">drop =</span> <span class="cn">FALSE</span>])<span class="sc">$</span>class</span>
 <span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># return training and test errors</span></span>
 <span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(</span>
@@ -4010,73 +4010,71 @@ other attached packages:
 [33] ggplot2_3.5.1                   tidyverse_2.0.0                
 
 loaded via a namespace (and not attached):
-  [1] rstudioapi_0.16.0           jsonlite_1.8.8             
-  [3] shape_1.4.6.1               MultiAssayExperiment_1.30.2
-  [5] magrittr_2.0.3              ggbeeswarm_0.7.2           
-  [7] farver_2.1.2                rmarkdown_2.27             
-  [9] fs_1.6.4                    zlibbioc_1.50.0            
- [11] vctrs_0.6.5                 DelayedMatrixStats_1.26.0  
- [13] memoise_2.0.1               htmltools_0.5.8.1          
- [15] S4Arrays_1.4.1              curl_5.2.1                 
- [17] BiocNeighbors_1.22.0        SparseArray_1.4.8          
- [19] pROC_1.18.5                 parallelly_1.37.1          
- [21] htmlwidgets_1.6.4           DECIPHER_3.0.0             
- [23] plyr_1.8.9                  cachem_1.1.0               
- [25] igraph_2.0.3                mime_0.12                  
- [27] lifecycle_1.0.4             iterators_1.0.14           
- [29] pkgconfig_2.0.3             rsvd_1.0.5                 
- [31] R6_2.5.1                    fastmap_1.2.0              
- [33] GenomeInfoDbData_1.2.12     future_1.33.2              
- [35] digest_0.6.36               colorspace_2.1-0           
- [37] AnnotationDbi_1.66.0        scater_1.32.0              
- [39] irlba_2.3.5.1               RSQLite_2.3.7              
- [41] vegan_2.6-6.1               beachmat_2.20.0            
- [43] filelock_1.0.3              labeling_0.4.3             
- [45] fansi_1.0.6                 timechange_0.3.0           
- [47] mgcv_1.8-35                 httr_1.4.7                 
- [49] abind_1.4-5                 compiler_4.4.1             
- [51] bit64_4.0.5                 withr_3.0.0                
- [53] BiocParallel_1.38.0         viridis_0.6.5              
- [55] DBI_1.2.3                   lava_1.8.0                 
- [57] rappdirs_0.3.3              DelayedArray_0.30.1        
- [59] bluster_1.14.0              permute_0.9-7              
- [61] ModelMetrics_1.2.2.2        tools_4.4.1                
- [63] vipor_0.4.7                 beeswarm_0.4.0             
- [65] ape_5.8                     future.apply_1.11.2        
- [67] nnet_7.3-15                 glue_1.7.0                 
- [69] nlme_3.1-152                grid_4.4.1                 
- [71] mia_1.12.0                  cluster_2.1.1              
- [73] reshape2_1.4.4              generics_0.1.3             
- [75] recipes_1.1.0               gtable_0.3.5               
- [77] class_7.3-18                data.table_1.15.4          
- [79] hms_1.1.3                   ScaledMatrix_1.12.0        
- [81] BiocSingular_1.20.0         utf8_1.2.4                 
- [83] ggrepel_0.9.5               BiocVersion_3.19.1         
- [85] foreach_1.5.2               pillar_1.9.0               
- [87] yulab.utils_0.1.4           splines_4.4.1              
- [89] treeio_1.28.0               survival_3.2-10            
- [91] bit_4.0.5                   DirichletMultinomial_1.46.0
- [93] tidyselect_1.2.1            scuttle_1.14.0             
- [95] knitr_1.47                  gridExtra_2.3              
- [97] xfun_0.45                   hardhat_1.4.0              
- [99] timeDate_4032.109           stringi_1.8.4              
-[101] UCSC.utils_1.0.0            lazyeval_0.2.2             
-[103] yaml_2.3.8                  evaluate_0.24.0            
-[105] codetools_0.2-18            BiocManager_1.30.23        
-[107] cli_3.6.3                   rpart_4.1-15               
-[109] munsell_0.5.1               Rcpp_1.0.12                
-[111] globals_0.16.3              png_0.1-8                  
-[113] parallel_4.4.1              gower_1.0.1                
-[115] blob_1.2.1                  sparseMatrixStats_1.16.0   
-[117] listenv_0.9.1               decontam_1.24.0            
-[119] viridisLite_0.4.2           tidytree_0.4.6             
-[121] ipred_0.9-14                scales_1.3.0               
-[123] prodlim_2024.06.25          crayon_1.5.3               
-[125] rlang_1.1.4                 KEGGREST_1.44.1            </code></pre>
+  [1] jsonlite_1.8.8              shape_1.4.6.1              
+  [3] MultiAssayExperiment_1.30.2 magrittr_2.0.3             
+  [5] ggbeeswarm_0.7.2            farver_2.1.2               
+  [7] rmarkdown_2.27              fs_1.6.4                   
+  [9] zlibbioc_1.50.0             vctrs_0.6.5                
+ [11] DelayedMatrixStats_1.26.0   memoise_2.0.1              
+ [13] htmltools_0.5.8.1           S4Arrays_1.4.1             
+ [15] curl_5.2.1                  BiocNeighbors_1.22.0       
+ [17] SparseArray_1.4.8           pROC_1.18.5                
+ [19] parallelly_1.37.1           htmlwidgets_1.6.4          
+ [21] DECIPHER_3.0.0              plyr_1.8.9                 
+ [23] cachem_1.1.0                igraph_2.0.3               
+ [25] mime_0.12                   lifecycle_1.0.4            
+ [27] iterators_1.0.14            pkgconfig_2.0.3            
+ [29] rsvd_1.0.5                  R6_2.5.1                   
+ [31] fastmap_1.2.0               GenomeInfoDbData_1.2.12    
+ [33] future_1.33.2               digest_0.6.36              
+ [35] colorspace_2.1-0            AnnotationDbi_1.66.0       
+ [37] scater_1.32.0               irlba_2.3.5.1              
+ [39] RSQLite_2.3.7               vegan_2.6-6.1              
+ [41] beachmat_2.20.0             filelock_1.0.3             
+ [43] labeling_0.4.3              fansi_1.0.6                
+ [45] timechange_0.3.0            mgcv_1.8-35                
+ [47] httr_1.4.7                  abind_1.4-5                
+ [49] compiler_4.4.1              bit64_4.0.5                
+ [51] withr_3.0.0                 BiocParallel_1.38.0        
+ [53] viridis_0.6.5               DBI_1.2.3                  
+ [55] lava_1.8.0                  rappdirs_0.3.3             
+ [57] DelayedArray_0.30.1         bluster_1.14.0             
+ [59] permute_0.9-7               ModelMetrics_1.2.2.2       
+ [61] tools_4.4.1                 vipor_0.4.7                
+ [63] beeswarm_0.4.0              ape_5.8                    
+ [65] future.apply_1.11.2         nnet_7.3-15                
+ [67] glue_1.7.0                  nlme_3.1-152               
+ [69] grid_4.4.1                  mia_1.12.0                 
+ [71] cluster_2.1.1               reshape2_1.4.4             
+ [73] generics_0.1.3              recipes_1.1.0              
+ [75] gtable_0.3.5                class_7.3-18               
+ [77] data.table_1.15.4           hms_1.1.3                  
+ [79] ScaledMatrix_1.12.0         BiocSingular_1.20.0        
+ [81] utf8_1.2.4                  ggrepel_0.9.5              
+ [83] BiocVersion_3.19.1          foreach_1.5.2              
+ [85] pillar_1.9.0                yulab.utils_0.1.4          
+ [87] splines_4.4.1               treeio_1.28.0              
+ [89] survival_3.2-10             bit_4.0.5                  
+ [91] DirichletMultinomial_1.46.0 tidyselect_1.2.1           
+ [93] scuttle_1.14.0              knitr_1.47                 
+ [95] gridExtra_2.3               xfun_0.45                  
+ [97] hardhat_1.4.0               timeDate_4032.109          
+ [99] stringi_1.8.4               UCSC.utils_1.0.0           
+[101] lazyeval_0.2.2              yaml_2.3.8                 
+[103] evaluate_0.24.0             codetools_0.2-18           
+[105] BiocManager_1.30.23         cli_3.6.3                  
+[107] rpart_4.1-15                munsell_0.5.1              
+[109] Rcpp_1.0.12                 globals_0.16.3             
+[111] png_0.1-8                   parallel_4.4.1             
+[113] gower_1.0.1                 blob_1.2.1                 
+[115] sparseMatrixStats_1.16.0    listenv_0.9.1              
+[117] decontam_1.24.0             viridisLite_0.4.2          
+[119] tidytree_0.4.6              ipred_0.9-14               
+[121] scales_1.3.0                prodlim_2024.06.25         
+[123] crayon_1.5.3                rlang_1.1.4                
+[125] KEGGREST_1.44.1            </code></pre>
 </div>
 </div>
-<!-- -->
-
 </section>
 
 </main>
@@ -4160,57 +4158,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     // clear code selection
     e.clearSelection();
   });
-  const viewSource = window.document.getElementById('quarto-view-source') ||
-                     window.document.getElementById('quarto-code-tools-source');
-  if (viewSource) {
-    const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
-    viewSource.addEventListener("click", function(e) {
-      if (sourceUrl) {
-        // rstudio viewer pane
-        if (/\bcapabilities=\b/.test(window.location)) {
-          window.open(sourceUrl);
-        } else {
-          window.location.href = sourceUrl;
-        }
-      } else {
-        const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
-        modal.show();
-      }
-      return false;
-    });
-  }
-  function toggleCodeHandler(show) {
-    return function(e) {
-      const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
-      for (let i=0; i<detailsSrc.length; i++) {
-        const details = detailsSrc[i].parentElement;
-        if (show) {
-          details.open = true;
-        } else {
-          details.removeAttribute("open");
-        }
-      }
-      const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
-      const fromCls = show ? "hidden" : "unhidden";
-      const toCls = show ? "unhidden" : "hidden";
-      for (let i=0; i<cellCodeDivs.length; i++) {
-        const codeDiv = cellCodeDivs[i];
-        if (codeDiv.classList.contains(fromCls)) {
-          codeDiv.classList.remove(fromCls);
-          codeDiv.classList.add(toCls);
-        } 
-      }
-      return false;
-    }
-  }
-  const hideAllCode = window.document.getElementById("quarto-hide-all-code");
-  if (hideAllCode) {
-    hideAllCode.addEventListener("click", toggleCodeHandler(false));
-  }
-  const showAllCode = window.document.getElementById("quarto-show-all-code");
-  if (showAllCode) {
-    showAllCode.addEventListener("click", toggleCodeHandler(true));
-  }
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
       var filterRegex = new RegExp('/' + window.location.host + '/');
@@ -4540,854 +4487,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
   }
 });
-</script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class>
-<div class="sourceCode" id="cb69" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> &#39;Machine learning&#39;</span></span>
-<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> &#39;&#39;</span></span>
-<span id="cb69-4"><a href="#cb69-4" aria-hidden="true" tabindex="-1"></a><span class="an">date:</span><span class="co"> today</span></span>
-<span id="cb69-5"><a href="#cb69-5" aria-hidden="true" tabindex="-1"></a><span class="an">format:</span><span class="co"> </span></span>
-<span id="cb69-6"><a href="#cb69-6" aria-hidden="true" tabindex="-1"></a><span class="co">  html:</span></span>
-<span id="cb69-7"><a href="#cb69-7" aria-hidden="true" tabindex="-1"></a><span class="co">    code-fold: false</span></span>
-<span id="cb69-8"><a href="#cb69-8" aria-hidden="true" tabindex="-1"></a><span class="co">    code-tools: true</span></span>
-<span id="cb69-9"><a href="#cb69-9" aria-hidden="true" tabindex="-1"></a><span class="co">    embed-resources: true</span></span>
-<span id="cb69-10"><a href="#cb69-10" aria-hidden="true" tabindex="-1"></a><span class="co">    highlight-style: github</span></span>
-<span id="cb69-11"><a href="#cb69-11" aria-hidden="true" tabindex="-1"></a><span class="co">    toc: true </span></span>
-<span id="cb69-12"><a href="#cb69-12" aria-hidden="true" tabindex="-1"></a><span class="co">    code-line-numbers: false </span></span>
-<span id="cb69-13"><a href="#cb69-13" aria-hidden="true" tabindex="-1"></a><span class="an">params:</span></span>
-<span id="cb69-14"><a href="#cb69-14" aria-hidden="true" tabindex="-1"></a><span class="co">  skip_execution: false</span></span>
-<span id="cb69-15"><a href="#cb69-15" aria-hidden="true" tabindex="-1"></a><span class="co">  skip_slow_chunks: true</span></span>
-<span id="cb69-16"><a href="#cb69-16" aria-hidden="true" tabindex="-1"></a><span class="co">  skip_answers: false</span></span>
-<span id="cb69-17"><a href="#cb69-17" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb69-18"><a href="#cb69-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-21"><a href="#cb69-21" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb69-22"><a href="#cb69-22" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: initialize</span></span>
-<span id="cb69-23"><a href="#cb69-23" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: FALSE</span></span>
-<span id="cb69-24"><a href="#cb69-24" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span>opts_chunk<span class="sc">$</span><span class="fu">set</span>(<span class="at">echo =</span> <span class="cn">TRUE</span>, <span class="at">fig.width=</span><span class="dv">7</span>, <span class="at">fig.height=</span><span class="dv">5</span>) </span>
-<span id="cb69-25"><a href="#cb69-25" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb69-26"><a href="#cb69-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-27"><a href="#cb69-27" aria-hidden="true" tabindex="-1"></a><span class="fu">## Goal</span></span>
-<span id="cb69-28"><a href="#cb69-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-29"><a href="#cb69-29" aria-hidden="true" tabindex="-1"></a>In this lab we will learn the basics of Machine Learning (ML). We will focus </span>
-<span id="cb69-30"><a href="#cb69-30" aria-hidden="true" tabindex="-1"></a>on supervised learning. We will start with the simple idea of linear </span>
-<span id="cb69-31"><a href="#cb69-31" aria-hidden="true" tabindex="-1"></a>discrimination, and then move on to important concepts in ML: cross-validation,</span>
-<span id="cb69-32"><a href="#cb69-32" aria-hidden="true" tabindex="-1"></a>overfitting and variance-bias trade-off.</span>
-<span id="cb69-33"><a href="#cb69-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-34"><a href="#cb69-34" aria-hidden="true" tabindex="-1"></a><span class="fu">## Packages</span></span>
-<span id="cb69-35"><a href="#cb69-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-36"><a href="#cb69-36" aria-hidden="true" tabindex="-1"></a>Install packages.</span>
-<span id="cb69-37"><a href="#cb69-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-40"><a href="#cb69-40" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb69-41"><a href="#cb69-41" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: installpkgs</span></span>
-<span id="cb69-42"><a href="#cb69-42" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: FALSE</span></span>
-<span id="cb69-43"><a href="#cb69-43" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: FALSE</span></span>
-<span id="cb69-44"><a href="#cb69-44" aria-hidden="true" tabindex="-1"></a><span class="co">#| message: FALSE</span></span>
-<span id="cb69-45"><a href="#cb69-45" aria-hidden="true" tabindex="-1"></a>pkgs_needed <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;MASS&quot;</span>,<span class="st">&quot;ExperimentHub&quot;</span>, <span class="st">&quot;tidyverse&quot;</span>,<span class="st">&quot;glmnet&quot;</span>, <span class="st">&quot;RColorBrewer&quot;</span>,<span class="st">&quot;caret&quot;</span>)</span>
-<span id="cb69-46"><a href="#cb69-46" aria-hidden="true" tabindex="-1"></a>letsinstall <span class="ot">=</span> <span class="fu">setdiff</span>(pkgs_needed, <span class="fu">installed.packages</span>()) </span>
-<span id="cb69-47"><a href="#cb69-47" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">length</span>(letsinstall) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
-<span id="cb69-48"><a href="#cb69-48" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (pkg <span class="cf">in</span> letsinstall) {</span>
-<span id="cb69-49"><a href="#cb69-49" aria-hidden="true" tabindex="-1"></a>    BiocManager<span class="sc">::</span><span class="fu">install</span>(pkg, <span class="at">dependencies =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb69-50"><a href="#cb69-50" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb69-51"><a href="#cb69-51" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb69-52"><a href="#cb69-52" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb69-53"><a href="#cb69-53" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-54"><a href="#cb69-54" aria-hidden="true" tabindex="-1"></a>Load packages.</span>
-<span id="cb69-55"><a href="#cb69-55" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-58"><a href="#cb69-58" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb69-59"><a href="#cb69-59" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: loadpkgs</span></span>
-<span id="cb69-60"><a href="#cb69-60" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: !expr (! isTRUE(params$skip_execution))</span></span>
-<span id="cb69-61"><a href="#cb69-61" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: FALSE</span></span>
-<span id="cb69-62"><a href="#cb69-62" aria-hidden="true" tabindex="-1"></a><span class="co">#| message: FALSE</span></span>
-<span id="cb69-63"><a href="#cb69-63" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb69-64"><a href="#cb69-64" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
-<span id="cb69-65"><a href="#cb69-65" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ExperimentHub)</span>
-<span id="cb69-66"><a href="#cb69-66" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(glmnet)</span>
-<span id="cb69-67"><a href="#cb69-67" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(RColorBrewer)</span>
-<span id="cb69-68"><a href="#cb69-68" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(caret)</span>
-<span id="cb69-69"><a href="#cb69-69" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb69-70"><a href="#cb69-70" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-71"><a href="#cb69-71" aria-hidden="true" tabindex="-1"></a><span class="fu">## Diabetes data set</span></span>
-<span id="cb69-72"><a href="#cb69-72" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-73"><a href="#cb69-73" aria-hidden="true" tabindex="-1"></a>The <span class="in">`diabetes`</span> dataset presents three different groups of diabetes patients and </span>
-<span id="cb69-74"><a href="#cb69-74" aria-hidden="true" tabindex="-1"></a>five clinical variables measured on them. We will try to use those measured </span>
-<span id="cb69-75"><a href="#cb69-75" aria-hidden="true" tabindex="-1"></a>variables to predict the group of a patient.</span>
-<span id="cb69-76"><a href="#cb69-76" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-79"><a href="#cb69-79" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb69-80"><a href="#cb69-80" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: diabetes</span></span>
-<span id="cb69-81"><a href="#cb69-81" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: FALSE</span></span>
-<span id="cb69-82"><a href="#cb69-82" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: FALSE</span></span>
-<span id="cb69-83"><a href="#cb69-83" aria-hidden="true" tabindex="-1"></a><span class="co">#| message: FALSE</span></span>
-<span id="cb69-84"><a href="#cb69-84" aria-hidden="true" tabindex="-1"></a><span class="co"># load data</span></span>
-<span id="cb69-85"><a href="#cb69-85" aria-hidden="true" tabindex="-1"></a>diabetes <span class="ot">=</span> <span class="fu">read_csv</span>(</span>
-<span id="cb69-86"><a href="#cb69-86" aria-hidden="true" tabindex="-1"></a>  <span class="fu">url</span>(<span class="st">&quot;http://web.stanford.edu/class/bios221/data/diabetes.csv&quot;</span>), </span>
-<span id="cb69-87"><a href="#cb69-87" aria-hidden="true" tabindex="-1"></a>  <span class="at">col_names =</span> <span class="cn">TRUE</span></span>
-<span id="cb69-88"><a href="#cb69-88" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb69-89"><a href="#cb69-89" aria-hidden="true" tabindex="-1"></a><span class="co"># if download fails with timeout error, try increasing it</span></span>
-<span id="cb69-90"><a href="#cb69-90" aria-hidden="true" tabindex="-1"></a><span class="co"># options(timeout = 1000)</span></span>
-<span id="cb69-91"><a href="#cb69-91" aria-hidden="true" tabindex="-1"></a>diabetes</span>
-<span id="cb69-92"><a href="#cb69-92" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb69-95"><a href="#cb69-95" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb69-96"><a href="#cb69-96" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: diabetes_local</span></span>
-<span id="cb69-97"><a href="#cb69-97" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: !expr (! isTRUE(params$skip_execution))</span></span>
-<span id="cb69-98"><a href="#cb69-98" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: FALSE</span></span>
-<span id="cb69-99"><a href="#cb69-99" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: FALSE</span></span>
-<span id="cb69-100"><a href="#cb69-100" aria-hidden="true" tabindex="-1"></a><span class="co">#| message: FALSE</span></span>
-<span id="cb69-101"><a href="#cb69-101" aria-hidden="true" tabindex="-1"></a>diabetes <span class="ot">=</span> <span class="fu">read_csv</span>(<span class="st">&quot;diabetes.csv&quot;</span>)</span>
-<span id="cb69-102"><a href="#cb69-102" aria-hidden="true" tabindex="-1"></a>diabetes</span>
-<span id="cb69-103"><a href="#cb69-103" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb69-104"><a href="#cb69-104" aria-hidden="true" tabindex="-1"></a>We convert values of <span class="in">`group`</span> column from character into factor. If you are not</span>
-<span id="cb69-105"><a href="#cb69-105" aria-hidden="true" tabindex="-1"></a>familiar with factors in R, you can read about them</span>
-<span id="cb69-106"><a href="#cb69-106" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">here</span><span class="co">](https://r4ds.hadley.nz/factors.html)</span>.  </span>
-<span id="cb69-107"><a href="#cb69-107" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-110"><a href="#cb69-110" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb69-111"><a href="#cb69-111" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: factor</span></span>
-<span id="cb69-112"><a href="#cb69-112" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: !expr (! isTRUE(params$skip_execution))</span></span>
-<span id="cb69-113"><a href="#cb69-113" aria-hidden="true" tabindex="-1"></a><span class="co"># convert group to factor</span></span>
-<span id="cb69-114"><a href="#cb69-114" aria-hidden="true" tabindex="-1"></a>diabetes<span class="sc">$</span>group <span class="ot">&lt;-</span> <span class="fu">factor</span>(diabetes<span class="sc">$</span>group)</span>
-<span id="cb69-115"><a href="#cb69-115" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb69-116"><a href="#cb69-116" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-117"><a href="#cb69-117" aria-hidden="true" tabindex="-1"></a>Next we will visualize the data using <span class="in">`ggplot2`</span> package. To plot all variables </span>
-<span id="cb69-118"><a href="#cb69-118" aria-hidden="true" tabindex="-1"></a>together, we need to transform the data into a long format, using <span class="in">`gather`</span> </span>
-<span id="cb69-119"><a href="#cb69-119" aria-hidden="true" tabindex="-1"></a>function from <span class="in">`tidyr`</span> package.</span>
-<span id="cb69-120"><a href="#cb69-120" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-123"><a href="#cb69-123" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb69-124"><a href="#cb69-124" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: ldagroups</span></span>
-<span id="cb69-125"><a href="#cb69-125" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: !expr (! isTRUE(params$skip_execution))</span></span>
-<span id="cb69-126"><a href="#cb69-126" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-127"><a href="#cb69-127" aria-hidden="true" tabindex="-1"></a><span class="co"># transform data to long format</span></span>
-<span id="cb69-128"><a href="#cb69-128" aria-hidden="true" tabindex="-1"></a>diabetes.long <span class="ot">=</span> <span class="fu">pivot_longer</span>(</span>
-<span id="cb69-129"><a href="#cb69-129" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> diabetes,</span>
-<span id="cb69-130"><a href="#cb69-130" aria-hidden="true" tabindex="-1"></a>  <span class="at">cols =</span> <span class="sc">-</span><span class="fu">c</span>(id, group), </span>
-<span id="cb69-131"><a href="#cb69-131" aria-hidden="true" tabindex="-1"></a>  <span class="at">names_to =</span> <span class="st">&quot;variable&quot;</span>, </span>
-<span id="cb69-132"><a href="#cb69-132" aria-hidden="true" tabindex="-1"></a>  <span class="at">values_to =</span> <span class="st">&quot;value&quot;</span></span>
-<span id="cb69-133"><a href="#cb69-133" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb69-134"><a href="#cb69-134" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-135"><a href="#cb69-135" aria-hidden="true" tabindex="-1"></a><span class="co"># plot distribution of different variables in the data</span></span>
-<span id="cb69-136"><a href="#cb69-136" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> diabetes.long, <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> value, <span class="at">col =</span> group)) <span class="sc">+</span></span>
-<span id="cb69-137"><a href="#cb69-137" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>() <span class="sc">+</span> <span class="fu">facet_wrap</span>( <span class="sc">~</span> variable, <span class="at">ncol =</span> <span class="dv">2</span>, <span class="at">scales =</span> <span class="st">&quot;free&quot;</span>) </span>
-<span id="cb69-138"><a href="#cb69-138" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb69-139"><a href="#cb69-139" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-140"><a href="#cb69-140" aria-hidden="true" tabindex="-1"></a>We see already from the one-dimensional distributions that some of the</span>
-<span id="cb69-141"><a href="#cb69-141" aria-hidden="true" tabindex="-1"></a>individual variables could potentially predict which group a patient is more </span>
-<span id="cb69-142"><a href="#cb69-142" aria-hidden="true" tabindex="-1"></a>likely to belong to. </span>
-<span id="cb69-143"><a href="#cb69-143" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-144"><a href="#cb69-144" aria-hidden="true" tabindex="-1"></a>::: {.callout-note collapse=&quot;false&quot;}</span>
-<span id="cb69-145"><a href="#cb69-145" aria-hidden="true" tabindex="-1"></a><span class="fu">## Question</span></span>
-<span id="cb69-146"><a href="#cb69-146" aria-hidden="true" tabindex="-1"></a>Which of the variables seem to be most informative for distinguishing the groups?</span>
-<span id="cb69-147"><a href="#cb69-147" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-150"><a href="#cb69-150" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb69-151"><a href="#cb69-151" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: informative</span></span>
-<span id="cb69-152"><a href="#cb69-152" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: !expr (! params$skip_execution &amp; ! params$skip_answers)</span></span>
-<span id="cb69-153"><a href="#cb69-153" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: !expr (! params$skip_answers)</span></span>
-<span id="cb69-154"><a href="#cb69-154" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Insulin&quot;</span>)</span>
-<span id="cb69-155"><a href="#cb69-155" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb69-156"><a href="#cb69-156" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb69-157"><a href="#cb69-157" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-158"><a href="#cb69-158" aria-hidden="true" tabindex="-1"></a>Our goal will be to combine variables to get the more accurate predictions.</span>
-<span id="cb69-159"><a href="#cb69-159" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-160"><a href="#cb69-160" aria-hidden="true" tabindex="-1"></a><span class="fu">## Linear discrimination analysis (LDA)</span></span>
-<span id="cb69-161"><a href="#cb69-161" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-162"><a href="#cb69-162" aria-hidden="true" tabindex="-1"></a>We start with one of the simplest possible discrimination problems. </span>
-<span id="cb69-163"><a href="#cb69-163" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-164"><a href="#cb69-164" aria-hidden="true" tabindex="-1"></a>We will use two variables, <span class="in">`insulin`</span> and <span class="in">`glutest`</span>, to predict the <span class="in">`group`</span>.</span>
-<span id="cb69-165"><a href="#cb69-165" aria-hidden="true" tabindex="-1"></a>Our aim is to partition the 2D plane defined by these variables into classes, </span>
-<span id="cb69-166"><a href="#cb69-166" aria-hidden="true" tabindex="-1"></a>using class boundaries that are straight lines.</span>
-<span id="cb69-167"><a href="#cb69-167" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-168"><a href="#cb69-168" aria-hidden="true" tabindex="-1"></a>::: {.callout-note collapse=&quot;false&quot;}</span>
-<span id="cb69-169"><a href="#cb69-169" aria-hidden="true" tabindex="-1"></a><span class="fu">## Question</span></span>
-<span id="cb69-170"><a href="#cb69-170" aria-hidden="true" tabindex="-1"></a>It&#39;s always a good idea to first visualize the data. Look at how <span class="in">`insulin`</span> and </span>
-<span id="cb69-171"><a href="#cb69-171" aria-hidden="true" tabindex="-1"></a><span class="in">`glutest`</span> are distributed relative to each other by plotting the scatterplot </span>
-<span id="cb69-172"><a href="#cb69-172" aria-hidden="true" tabindex="-1"></a>of the two variables and colouring the points by the group.</span>
-<span id="cb69-173"><a href="#cb69-173" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-176"><a href="#cb69-176" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb69-177"><a href="#cb69-177" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: scatterdiabetes_code</span></span>
-<span id="cb69-178"><a href="#cb69-178" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: !expr (! params$skip_execution)</span></span>
-<span id="cb69-179"><a href="#cb69-179" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: FALSE</span></span>
-<span id="cb69-180"><a href="#cb69-180" aria-hidden="true" tabindex="-1"></a>ggdb <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(diabetes, <span class="fu">aes</span>(<span class="at">x =</span> insulin, <span class="at">y =</span> glutest, <span class="at">colour =</span> group)) <span class="sc">+</span></span>
-<span id="cb69-181"><a href="#cb69-181" aria-hidden="true" tabindex="-1"></a>         <span class="fu">geom_point</span>()</span>
-<span id="cb69-182"><a href="#cb69-182" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb69-185"><a href="#cb69-185" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb69-186"><a href="#cb69-186" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: scatterdiabetes_plot</span></span>
-<span id="cb69-187"><a href="#cb69-187" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: !expr (! params$skip_execution &amp; ! params$skip_answers)</span></span>
-<span id="cb69-188"><a href="#cb69-188" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: !expr (! params$skip_answers)</span></span>
-<span id="cb69-189"><a href="#cb69-189" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig.width: 5</span></span>
-<span id="cb69-190"><a href="#cb69-190" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig.height: 4 </span></span>
-<span id="cb69-191"><a href="#cb69-191" aria-hidden="true" tabindex="-1"></a>ggdb <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(diabetes, <span class="fu">aes</span>(<span class="at">x =</span> insulin, <span class="at">y =</span> glutest, <span class="at">colour =</span> group)) <span class="sc">+</span></span>
-<span id="cb69-192"><a href="#cb69-192" aria-hidden="true" tabindex="-1"></a>         <span class="fu">geom_point</span>()</span>
-<span id="cb69-193"><a href="#cb69-193" aria-hidden="true" tabindex="-1"></a>ggdb</span>
-<span id="cb69-194"><a href="#cb69-194" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb69-195"><a href="#cb69-195" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb69-196"><a href="#cb69-196" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-197"><a href="#cb69-197" aria-hidden="true" tabindex="-1"></a>We&#39;ll start with a method called linear discriminant analysis (LDA). </span>
-<span id="cb69-198"><a href="#cb69-198" aria-hidden="true" tabindex="-1"></a>This method is a foundation stone of classification, many of the more </span>
-<span id="cb69-199"><a href="#cb69-199" aria-hidden="true" tabindex="-1"></a>complicated (and sometimes more powerful) algorithms are really just </span>
-<span id="cb69-200"><a href="#cb69-200" aria-hidden="true" tabindex="-1"></a>generalizations of LDA.</span>
-<span id="cb69-201"><a href="#cb69-201" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-202"><a href="#cb69-202" aria-hidden="true" tabindex="-1"></a>To calculate LDA, we will use the <span class="in">`lda`</span> function from the <span class="in">`MASS`</span> package.</span>
-<span id="cb69-203"><a href="#cb69-203" aria-hidden="true" tabindex="-1"></a>One way to run this function (and many other models in R) is using the formula </span>
-<span id="cb69-204"><a href="#cb69-204" aria-hidden="true" tabindex="-1"></a>notation. To read more about LDA and formula format, check <span class="in">`?lda`</span> and <span class="in">`?formula`</span>.</span>
-<span id="cb69-205"><a href="#cb69-205" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-206"><a href="#cb69-206" aria-hidden="true" tabindex="-1"></a>In the simple form, a formula can look like this: </span>
-<span id="cb69-207"><a href="#cb69-207" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-208"><a href="#cb69-208" aria-hidden="true" tabindex="-1"></a><span class="in">`response ~ predictor1 + predictor2 + ... + predictorn`</span></span>
-<span id="cb69-209"><a href="#cb69-209" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-210"><a href="#cb69-210" aria-hidden="true" tabindex="-1"></a>Here <span class="in">`response`</span> is the variable we want to predict, and <span class="in">`predictor1`</span>, </span>
-<span id="cb69-211"><a href="#cb69-211" aria-hidden="true" tabindex="-1"></a><span class="in">`predictor2`</span>, etc. are the variables we use to make the prediction.</span>
-<span id="cb69-212"><a href="#cb69-212" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-213"><a href="#cb69-213" aria-hidden="true" tabindex="-1"></a>Response and predictors can be vectors of data used in the model.  </span>
-<span id="cb69-214"><a href="#cb69-214" aria-hidden="true" tabindex="-1"></a>Alternatively, if data argument is specified, they can be (unquoted!) column </span>
-<span id="cb69-215"><a href="#cb69-215" aria-hidden="true" tabindex="-1"></a>names of the data that contain the response and predictor values.  </span>
-<span id="cb69-216"><a href="#cb69-216" aria-hidden="true" tabindex="-1"></a>Yet another alternative is to fit <span class="in">`lda`</span> by providing as parameter <span class="in">`x`</span> a data.frame </span>
-<span id="cb69-217"><a href="#cb69-217" aria-hidden="true" tabindex="-1"></a>of predictor variables (with observations as rows and variables as columns), and </span>
-<span id="cb69-218"><a href="#cb69-218" aria-hidden="true" tabindex="-1"></a>as parameter <span class="in">`groupping`</span> a corresponding factor of response variables i.e. groups.</span>
-<span id="cb69-219"><a href="#cb69-219" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-220"><a href="#cb69-220" aria-hidden="true" tabindex="-1"></a>Below we show these different ways in which we can fit the LDA model using </span>
-<span id="cb69-221"><a href="#cb69-221" aria-hidden="true" tabindex="-1"></a>diabetes data. All the three lines of code are equivalent.</span>
-<span id="cb69-222"><a href="#cb69-222" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-225"><a href="#cb69-225" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb69-226"><a href="#cb69-226" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: ldafit</span></span>
-<span id="cb69-227"><a href="#cb69-227" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: !expr (! isTRUE(params$skip_execution))</span></span>
-<span id="cb69-228"><a href="#cb69-228" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-229"><a href="#cb69-229" aria-hidden="true" tabindex="-1"></a><span class="co"># three ways to fit LDA model:</span></span>
-<span id="cb69-230"><a href="#cb69-230" aria-hidden="true" tabindex="-1"></a>diabetes_lda <span class="ot">&lt;-</span> <span class="fu">lda</span>(diabetes<span class="sc">$</span>group <span class="sc">~</span> diabetes<span class="sc">$</span>insulin <span class="sc">+</span> diabetes<span class="sc">$</span>glutest)</span>
-<span id="cb69-231"><a href="#cb69-231" aria-hidden="true" tabindex="-1"></a>diabetes_lda <span class="ot">&lt;-</span> <span class="fu">lda</span>(group <span class="sc">~</span> insulin <span class="sc">+</span> glutest, <span class="at">data =</span> diabetes)</span>
-<span id="cb69-232"><a href="#cb69-232" aria-hidden="true" tabindex="-1"></a>diabetes_lda <span class="ot">&lt;-</span> <span class="fu">lda</span>(<span class="at">x =</span> diabetes[, <span class="fu">c</span>(<span class="st">&quot;insulin&quot;</span>, <span class="st">&quot;glutest&quot;</span>)], <span class="at">grouping =</span> diabetes<span class="sc">$</span>group)</span>
-<span id="cb69-233"><a href="#cb69-233" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-234"><a href="#cb69-234" aria-hidden="true" tabindex="-1"></a><span class="co"># inspect the model</span></span>
-<span id="cb69-235"><a href="#cb69-235" aria-hidden="true" tabindex="-1"></a>diabetes_lda</span>
-<span id="cb69-236"><a href="#cb69-236" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb69-237"><a href="#cb69-237" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-238"><a href="#cb69-238" aria-hidden="true" tabindex="-1"></a>In the shown model summary:  </span>
-<span id="cb69-239"><a href="#cb69-239" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>prior probabilities are calculated as the fraction of samples from every group  </span>
-<span id="cb69-240"><a href="#cb69-240" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>group means are the means of the variables for each group  </span>
-<span id="cb69-241"><a href="#cb69-241" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>coefficients are the coefficients of the linear model  </span>
-<span id="cb69-242"><a href="#cb69-242" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>proportion of trace are the proportions of inter-group variance explained  </span>
-<span id="cb69-243"><a href="#cb69-243" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-244"><a href="#cb69-244" aria-hidden="true" tabindex="-1"></a>We can then use the model for prediction.</span>
-<span id="cb69-245"><a href="#cb69-245" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-248"><a href="#cb69-248" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb69-249"><a href="#cb69-249" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: ldaresults</span></span>
-<span id="cb69-250"><a href="#cb69-250" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: !expr (! isTRUE(params$skip_execution))</span></span>
-<span id="cb69-251"><a href="#cb69-251" aria-hidden="true" tabindex="-1"></a><span class="co"># predictions from model</span></span>
-<span id="cb69-252"><a href="#cb69-252" aria-hidden="true" tabindex="-1"></a>ghat <span class="ot">&lt;-</span> <span class="fu">predict</span>(diabetes_lda)<span class="sc">$</span>class</span>
-<span id="cb69-253"><a href="#cb69-253" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-254"><a href="#cb69-254" aria-hidden="true" tabindex="-1"></a><span class="co"># contingency table</span></span>
-<span id="cb69-255"><a href="#cb69-255" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(<span class="at">predicted =</span> ghat, <span class="at">truth =</span> diabetes<span class="sc">$</span>group)</span>
-<span id="cb69-256"><a href="#cb69-256" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-257"><a href="#cb69-257" aria-hidden="true" tabindex="-1"></a><span class="co"># prediction error</span></span>
-<span id="cb69-258"><a href="#cb69-258" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(ghat <span class="sc">!=</span> diabetes<span class="sc">$</span>group)</span>
-<span id="cb69-259"><a href="#cb69-259" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb69-260"><a href="#cb69-260" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-261"><a href="#cb69-261" aria-hidden="true" tabindex="-1"></a>Now, let&#39;s visualize the LDA result. We are going to plot the prediction regions </span>
-<span id="cb69-262"><a href="#cb69-262" aria-hidden="true" tabindex="-1"></a>for each of the three groups. We do this by creating a grid of points and using </span>
-<span id="cb69-263"><a href="#cb69-263" aria-hidden="true" tabindex="-1"></a>our prediction rule on each of them. On top of this, we also plot the class </span>
-<span id="cb69-264"><a href="#cb69-264" aria-hidden="true" tabindex="-1"></a>centers. Assembling this visualization requires us to write a bit of code, but </span>
-<span id="cb69-265"><a href="#cb69-265" aria-hidden="true" tabindex="-1"></a>don&#39;t worry too much if you don&#39;t understand it - we do this just to illustrate </span>
-<span id="cb69-266"><a href="#cb69-266" aria-hidden="true" tabindex="-1"></a>the concepts.</span>
-<span id="cb69-267"><a href="#cb69-267" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-270"><a href="#cb69-270" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb69-271"><a href="#cb69-271" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: plot_lda_results</span></span>
-<span id="cb69-272"><a href="#cb69-272" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: !expr (! isTRUE(params$skip_execution))</span></span>
-<span id="cb69-273"><a href="#cb69-273" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig.width: 5</span></span>
-<span id="cb69-274"><a href="#cb69-274" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig.height: 4 </span></span>
-<span id="cb69-275"><a href="#cb69-275" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-276"><a href="#cb69-276" aria-hidden="true" tabindex="-1"></a><span class="co"># helper function to make 1D grid</span></span>
-<span id="cb69-277"><a href="#cb69-277" aria-hidden="true" tabindex="-1"></a>make1Dgrid <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
-<span id="cb69-278"><a href="#cb69-278" aria-hidden="true" tabindex="-1"></a>  <span class="co"># extend the range of x by small fraction on both sides</span></span>
-<span id="cb69-279"><a href="#cb69-279" aria-hidden="true" tabindex="-1"></a>  rg <span class="ot">&lt;-</span> grDevices<span class="sc">::</span><span class="fu">extendrange</span>(x)</span>
-<span id="cb69-280"><a href="#cb69-280" aria-hidden="true" tabindex="-1"></a>  <span class="co"># generate 100 sequential values within extended range of x</span></span>
-<span id="cb69-281"><a href="#cb69-281" aria-hidden="true" tabindex="-1"></a>  <span class="fu">seq</span>(<span class="at">from =</span> rg[<span class="dv">1</span>], <span class="at">to =</span> rg[<span class="dv">2</span>], <span class="at">length.out =</span> <span class="dv">100</span>)</span>
-<span id="cb69-282"><a href="#cb69-282" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb69-283"><a href="#cb69-283" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-284"><a href="#cb69-284" aria-hidden="true" tabindex="-1"></a><span class="co"># get all combinations of insulin and glutest in the range of the data</span></span>
-<span id="cb69-285"><a href="#cb69-285" aria-hidden="true" tabindex="-1"></a>diabetes_grid <span class="ot">&lt;-</span> <span class="fu">with</span>(</span>
-<span id="cb69-286"><a href="#cb69-286" aria-hidden="true" tabindex="-1"></a>  diabetes,</span>
-<span id="cb69-287"><a href="#cb69-287" aria-hidden="true" tabindex="-1"></a>  <span class="fu">expand.grid</span>(</span>
-<span id="cb69-288"><a href="#cb69-288" aria-hidden="true" tabindex="-1"></a>    <span class="at">insulin =</span> <span class="fu">make1Dgrid</span>(insulin),</span>
-<span id="cb69-289"><a href="#cb69-289" aria-hidden="true" tabindex="-1"></a>    <span class="at">glutest =</span> <span class="fu">make1Dgrid</span>(glutest)</span>
-<span id="cb69-290"><a href="#cb69-290" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb69-291"><a href="#cb69-291" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb69-292"><a href="#cb69-292" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-293"><a href="#cb69-293" aria-hidden="true" tabindex="-1"></a><span class="co"># predictions for the grid values</span></span>
-<span id="cb69-294"><a href="#cb69-294" aria-hidden="true" tabindex="-1"></a>diabetes_grid<span class="sc">$</span>ghat <span class="ot">&lt;-</span> <span class="fu">predict</span>(diabetes_lda, <span class="at">newdata =</span> diabetes_grid)<span class="sc">$</span>class</span>
-<span id="cb69-295"><a href="#cb69-295" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-296"><a href="#cb69-296" aria-hidden="true" tabindex="-1"></a><span class="co"># group centers</span></span>
-<span id="cb69-297"><a href="#cb69-297" aria-hidden="true" tabindex="-1"></a>centers <span class="ot">&lt;-</span> diabetes_lda<span class="sc">$</span>means</span>
-<span id="cb69-298"><a href="#cb69-298" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-299"><a href="#cb69-299" aria-hidden="true" tabindex="-1"></a><span class="co"># plotting on top of the diabetes data scatterplot we generated before</span></span>
-<span id="cb69-300"><a href="#cb69-300" aria-hidden="true" tabindex="-1"></a>ggdb <span class="sc">+</span> </span>
-<span id="cb69-301"><a href="#cb69-301" aria-hidden="true" tabindex="-1"></a>  <span class="co"># we add prediction regions plotted as raster image on top of original points</span></span>
-<span id="cb69-302"><a href="#cb69-302" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_raster</span>(</span>
-<span id="cb69-303"><a href="#cb69-303" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> diabetes_grid,</span>
-<span id="cb69-304"><a href="#cb69-304" aria-hidden="true" tabindex="-1"></a>    <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> insulin, <span class="at">y =</span> glutest, <span class="at">fill =</span> ghat),</span>
-<span id="cb69-305"><a href="#cb69-305" aria-hidden="true" tabindex="-1"></a>    <span class="at">inherit.aes =</span> <span class="cn">FALSE</span>, <span class="at">alpha =</span> <span class="fl">0.25</span>, <span class="at">interpolate =</span> <span class="cn">TRUE</span></span>
-<span id="cb69-306"><a href="#cb69-306" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb69-307"><a href="#cb69-307" aria-hidden="true" tabindex="-1"></a>  <span class="co"># we add centers as + points</span></span>
-<span id="cb69-308"><a href="#cb69-308" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
-<span id="cb69-309"><a href="#cb69-309" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> <span class="fu">as_tibble</span>(centers),</span>
-<span id="cb69-310"><a href="#cb69-310" aria-hidden="true" tabindex="-1"></a>    <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> insulin, <span class="at">y =</span> glutest),</span>
-<span id="cb69-311"><a href="#cb69-311" aria-hidden="true" tabindex="-1"></a>    <span class="at">inherit.aes =</span> <span class="cn">FALSE</span>, <span class="at">pch =</span> <span class="st">&quot;+&quot;</span>, <span class="at">size =</span> <span class="dv">8</span></span>
-<span id="cb69-312"><a href="#cb69-312" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb69-313"><a href="#cb69-313" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">expand =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>)) <span class="sc">+</span> </span>
-<span id="cb69-314"><a href="#cb69-314" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">expand =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>))</span>
-<span id="cb69-315"><a href="#cb69-315" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb69-316"><a href="#cb69-316" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-317"><a href="#cb69-317" aria-hidden="true" tabindex="-1"></a>::: {.callout-note collapse=&quot;false&quot;}</span>
-<span id="cb69-318"><a href="#cb69-318" aria-hidden="true" tabindex="-1"></a><span class="fu">## Question</span></span>
-<span id="cb69-319"><a href="#cb69-319" aria-hidden="true" tabindex="-1"></a>Instead of trying to predict with 2 variables, fit LDA model with all 5 variables.  </span>
-<span id="cb69-320"><a href="#cb69-320" aria-hidden="true" tabindex="-1"></a>Get predictions using this new model.  </span>
-<span id="cb69-321"><a href="#cb69-321" aria-hidden="true" tabindex="-1"></a>Get the confusion table for predictions, and calculate the prediction error.  </span>
-<span id="cb69-322"><a href="#cb69-322" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-325"><a href="#cb69-325" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb69-326"><a href="#cb69-326" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: lda5</span></span>
-<span id="cb69-327"><a href="#cb69-327" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: !expr (! params$skip_execution &amp; ! params$skip_answers)</span></span>
-<span id="cb69-328"><a href="#cb69-328" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: !expr (! params$skip_answers)</span></span>
-<span id="cb69-329"><a href="#cb69-329" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-330"><a href="#cb69-330" aria-hidden="true" tabindex="-1"></a><span class="co"># fit the model</span></span>
-<span id="cb69-331"><a href="#cb69-331" aria-hidden="true" tabindex="-1"></a>diabetes_lda5 <span class="ot">&lt;-</span> <span class="fu">lda</span>(group <span class="sc">~</span> relwt <span class="sc">+</span> glufast <span class="sc">+</span> glutest <span class="sc">+</span> steady <span class="sc">+</span> insulin, <span class="at">data =</span> diabetes)</span>
-<span id="cb69-332"><a href="#cb69-332" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-333"><a href="#cb69-333" aria-hidden="true" tabindex="-1"></a><span class="co"># predicitons</span></span>
-<span id="cb69-334"><a href="#cb69-334" aria-hidden="true" tabindex="-1"></a>ghat5 <span class="ot">&lt;-</span> <span class="fu">predict</span>(diabetes_lda5)<span class="sc">$</span>class</span>
-<span id="cb69-335"><a href="#cb69-335" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-336"><a href="#cb69-336" aria-hidden="true" tabindex="-1"></a><span class="co"># confusion table</span></span>
-<span id="cb69-337"><a href="#cb69-337" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(ghat5, diabetes<span class="sc">$</span>group)</span>
-<span id="cb69-338"><a href="#cb69-338" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-339"><a href="#cb69-339" aria-hidden="true" tabindex="-1"></a><span class="co"># error</span></span>
-<span id="cb69-340"><a href="#cb69-340" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(ghat5 <span class="sc">!=</span> diabetes<span class="sc">$</span>group)</span>
-<span id="cb69-341"><a href="#cb69-341" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb69-342"><a href="#cb69-342" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-343"><a href="#cb69-343" aria-hidden="true" tabindex="-1"></a>How did the prediction error change compared to the model with only 2 variables?</span>
-<span id="cb69-344"><a href="#cb69-344" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-347"><a href="#cb69-347" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb69-348"><a href="#cb69-348" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: lda5_error</span></span>
-<span id="cb69-349"><a href="#cb69-349" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: !expr (! params$skip_execution &amp; ! params$skip_answers)</span></span>
-<span id="cb69-350"><a href="#cb69-350" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: FALSE</span></span>
-<span id="cb69-351"><a href="#cb69-351" aria-hidden="true" tabindex="-1"></a><span class="co">#| results: &#39;asis&#39;</span></span>
-<span id="cb69-352"><a href="#cb69-352" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(</span>
-<span id="cb69-353"><a href="#cb69-353" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;It decreased - the prediction error is almost half compared to what we got with only the insulin and glutest variables.&quot;</span></span>
-<span id="cb69-354"><a href="#cb69-354" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb69-355"><a href="#cb69-355" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb69-356"><a href="#cb69-356" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-357"><a href="#cb69-357" aria-hidden="true" tabindex="-1"></a>Based on this, can you tell if the classifier trained with 5 variables is better </span>
-<span id="cb69-358"><a href="#cb69-358" aria-hidden="true" tabindex="-1"></a>than the one trained with only 2?</span>
-<span id="cb69-359"><a href="#cb69-359" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-362"><a href="#cb69-362" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb69-363"><a href="#cb69-363" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: lda_train_comparison</span></span>
-<span id="cb69-364"><a href="#cb69-364" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: !expr (! params$skip_execution &amp; ! params$skip_answers)</span></span>
-<span id="cb69-365"><a href="#cb69-365" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: FALSE</span></span>
-<span id="cb69-366"><a href="#cb69-366" aria-hidden="true" tabindex="-1"></a><span class="co">#| results: &#39;asis&#39;</span></span>
-<span id="cb69-367"><a href="#cb69-367" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(</span>
-<span id="cb69-368"><a href="#cb69-368" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;No, because the errors are computed on the same data that we use for model training, so the model with lower error might actually be overfitting the data.&quot;</span></span>
-<span id="cb69-369"><a href="#cb69-369" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb69-370"><a href="#cb69-370" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb69-371"><a href="#cb69-371" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-372"><a href="#cb69-372" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb69-373"><a href="#cb69-373" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-374"><a href="#cb69-374" aria-hidden="true" tabindex="-1"></a><span class="fu">## Cross-validation</span></span>
-<span id="cb69-375"><a href="#cb69-375" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-376"><a href="#cb69-376" aria-hidden="true" tabindex="-1"></a>Previously we were looking at predictions and classification error on the same </span>
-<span id="cb69-377"><a href="#cb69-377" aria-hidden="true" tabindex="-1"></a>data that we used for training the model. This is not the most correct approach, </span>
-<span id="cb69-378"><a href="#cb69-378" aria-hidden="true" tabindex="-1"></a>as the model will always perform better on the training data than on the new, </span>
-<span id="cb69-379"><a href="#cb69-379" aria-hidden="true" tabindex="-1"></a>unseen data. In extreme cases, the model could fail to learn the trends </span>
-<span id="cb69-380"><a href="#cb69-380" aria-hidden="true" tabindex="-1"></a>underlying the data, but instead it simply memorizes the values that it is </span>
-<span id="cb69-381"><a href="#cb69-381" aria-hidden="true" tabindex="-1"></a>trained on - this is called overfitting, and is something we want to avoid.</span>
-<span id="cb69-382"><a href="#cb69-382" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-383"><a href="#cb69-383" aria-hidden="true" tabindex="-1"></a>To get a good idea if the model learns well, we need to estimate its performance</span>
-<span id="cb69-384"><a href="#cb69-384" aria-hidden="true" tabindex="-1"></a>on new data it hasn&#39;t seen before. The most simple way to do this, we would to </span>
-<span id="cb69-385"><a href="#cb69-385" aria-hidden="true" tabindex="-1"></a>use a fraction of data only for training, and a fraction only for testing. </span>
-<span id="cb69-386"><a href="#cb69-386" aria-hidden="true" tabindex="-1"></a>However, by splitting the data only once, our results can be quite affected by </span>
-<span id="cb69-387"><a href="#cb69-387" aria-hidden="true" tabindex="-1"></a>how the split happens to fall, especcially if we don&#39;t have many observations. </span>
-<span id="cb69-388"><a href="#cb69-388" aria-hidden="true" tabindex="-1"></a>Another way to deal with this would be to perform cross validation (CV).  </span>
-<span id="cb69-389"><a href="#cb69-389" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-390"><a href="#cb69-390" aria-hidden="true" tabindex="-1"></a>Below we will look at one version of CV, called leave-one-out cross-validation </span>
-<span id="cb69-391"><a href="#cb69-391" aria-hidden="true" tabindex="-1"></a>(LOOCV). In LOOCV, we fit the whole model without one data point and then we </span>
-<span id="cb69-392"><a href="#cb69-392" aria-hidden="true" tabindex="-1"></a>predict the label of the left-out point. We know the true label of that data </span>
-<span id="cb69-393"><a href="#cb69-393" aria-hidden="true" tabindex="-1"></a>point, and the learning algorithm does not, hence we can get a reasonable </span>
-<span id="cb69-394"><a href="#cb69-394" aria-hidden="true" tabindex="-1"></a>estimate of the algorithm&#39;s performance on this &quot;new&quot; data.  Then, this process </span>
-<span id="cb69-395"><a href="#cb69-395" aria-hidden="true" tabindex="-1"></a>is repeated for each data point separately, and the average error is calculated.</span>
-<span id="cb69-396"><a href="#cb69-396" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-397"><a href="#cb69-397" aria-hidden="true" tabindex="-1"></a>::: {.callout-note collapse=&quot;false&quot;}</span>
-<span id="cb69-398"><a href="#cb69-398" aria-hidden="true" tabindex="-1"></a><span class="fu">## Question</span></span>
-<span id="cb69-399"><a href="#cb69-399" aria-hidden="true" tabindex="-1"></a>Let&#39;s write a function that fits <span class="in">`lda`</span> model with LOOCV.</span>
-<span id="cb69-400"><a href="#cb69-400" aria-hidden="true" tabindex="-1"></a>In the code below, the parameters of the function are described after <span class="in">`@param`</span> </span>
-<span id="cb69-401"><a href="#cb69-401" aria-hidden="true" tabindex="-1"></a>keywords, and the <span class="in">`@value`</span> describes what the function should output. </span>
-<span id="cb69-402"><a href="#cb69-402" aria-hidden="true" tabindex="-1"></a>Complete the function template provided (replace <span class="in">`...`</span> with code).</span>
-<span id="cb69-403"><a href="#cb69-403" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-406"><a href="#cb69-406" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb69-407"><a href="#cb69-407" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: estimate_mcl_loocv_solved</span></span>
-<span id="cb69-408"><a href="#cb69-408" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: !expr (! isTRUE(params$skip_execution))</span></span>
-<span id="cb69-409"><a href="#cb69-409" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: !expr (! params$skip_execution &amp; ! params$skip_answers)</span></span>
-<span id="cb69-410"><a href="#cb69-410" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-411"><a href="#cb69-411" aria-hidden="true" tabindex="-1"></a><span class="co">#&#39; A function to perform LOOCV</span></span>
-<span id="cb69-412"><a href="#cb69-412" aria-hidden="true" tabindex="-1"></a><span class="co">#&#39; </span></span>
-<span id="cb69-413"><a href="#cb69-413" aria-hidden="true" tabindex="-1"></a><span class="co">#&#39; @param x data.frame of predictor variables (rows are observations, columns are variables)</span></span>
-<span id="cb69-414"><a href="#cb69-414" aria-hidden="true" tabindex="-1"></a><span class="co">#&#39; @param grouping factor, response variable (length should be the same as nrow(x))</span></span>
-<span id="cb69-415"><a href="#cb69-415" aria-hidden="true" tabindex="-1"></a><span class="co">#&#39; </span></span>
-<span id="cb69-416"><a href="#cb69-416" aria-hidden="true" tabindex="-1"></a><span class="co">#&#39; @value vector with mean training and test error</span></span>
-<span id="cb69-417"><a href="#cb69-417" aria-hidden="true" tabindex="-1"></a><span class="co">#&#39; </span></span>
-<span id="cb69-418"><a href="#cb69-418" aria-hidden="true" tabindex="-1"></a>estimate_mcl_loocv <span class="ot">=</span> <span class="cf">function</span>(x, grouping) {</span>
-<span id="cb69-419"><a href="#cb69-419" aria-hidden="true" tabindex="-1"></a>  <span class="co"># iterate over observations</span></span>
-<span id="cb69-420"><a href="#cb69-420" aria-hidden="true" tabindex="-1"></a>  <span class="fu">vapply</span>(<span class="fu">seq_len</span>(<span class="fu">nrow</span>(x)), <span class="cf">function</span>(i) {</span>
-<span id="cb69-421"><a href="#cb69-421" aria-hidden="true" tabindex="-1"></a>    <span class="co"># fit a model with i-th observation left-out</span></span>
-<span id="cb69-422"><a href="#cb69-422" aria-hidden="true" tabindex="-1"></a>    fit  <span class="ot">=</span> <span class="fu">lda</span>(<span class="at">x =</span> x[<span class="sc">-</span>i, ], <span class="at">grouping =</span> grouping[<span class="sc">-</span>i])</span>
-<span id="cb69-423"><a href="#cb69-423" aria-hidden="true" tabindex="-1"></a>    <span class="co"># predict on the left-out i-th observation</span></span>
-<span id="cb69-424"><a href="#cb69-424" aria-hidden="true" tabindex="-1"></a>    ptrn <span class="ot">=</span> <span class="fu">predict</span>(fit, <span class="at">newdata =</span> x[<span class="sc">-</span>i,, <span class="at">drop =</span> <span class="cn">FALSE</span>])<span class="sc">$</span>class</span>
-<span id="cb69-425"><a href="#cb69-425" aria-hidden="true" tabindex="-1"></a>    <span class="co"># predict on the left-out i-th observation</span></span>
-<span id="cb69-426"><a href="#cb69-426" aria-hidden="true" tabindex="-1"></a>    ptst <span class="ot">=</span> <span class="fu">predict</span>(fit, <span class="at">newdata =</span> x[ i,, <span class="at">drop =</span> <span class="cn">FALSE</span>])<span class="sc">$</span>class</span>
-<span id="cb69-427"><a href="#cb69-427" aria-hidden="true" tabindex="-1"></a>    <span class="co"># return training and test errors</span></span>
-<span id="cb69-428"><a href="#cb69-428" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(</span>
-<span id="cb69-429"><a href="#cb69-429" aria-hidden="true" tabindex="-1"></a>      <span class="at">train =</span> <span class="fu">mean</span>(ptrn <span class="sc">!=</span> grouping[<span class="sc">-</span>i]),</span>
-<span id="cb69-430"><a href="#cb69-430" aria-hidden="true" tabindex="-1"></a>      <span class="at">test =</span> (ptst <span class="sc">!=</span> grouping[i])</span>
-<span id="cb69-431"><a href="#cb69-431" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb69-432"><a href="#cb69-432" aria-hidden="true" tabindex="-1"></a>  }, <span class="at">FUN.VALUE =</span> <span class="fu">numeric</span>(<span class="dv">2</span>)) <span class="sc">%&gt;%</span> rowMeans</span>
-<span id="cb69-433"><a href="#cb69-433" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb69-434"><a href="#cb69-434" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb69-437"><a href="#cb69-437" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb69-438"><a href="#cb69-438" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: estimate_mcl_loocv_template</span></span>
-<span id="cb69-439"><a href="#cb69-439" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: !expr (params$skip_answers)</span></span>
-<span id="cb69-440"><a href="#cb69-440" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: FALSE</span></span>
-<span id="cb69-441"><a href="#cb69-441" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-442"><a href="#cb69-442" aria-hidden="true" tabindex="-1"></a><span class="co">#&#39; A function to perform LOOCV</span></span>
-<span id="cb69-443"><a href="#cb69-443" aria-hidden="true" tabindex="-1"></a><span class="co">#&#39; </span></span>
-<span id="cb69-444"><a href="#cb69-444" aria-hidden="true" tabindex="-1"></a><span class="co">#&#39; @param x data.frame of predictor variables (rows are observations, columns are variables)</span></span>
-<span id="cb69-445"><a href="#cb69-445" aria-hidden="true" tabindex="-1"></a><span class="co">#&#39; @param grouping factor, response variable (length should be the same as nrow(x))</span></span>
-<span id="cb69-446"><a href="#cb69-446" aria-hidden="true" tabindex="-1"></a><span class="co">#&#39; </span></span>
-<span id="cb69-447"><a href="#cb69-447" aria-hidden="true" tabindex="-1"></a><span class="co">#&#39; @value vector with mean training and test error</span></span>
-<span id="cb69-448"><a href="#cb69-448" aria-hidden="true" tabindex="-1"></a><span class="co">#&#39; </span></span>
-<span id="cb69-449"><a href="#cb69-449" aria-hidden="true" tabindex="-1"></a>estimate_mcl_loocv <span class="ot">=</span> <span class="cf">function</span>(x, grouping) {</span>
-<span id="cb69-450"><a href="#cb69-450" aria-hidden="true" tabindex="-1"></a>  <span class="co"># iterate over observations</span></span>
-<span id="cb69-451"><a href="#cb69-451" aria-hidden="true" tabindex="-1"></a>  <span class="fu">vapply</span>(<span class="fu">seq_len</span>(<span class="fu">nrow</span>(x)), <span class="cf">function</span>(i) {</span>
-<span id="cb69-452"><a href="#cb69-452" aria-hidden="true" tabindex="-1"></a>    <span class="co"># fit a model with i-th observation left-out</span></span>
-<span id="cb69-453"><a href="#cb69-453" aria-hidden="true" tabindex="-1"></a>    fit  <span class="ot">=</span> ...</span>
-<span id="cb69-454"><a href="#cb69-454" aria-hidden="true" tabindex="-1"></a>    <span class="co"># predict on the left-out i-th observation</span></span>
-<span id="cb69-455"><a href="#cb69-455" aria-hidden="true" tabindex="-1"></a>    ptrn <span class="ot">=</span> ...</span>
-<span id="cb69-456"><a href="#cb69-456" aria-hidden="true" tabindex="-1"></a>    <span class="co"># predict on the left-out i-th observation</span></span>
-<span id="cb69-457"><a href="#cb69-457" aria-hidden="true" tabindex="-1"></a>    ptst <span class="ot">=</span> ...</span>
-<span id="cb69-458"><a href="#cb69-458" aria-hidden="true" tabindex="-1"></a>    <span class="co"># return training and test errors</span></span>
-<span id="cb69-459"><a href="#cb69-459" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(</span>
-<span id="cb69-460"><a href="#cb69-460" aria-hidden="true" tabindex="-1"></a>      <span class="at">train =</span> ...,</span>
-<span id="cb69-461"><a href="#cb69-461" aria-hidden="true" tabindex="-1"></a>      <span class="at">test =</span> ...</span>
-<span id="cb69-462"><a href="#cb69-462" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb69-463"><a href="#cb69-463" aria-hidden="true" tabindex="-1"></a>  }, <span class="at">FUN.VALUE =</span> <span class="fu">numeric</span>(<span class="dv">2</span>)) <span class="sc">%&gt;%</span> rowMeans</span>
-<span id="cb69-464"><a href="#cb69-464" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb69-465"><a href="#cb69-465" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb69-466"><a href="#cb69-466" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb69-467"><a href="#cb69-467" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-468"><a href="#cb69-468" aria-hidden="true" tabindex="-1"></a>::: {.callout-note collapse=&quot;false&quot;}</span>
-<span id="cb69-469"><a href="#cb69-469" aria-hidden="true" tabindex="-1"></a><span class="fu">## Question</span></span>
-<span id="cb69-470"><a href="#cb69-470" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-471"><a href="#cb69-471" aria-hidden="true" tabindex="-1"></a>Now compare again the errors for model trained with only <span class="in">`insulin`</span> and <span class="in">`glutest`</span>, </span>
-<span id="cb69-472"><a href="#cb69-472" aria-hidden="true" tabindex="-1"></a>and the model trained with all variables. Which model is better?</span>
-<span id="cb69-473"><a href="#cb69-473" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-476"><a href="#cb69-476" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb69-477"><a href="#cb69-477" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: lda_loocv</span></span>
-<span id="cb69-478"><a href="#cb69-478" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: !expr (! params$skip_execution &amp; ! params$skip_answers)</span></span>
-<span id="cb69-479"><a href="#cb69-479" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: !expr (! params$skip_answers)</span></span>
-<span id="cb69-480"><a href="#cb69-480" aria-hidden="true" tabindex="-1"></a><span class="fu">estimate_mcl_loocv</span>(<span class="at">x =</span> diabetes[, <span class="fu">c</span>(<span class="st">&quot;insulin&quot;</span>, <span class="st">&quot;glutest&quot;</span>)], <span class="at">grouping =</span> diabetes<span class="sc">$</span>group)</span>
-<span id="cb69-481"><a href="#cb69-481" aria-hidden="true" tabindex="-1"></a><span class="fu">estimate_mcl_loocv</span>(<span class="at">x =</span> diabetes[, <span class="fu">c</span>(<span class="st">&quot;insulin&quot;</span>, <span class="st">&quot;glutest&quot;</span>, <span class="st">&quot;glufast&quot;</span>, <span class="st">&quot;relwt&quot;</span>, <span class="st">&quot;steady&quot;</span>)], <span class="at">grouping =</span> diabetes<span class="sc">$</span>group)</span>
-<span id="cb69-482"><a href="#cb69-482" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb69-485"><a href="#cb69-485" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb69-486"><a href="#cb69-486" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: lda_loocv_error</span></span>
-<span id="cb69-487"><a href="#cb69-487" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: !expr (! params$skip_execution &amp; ! params$skip_answers)</span></span>
-<span id="cb69-488"><a href="#cb69-488" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: FALSE</span></span>
-<span id="cb69-489"><a href="#cb69-489" aria-hidden="true" tabindex="-1"></a><span class="co">#| results: &#39;asis&#39;</span></span>
-<span id="cb69-490"><a href="#cb69-490" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(</span>
-<span id="cb69-491"><a href="#cb69-491" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Both the training and the test error are lower for the model with 5 variables&quot;</span></span>
-<span id="cb69-492"><a href="#cb69-492" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb69-493"><a href="#cb69-493" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb69-494"><a href="#cb69-494" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-495"><a href="#cb69-495" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb69-496"><a href="#cb69-496" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-497"><a href="#cb69-497" aria-hidden="true" tabindex="-1"></a>In the section below you will also see CV used to pick a parameter for LASSO-logistic </span>
-<span id="cb69-498"><a href="#cb69-498" aria-hidden="true" tabindex="-1"></a>regression.</span>
-<span id="cb69-499"><a href="#cb69-499" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-500"><a href="#cb69-500" aria-hidden="true" tabindex="-1"></a><span class="fu">## Metagenome data set</span></span>
-<span id="cb69-501"><a href="#cb69-501" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-502"><a href="#cb69-502" aria-hidden="true" tabindex="-1"></a>Zeller et al. (2014) studied metagenome sequencing data from fecal samples of </span>
-<span id="cb69-503"><a href="#cb69-503" aria-hidden="true" tabindex="-1"></a>156 humans that included colorectal cancer patients and tumor-free controls. </span>
-<span id="cb69-504"><a href="#cb69-504" aria-hidden="true" tabindex="-1"></a>Their aim was to see whether they could identify biomarkers (presence or </span>
-<span id="cb69-505"><a href="#cb69-505" aria-hidden="true" tabindex="-1"></a>abundance of certain taxa) that could help with early tumor detection. The data </span>
-<span id="cb69-506"><a href="#cb69-506" aria-hidden="true" tabindex="-1"></a>are available from <span class="co">[</span><span class="ot">Bioconductor</span><span class="co">](https://www.bioconductor.org)</span> through its </span>
-<span id="cb69-507"><a href="#cb69-507" aria-hidden="true" tabindex="-1"></a><span class="in">`ExperimentHub`</span> service under the identifier EH359.</span>
-<span id="cb69-508"><a href="#cb69-508" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-511"><a href="#cb69-511" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb69-512"><a href="#cb69-512" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: colon1</span></span>
-<span id="cb69-513"><a href="#cb69-513" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: !expr (! isTRUE(params$skip_execution))</span></span>
-<span id="cb69-514"><a href="#cb69-514" aria-hidden="true" tabindex="-1"></a><span class="co">#| message: FALSE</span></span>
-<span id="cb69-515"><a href="#cb69-515" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: FALSE</span></span>
-<span id="cb69-516"><a href="#cb69-516" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-517"><a href="#cb69-517" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ExperimentHub)</span>
-<span id="cb69-518"><a href="#cb69-518" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-519"><a href="#cb69-519" aria-hidden="true" tabindex="-1"></a><span class="co"># get experiments</span></span>
-<span id="cb69-520"><a href="#cb69-520" aria-hidden="true" tabindex="-1"></a>eh <span class="ot">=</span> <span class="fu">ExperimentHub</span>()</span>
-<span id="cb69-521"><a href="#cb69-521" aria-hidden="true" tabindex="-1"></a><span class="co"># if you encounter problem, try running</span></span>
-<span id="cb69-522"><a href="#cb69-522" aria-hidden="true" tabindex="-1"></a><span class="co"># eh = ExperimentHub(localHub = TRUE)</span></span>
-<span id="cb69-523"><a href="#cb69-523" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-524"><a href="#cb69-524" aria-hidden="true" tabindex="-1"></a><span class="co"># selected experiment</span></span>
-<span id="cb69-525"><a href="#cb69-525" aria-hidden="true" tabindex="-1"></a>zeller <span class="ot">=</span> eh[[<span class="st">&quot;EH361&quot;</span>]]</span>
-<span id="cb69-526"><a href="#cb69-526" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-527"><a href="#cb69-527" aria-hidden="true" tabindex="-1"></a><span class="co"># inspect ExpressionSet object</span></span>
-<span id="cb69-528"><a href="#cb69-528" aria-hidden="true" tabindex="-1"></a>zeller</span>
-<span id="cb69-529"><a href="#cb69-529" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb69-530"><a href="#cb69-530" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-531"><a href="#cb69-531" aria-hidden="true" tabindex="-1"></a><span class="in">`ExpressionSet`</span> contains gene expression data, together with the samples and features information.</span>
-<span id="cb69-532"><a href="#cb69-532" aria-hidden="true" tabindex="-1"></a>Expression data can be accessed with <span class="in">`exprs()`</span>, sample information with <span class="in">`pData()`</span> (phenotypic data), and feature information with the <span class="in">`fData()`</span> accessors. </span>
-<span id="cb69-533"><a href="#cb69-533" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-534"><a href="#cb69-534" aria-hidden="true" tabindex="-1"></a>Check sample information for <span class="in">`zeller`</span> dataset.  </span>
-<span id="cb69-535"><a href="#cb69-535" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-538"><a href="#cb69-538" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb69-539"><a href="#cb69-539" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: zeller_pData</span></span>
-<span id="cb69-540"><a href="#cb69-540" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: !expr (! isTRUE(params$skip_execution))</span></span>
-<span id="cb69-541"><a href="#cb69-541" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">pData</span>(zeller))</span>
-<span id="cb69-542"><a href="#cb69-542" aria-hidden="true" tabindex="-1"></a><span class="fu">tail</span>(<span class="fu">pData</span>(zeller))</span>
-<span id="cb69-543"><a href="#cb69-543" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb69-544"><a href="#cb69-544" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-545"><a href="#cb69-545" aria-hidden="true" tabindex="-1"></a>Columns of the annotations can be accessed directly by their names, e.g. <span class="in">`zeller$disease`</span>. </span>
-<span id="cb69-546"><a href="#cb69-546" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-549"><a href="#cb69-549" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb69-550"><a href="#cb69-550" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: zeller_pData_disease</span></span>
-<span id="cb69-551"><a href="#cb69-551" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: !expr (! isTRUE(params$skip_execution))</span></span>
-<span id="cb69-552"><a href="#cb69-552" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(zeller<span class="sc">$</span>disease)</span>
-<span id="cb69-553"><a href="#cb69-553" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb69-554"><a href="#cb69-554" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-555"><a href="#cb69-555" aria-hidden="true" tabindex="-1"></a>For the following exercises, we will focus only on the normal (<span class="in">`n`</span>) and <span class="in">`cancer`</span> samples, so we will now also sample the <span class="in">`ExpressionSet`</span> object to include only these samples. </span>
-<span id="cb69-556"><a href="#cb69-556" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-559"><a href="#cb69-559" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb69-560"><a href="#cb69-560" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: zeller_subset</span></span>
-<span id="cb69-561"><a href="#cb69-561" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: !expr (! isTRUE(params$skip_execution))</span></span>
-<span id="cb69-562"><a href="#cb69-562" aria-hidden="true" tabindex="-1"></a>zellerNC <span class="ot">&lt;-</span> zeller[, zeller<span class="sc">$</span>disease <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;n&quot;</span>, <span class="st">&quot;cancer&quot;</span>)]</span>
-<span id="cb69-563"><a href="#cb69-563" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb69-564"><a href="#cb69-564" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-565"><a href="#cb69-565" aria-hidden="true" tabindex="-1"></a>Notice that feature information in this dataset (<span class="in">`fData(zellerNC)`</span>) is empty. </span>
-<span id="cb69-566"><a href="#cb69-566" aria-hidden="true" tabindex="-1"></a>We only have feature names in the expression data.</span>
-<span id="cb69-567"><a href="#cb69-567" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-570"><a href="#cb69-570" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb69-571"><a href="#cb69-571" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: zellerpData_end</span></span>
-<span id="cb69-572"><a href="#cb69-572" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: !expr (! isTRUE(params$skip_execution))</span></span>
-<span id="cb69-573"><a href="#cb69-573" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">rownames</span>(zellerNC))</span>
-<span id="cb69-574"><a href="#cb69-574" aria-hidden="true" tabindex="-1"></a><span class="fu">tail</span>(<span class="fu">rownames</span>(zellerNC))</span>
-<span id="cb69-575"><a href="#cb69-575" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb69-576"><a href="#cb69-576" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-577"><a href="#cb69-577" aria-hidden="true" tabindex="-1"></a>As you can see, the features are a mixture of abundance quantifications at </span>
-<span id="cb69-578"><a href="#cb69-578" aria-hidden="true" tabindex="-1"></a>different taxonomic levels, from **k**ingdom over **p**hylum to **s**pecies.</span>
-<span id="cb69-579"><a href="#cb69-579" aria-hidden="true" tabindex="-1"></a>We could select only some of these, but here we continue with all of them.  </span>
-<span id="cb69-580"><a href="#cb69-580" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-581"><a href="#cb69-581" aria-hidden="true" tabindex="-1"></a>Next, let&#39;s look at the distribution of some of the features. Here, we show </span>
-<span id="cb69-582"><a href="#cb69-582" aria-hidden="true" tabindex="-1"></a>an arbitrary choice of features; in practice, it is helpful to scroll through </span>
-<span id="cb69-583"><a href="#cb69-583" aria-hidden="true" tabindex="-1"></a>many such plots quickly to get an impression.</span>
-<span id="cb69-584"><a href="#cb69-584" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-587"><a href="#cb69-587" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb69-588"><a href="#cb69-588" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: zellerHist </span></span>
-<span id="cb69-589"><a href="#cb69-589" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: !expr (! isTRUE(params$skip_execution))</span></span>
-<span id="cb69-590"><a href="#cb69-590" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-591"><a href="#cb69-591" aria-hidden="true" tabindex="-1"></a><span class="co"># convert to data.frame</span></span>
-<span id="cb69-592"><a href="#cb69-592" aria-hidden="true" tabindex="-1"></a>tidy_zeller <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">t</span>(<span class="fu">exprs</span>(zellerNC)))</span>
-<span id="cb69-593"><a href="#cb69-593" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-594"><a href="#cb69-594" aria-hidden="true" tabindex="-1"></a><span class="co"># select features to show</span></span>
-<span id="cb69-595"><a href="#cb69-595" aria-hidden="true" tabindex="-1"></a>feats <span class="ot">&lt;-</span> <span class="fu">colnames</span>(tidy_zeller)[<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>]</span>
-<span id="cb69-596"><a href="#cb69-596" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-597"><a href="#cb69-597" aria-hidden="true" tabindex="-1"></a><span class="co"># histograms for selected features</span></span>
-<span id="cb69-598"><a href="#cb69-598" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> feats) {</span>
-<span id="cb69-599"><a href="#cb69-599" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hist</span>(tidy_zeller[[i]], <span class="at">main =</span> i, <span class="at">xlab =</span> <span class="st">&quot;Abundance&quot;</span>)</span>
-<span id="cb69-600"><a href="#cb69-600" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb69-601"><a href="#cb69-601" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-602"><a href="#cb69-602" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb69-603"><a href="#cb69-603" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-604"><a href="#cb69-604" aria-hidden="true" tabindex="-1"></a><span class="fu">## GLM with L1 regularisation (LASSO)</span></span>
-<span id="cb69-605"><a href="#cb69-605" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-606"><a href="#cb69-606" aria-hidden="true" tabindex="-1"></a>In the simplest case, we fit model</span>
-<span id="cb69-607"><a href="#cb69-607" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-608"><a href="#cb69-608" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb69-609"><a href="#cb69-609" aria-hidden="true" tabindex="-1"></a>\log \frac{P(Y=i\,|\,X=x)}{P(Y=k\,|\,X=x)} = \beta^0_i + \beta_i^\top x</span>
-<span id="cb69-610"><a href="#cb69-610" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb69-611"><a href="#cb69-611" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-612"><a href="#cb69-612" aria-hidden="true" tabindex="-1"></a>as follows.</span>
-<span id="cb69-613"><a href="#cb69-613" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-616"><a href="#cb69-616" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb69-617"><a href="#cb69-617" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: glmnet</span></span>
-<span id="cb69-618"><a href="#cb69-618" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: !expr (! isTRUE(params$skip_execution))</span></span>
-<span id="cb69-619"><a href="#cb69-619" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;glmnet&quot;</span>)</span>
-<span id="cb69-620"><a href="#cb69-620" aria-hidden="true" tabindex="-1"></a>glmfit <span class="ot">=</span> <span class="fu">glmnet</span>(</span>
-<span id="cb69-621"><a href="#cb69-621" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> <span class="fu">t</span>(<span class="fu">exprs</span>(zellerNC)),</span>
-<span id="cb69-622"><a href="#cb69-622" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> <span class="fu">factor</span>(zellerNC<span class="sc">$</span>disease),</span>
-<span id="cb69-623"><a href="#cb69-623" aria-hidden="true" tabindex="-1"></a>  <span class="at">family =</span> <span class="st">&quot;binomial&quot;</span></span>
-<span id="cb69-624"><a href="#cb69-624" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb69-625"><a href="#cb69-625" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb69-626"><a href="#cb69-626" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-627"><a href="#cb69-627" aria-hidden="true" tabindex="-1"></a>A remarkable feature of the <span class="in">`glmnet`</span> function is that it fits the model not </span>
-<span id="cb69-628"><a href="#cb69-628" aria-hidden="true" tabindex="-1"></a>only for one choice of $\lambda$, but for all possible $\lambda$s at once. </span>
-<span id="cb69-629"><a href="#cb69-629" aria-hidden="true" tabindex="-1"></a>For now, let&#39;s look at the prediction performance for, say, $\lambda=0.04$.</span>
-<span id="cb69-630"><a href="#cb69-630" aria-hidden="true" tabindex="-1"></a>The name of the function parameter is <span class="in">`s`</span>:</span>
-<span id="cb69-631"><a href="#cb69-631" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-634"><a href="#cb69-634" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb69-635"><a href="#cb69-635" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: colonPred</span></span>
-<span id="cb69-636"><a href="#cb69-636" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: !expr (! isTRUE(params$skip_execution))</span></span>
-<span id="cb69-637"><a href="#cb69-637" aria-hidden="true" tabindex="-1"></a>pred <span class="ot">=</span> <span class="fu">predict</span>(glmfit, <span class="at">newx =</span> <span class="fu">t</span>(<span class="fu">exprs</span>(zellerNC)), <span class="at">type =</span> <span class="st">&quot;class&quot;</span>, <span class="at">s =</span> <span class="fl">0.04</span>)</span>
-<span id="cb69-638"><a href="#cb69-638" aria-hidden="true" tabindex="-1"></a>confusion_table <span class="ot">=</span> <span class="fu">table</span>(<span class="at">predicted =</span> pred, <span class="at">truth =</span> zellerNC<span class="sc">$</span>disease)</span>
-<span id="cb69-639"><a href="#cb69-639" aria-hidden="true" tabindex="-1"></a>confusion_table</span>
-<span id="cb69-640"><a href="#cb69-640" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb69-641"><a href="#cb69-641" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-642"><a href="#cb69-642" aria-hidden="true" tabindex="-1"></a>::: {.callout-note collapse=&quot;false&quot;}</span>
-<span id="cb69-643"><a href="#cb69-643" aria-hidden="true" tabindex="-1"></a><span class="fu">## Question</span></span>
-<span id="cb69-644"><a href="#cb69-644" aria-hidden="true" tabindex="-1"></a>What is the true positive rate (TPR, i.e. sensitivity) and true negative rate (TNR, i.e. specificity)?</span>
-<span id="cb69-645"><a href="#cb69-645" aria-hidden="true" tabindex="-1"></a>Hint: See <span class="co">[</span><span class="ot">Wikipedia</span><span class="co">](https://en.wikipedia.org/wiki/Sensitivity_and_specificity)</span>.</span>
-<span id="cb69-646"><a href="#cb69-646" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-649"><a href="#cb69-649" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb69-650"><a href="#cb69-650" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: tpr_tnr</span></span>
-<span id="cb69-651"><a href="#cb69-651" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: !expr (! params$skip_execution &amp; ! params$skip_answers)</span></span>
-<span id="cb69-652"><a href="#cb69-652" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: !expr (! params$skip_answers)</span></span>
-<span id="cb69-653"><a href="#cb69-653" aria-hidden="true" tabindex="-1"></a><span class="co">#| results: &#39;asis&#39;</span></span>
-<span id="cb69-654"><a href="#cb69-654" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-655"><a href="#cb69-655" aria-hidden="true" tabindex="-1"></a><span class="co"># TPR</span></span>
-<span id="cb69-656"><a href="#cb69-656" aria-hidden="true" tabindex="-1"></a>confusion_table[<span class="dv">1</span>,<span class="dv">1</span>]<span class="sc">/</span>(confusion_table[<span class="dv">1</span>,<span class="dv">1</span>] <span class="sc">+</span> confusion_table[<span class="dv">2</span>,<span class="dv">1</span>])</span>
-<span id="cb69-657"><a href="#cb69-657" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-658"><a href="#cb69-658" aria-hidden="true" tabindex="-1"></a><span class="co"># TNR</span></span>
-<span id="cb69-659"><a href="#cb69-659" aria-hidden="true" tabindex="-1"></a>confusion_table[<span class="dv">2</span>,<span class="dv">2</span>]<span class="sc">/</span>(confusion_table[<span class="dv">2</span>,<span class="dv">2</span>] <span class="sc">+</span> confusion_table[<span class="dv">1</span>,<span class="dv">2</span>])</span>
-<span id="cb69-660"><a href="#cb69-660" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb69-661"><a href="#cb69-661" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb69-662"><a href="#cb69-662" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-663"><a href="#cb69-663" aria-hidden="true" tabindex="-1"></a>Not bad. But remember that this is on the training data, without </span>
-<span id="cb69-664"><a href="#cb69-664" aria-hidden="true" tabindex="-1"></a>cross-validation.  </span>
-<span id="cb69-665"><a href="#cb69-665" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-666"><a href="#cb69-666" aria-hidden="true" tabindex="-1"></a>Let&#39;s have a closer look at <span class="in">`glmfit`</span>. The <span class="in">`glmnet`</span> package offers a diagnostic </span>
-<span id="cb69-667"><a href="#cb69-667" aria-hidden="true" tabindex="-1"></a>plot that is worth looking at:</span>
-<span id="cb69-668"><a href="#cb69-668" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-671"><a href="#cb69-671" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb69-672"><a href="#cb69-672" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: plotglmfit</span></span>
-<span id="cb69-673"><a href="#cb69-673" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: !expr (! isTRUE(params$skip_execution))</span></span>
-<span id="cb69-674"><a href="#cb69-674" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig.width: 6</span></span>
-<span id="cb69-675"><a href="#cb69-675" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig.height: 6</span></span>
-<span id="cb69-676"><a href="#cb69-676" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(glmfit, <span class="at">xvar =</span> <span class="st">&quot;norm&quot;</span>, <span class="at">col =</span> RColorBrewer<span class="sc">::</span><span class="fu">brewer.pal</span>(<span class="dv">12</span>, <span class="st">&quot;Set3&quot;</span>), <span class="at">lwd =</span> <span class="fu">sqrt</span>(<span class="dv">3</span>))</span>
-<span id="cb69-677"><a href="#cb69-677" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb69-678"><a href="#cb69-678" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-679"><a href="#cb69-679" aria-hidden="true" tabindex="-1"></a>What is the x-axis? What are the different lines? Check the ``plot.glmnet``</span>
-<span id="cb69-680"><a href="#cb69-680" aria-hidden="true" tabindex="-1"></a>documentation and look at different <span class="in">`xvar`</span> options.</span>
-<span id="cb69-681"><a href="#cb69-681" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-682"><a href="#cb69-682" aria-hidden="true" tabindex="-1"></a>In particular, we note that as the penalty $\lambda$ increases, the L1 Norm </span>
-<span id="cb69-683"><a href="#cb69-683" aria-hidden="true" tabindex="-1"></a>of the coefficients ($\sum |\beta_i|$) shrinks. <span class="in">`glmnet`</span> only shrinks the </span>
-<span id="cb69-684"><a href="#cb69-684" aria-hidden="true" tabindex="-1"></a>coefficients corresponding to the variables and not the intercept, however for </span>
-<span id="cb69-685"><a href="#cb69-685" aria-hidden="true" tabindex="-1"></a>simplicity our computations (and questions) below also include the intercept </span>
-<span id="cb69-686"><a href="#cb69-686" aria-hidden="true" tabindex="-1"></a>(the first coefficient returned from <span class="in">`coef`</span>).</span>
-<span id="cb69-687"><a href="#cb69-687" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-688"><a href="#cb69-688" aria-hidden="true" tabindex="-1"></a>For example as above let&#39;s see what fitted coefficients we got for </span>
-<span id="cb69-689"><a href="#cb69-689" aria-hidden="true" tabindex="-1"></a>$\lambda = 0.04$:</span>
-<span id="cb69-690"><a href="#cb69-690" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-693"><a href="#cb69-693" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb69-694"><a href="#cb69-694" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: fitted_beta</span></span>
-<span id="cb69-695"><a href="#cb69-695" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: !expr (! isTRUE(params$skip_execution))</span></span>
-<span id="cb69-696"><a href="#cb69-696" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-697"><a href="#cb69-697" aria-hidden="true" tabindex="-1"></a><span class="co"># matrix of coefficients with given lambda</span></span>
-<span id="cb69-698"><a href="#cb69-698" aria-hidden="true" tabindex="-1"></a>fitted_beta <span class="ot">=</span> <span class="fu">coef</span>(glmfit, <span class="at">s=</span><span class="fl">0.04</span>)</span>
-<span id="cb69-699"><a href="#cb69-699" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(fitted_beta)</span>
-<span id="cb69-700"><a href="#cb69-700" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-701"><a href="#cb69-701" aria-hidden="true" tabindex="-1"></a><span class="co"># L1 norm of coefficients</span></span>
-<span id="cb69-702"><a href="#cb69-702" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">abs</span>(fitted_beta))</span>
-<span id="cb69-703"><a href="#cb69-703" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb69-704"><a href="#cb69-704" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-705"><a href="#cb69-705" aria-hidden="true" tabindex="-1"></a>Let&#39;s try with larger $\lambda$:</span>
-<span id="cb69-706"><a href="#cb69-706" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-709"><a href="#cb69-709" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb69-710"><a href="#cb69-710" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: coef_lambda</span></span>
-<span id="cb69-711"><a href="#cb69-711" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: !expr (! isTRUE(params$skip_execution))</span></span>
-<span id="cb69-712"><a href="#cb69-712" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-713"><a href="#cb69-713" aria-hidden="true" tabindex="-1"></a><span class="co"># L1 norm of coefficients with given lambda</span></span>
-<span id="cb69-714"><a href="#cb69-714" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">abs</span>(<span class="fu">coef</span>(glmfit, <span class="at">s=</span><span class="fl">0.1</span>)))</span>
-<span id="cb69-715"><a href="#cb69-715" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb69-716"><a href="#cb69-716" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-717"><a href="#cb69-717" aria-hidden="true" tabindex="-1"></a>::: {.callout-note collapse=&quot;false&quot;}</span>
-<span id="cb69-718"><a href="#cb69-718" aria-hidden="true" tabindex="-1"></a><span class="fu">## Question</span></span>
-<span id="cb69-719"><a href="#cb69-719" aria-hidden="true" tabindex="-1"></a>For how many different values of $\lambda$ did <span class="in">`glmnet`</span> fit the model using settings as above?</span>
-<span id="cb69-720"><a href="#cb69-720" aria-hidden="true" tabindex="-1"></a>Inspect the <span class="in">`glmfit`</span> object.</span>
-<span id="cb69-721"><a href="#cb69-721" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-724"><a href="#cb69-724" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb69-725"><a href="#cb69-725" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: glmfit_lambda</span></span>
-<span id="cb69-726"><a href="#cb69-726" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: !expr (! params$skip_execution &amp; ! params$skip_answers)</span></span>
-<span id="cb69-727"><a href="#cb69-727" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: !expr (! params$skip_answers)</span></span>
-<span id="cb69-728"><a href="#cb69-728" aria-hidden="true" tabindex="-1"></a><span class="co">#| results: &#39;asis&#39;</span></span>
-<span id="cb69-729"><a href="#cb69-729" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(glmfit<span class="sc">$</span>lambda)</span>
-<span id="cb69-730"><a href="#cb69-730" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb69-731"><a href="#cb69-731" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb69-732"><a href="#cb69-732" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-733"><a href="#cb69-733" aria-hidden="true" tabindex="-1"></a>::: {.callout-note collapse=&quot;false&quot;}</span>
-<span id="cb69-734"><a href="#cb69-734" aria-hidden="true" tabindex="-1"></a><span class="fu">## Question</span></span>
-<span id="cb69-735"><a href="#cb69-735" aria-hidden="true" tabindex="-1"></a>For each of the values of $\lambda$ in the object above, calculate the L1 Norm (as we did above for two values of $\lambda$). </span>
-<span id="cb69-736"><a href="#cb69-736" aria-hidden="true" tabindex="-1"></a>Which $\lambda$ most closely corresponds to a L1 norm 6000?</span>
-<span id="cb69-737"><a href="#cb69-737" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-740"><a href="#cb69-740" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb69-741"><a href="#cb69-741" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: lambda_6k</span></span>
-<span id="cb69-742"><a href="#cb69-742" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: !expr (! params$skip_execution &amp; ! params$skip_answers)</span></span>
-<span id="cb69-743"><a href="#cb69-743" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: !expr (! params$skip_answers)</span></span>
-<span id="cb69-744"><a href="#cb69-744" aria-hidden="true" tabindex="-1"></a><span class="co">#| results: &#39;asis&#39;</span></span>
-<span id="cb69-745"><a href="#cb69-745" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-746"><a href="#cb69-746" aria-hidden="true" tabindex="-1"></a><span class="co"># matrix of coefficients for all lambda</span></span>
-<span id="cb69-747"><a href="#cb69-747" aria-hidden="true" tabindex="-1"></a>fitted_beta <span class="ot">&lt;-</span> <span class="fu">coef</span>(glmfit)</span>
-<span id="cb69-748"><a href="#cb69-748" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(fitted_beta)</span>
-<span id="cb69-749"><a href="#cb69-749" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-750"><a href="#cb69-750" aria-hidden="true" tabindex="-1"></a><span class="co"># L1 norm of coefficients for each lambda</span></span>
-<span id="cb69-751"><a href="#cb69-751" aria-hidden="true" tabindex="-1"></a>L1Norm <span class="ot">&lt;-</span> <span class="fu">colSums</span>(<span class="fu">abs</span>(fitted_beta))</span>
-<span id="cb69-752"><a href="#cb69-752" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-753"><a href="#cb69-753" aria-hidden="true" tabindex="-1"></a><span class="co"># which L1 norm is clisest to 6000</span></span>
-<span id="cb69-754"><a href="#cb69-754" aria-hidden="true" tabindex="-1"></a>idx_L1Norm_6k <span class="ot">&lt;-</span> <span class="fu">which.min</span>(<span class="fu">abs</span>(L1Norm <span class="sc">-</span> <span class="dv">6000</span>))    </span>
-<span id="cb69-755"><a href="#cb69-755" aria-hidden="true" tabindex="-1"></a>lambda_6k <span class="ot">&lt;-</span> glmfit<span class="sc">$</span>lambda[idx_L1Norm_6k]    </span>
-<span id="cb69-756"><a href="#cb69-756" aria-hidden="true" tabindex="-1"></a>lambda_6k</span>
-<span id="cb69-757"><a href="#cb69-757" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb69-758"><a href="#cb69-758" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb69-759"><a href="#cb69-759" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-760"><a href="#cb69-760" aria-hidden="true" tabindex="-1"></a>::: {.callout-note collapse=&quot;false&quot;}</span>
-<span id="cb69-761"><a href="#cb69-761" aria-hidden="true" tabindex="-1"></a><span class="fu">## Question: </span></span>
-<span id="cb69-762"><a href="#cb69-762" aria-hidden="true" tabindex="-1"></a>How many non-zero coefficients do you get for the $\lambda$ that you found in the previous question?</span>
-<span id="cb69-763"><a href="#cb69-763" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-766"><a href="#cb69-766" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb69-767"><a href="#cb69-767" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: lambda_6k_nonzero</span></span>
-<span id="cb69-768"><a href="#cb69-768" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: !expr (! params$skip_execution &amp; ! params$skip_answers)</span></span>
-<span id="cb69-769"><a href="#cb69-769" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: !expr (! params$skip_answers)</span></span>
-<span id="cb69-770"><a href="#cb69-770" aria-hidden="true" tabindex="-1"></a><span class="co">#| results: &#39;asis&#39;</span></span>
-<span id="cb69-771"><a href="#cb69-771" aria-hidden="true" tabindex="-1"></a>non0_coeff <span class="ot">&lt;-</span> <span class="fu">abs</span>(<span class="fu">coef</span>(glmfit, <span class="at">s=</span>lambda_6k)) <span class="sc">&gt;</span> <span class="dv">0</span> </span>
-<span id="cb69-772"><a href="#cb69-772" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(non0_coeff)</span>
-<span id="cb69-773"><a href="#cb69-773" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb69-774"><a href="#cb69-774" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb69-775"><a href="#cb69-775" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-776"><a href="#cb69-776" aria-hidden="true" tabindex="-1"></a>To choose the best regularization parameter $\lambda$, we use cross-validation. </span>
-<span id="cb69-777"><a href="#cb69-777" aria-hidden="true" tabindex="-1"></a><span class="in">`cv.glmnet()`</span> implements this.</span>
-<span id="cb69-778"><a href="#cb69-778" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-781"><a href="#cb69-781" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb69-782"><a href="#cb69-782" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: colonCV</span></span>
-<span id="cb69-783"><a href="#cb69-783" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: !expr (! isTRUE(params$skip_execution))</span></span>
-<span id="cb69-784"><a href="#cb69-784" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">0xdada2</span>)</span>
-<span id="cb69-785"><a href="#cb69-785" aria-hidden="true" tabindex="-1"></a>cvglmfit <span class="ot">=</span> <span class="fu">cv.glmnet</span>(</span>
-<span id="cb69-786"><a href="#cb69-786" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> <span class="fu">t</span>(<span class="fu">exprs</span>(zellerNC)),</span>
-<span id="cb69-787"><a href="#cb69-787" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> <span class="fu">factor</span>(zellerNC<span class="sc">$</span>disease),</span>
-<span id="cb69-788"><a href="#cb69-788" aria-hidden="true" tabindex="-1"></a>  <span class="at">family =</span> <span class="st">&quot;binomial&quot;</span></span>
-<span id="cb69-789"><a href="#cb69-789" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb69-790"><a href="#cb69-790" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-791"><a href="#cb69-791" aria-hidden="true" tabindex="-1"></a><span class="co"># deviation for different lambdas</span></span>
-<span id="cb69-792"><a href="#cb69-792" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(cvglmfit)</span>
-<span id="cb69-793"><a href="#cb69-793" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb69-794"><a href="#cb69-794" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-795"><a href="#cb69-795" aria-hidden="true" tabindex="-1"></a>We can access the optimal value with:</span>
-<span id="cb69-796"><a href="#cb69-796" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-799"><a href="#cb69-799" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb69-800"><a href="#cb69-800" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: lambda.min </span></span>
-<span id="cb69-801"><a href="#cb69-801" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: !expr (! isTRUE(params$skip_execution))</span></span>
-<span id="cb69-802"><a href="#cb69-802" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-803"><a href="#cb69-803" aria-hidden="true" tabindex="-1"></a>cvglmfit<span class="sc">$</span>lambda.min</span>
-<span id="cb69-804"><a href="#cb69-804" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-805"><a href="#cb69-805" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb69-806"><a href="#cb69-806" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-807"><a href="#cb69-807" aria-hidden="true" tabindex="-1"></a>As this value results from finding a minimum in an estimated curve, it turns out </span>
-<span id="cb69-808"><a href="#cb69-808" aria-hidden="true" tabindex="-1"></a>that it is often too small, i.e., that the implied penalization is too weak. </span>
-<span id="cb69-809"><a href="#cb69-809" aria-hidden="true" tabindex="-1"></a>A heuristic recommended by the authors of the <span class="in">`glmnet`</span> package is to use a </span>
-<span id="cb69-810"><a href="#cb69-810" aria-hidden="true" tabindex="-1"></a>somewhat larger value instead, namely the largest value of $\lambda$ such that</span>
-<span id="cb69-811"><a href="#cb69-811" aria-hidden="true" tabindex="-1"></a>the performance measure is within 1 standard error of the minimum.</span>
-<span id="cb69-812"><a href="#cb69-812" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-815"><a href="#cb69-815" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb69-816"><a href="#cb69-816" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: lambda.1se </span></span>
-<span id="cb69-817"><a href="#cb69-817" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: !expr (! isTRUE(params$skip_execution))</span></span>
-<span id="cb69-818"><a href="#cb69-818" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-819"><a href="#cb69-819" aria-hidden="true" tabindex="-1"></a>cvglmfit<span class="sc">$</span>lambda<span class="fl">.1</span>se</span>
-<span id="cb69-820"><a href="#cb69-820" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-821"><a href="#cb69-821" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb69-822"><a href="#cb69-822" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-823"><a href="#cb69-823" aria-hidden="true" tabindex="-1"></a>::: {.callout-note collapse=&quot;false&quot;}</span>
-<span id="cb69-824"><a href="#cb69-824" aria-hidden="true" tabindex="-1"></a><span class="fu">## Question</span></span>
-<span id="cb69-825"><a href="#cb69-825" aria-hidden="true" tabindex="-1"></a>How does the confusion table look like for $\lambda$ = <span class="in">`lambda.1se`</span>?</span>
-<span id="cb69-826"><a href="#cb69-826" aria-hidden="true" tabindex="-1"></a>Report the top left element of the confusion table (i.e. number of correctly classified cancer samples). </span>
-<span id="cb69-827"><a href="#cb69-827" aria-hidden="true" tabindex="-1"></a>Hint: Use function <span class="in">`predict`</span>.</span>
-<span id="cb69-828"><a href="#cb69-828" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-831"><a href="#cb69-831" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb69-832"><a href="#cb69-832" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: preds.1se</span></span>
-<span id="cb69-833"><a href="#cb69-833" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: !expr (! params$skip_execution &amp; ! params$skip_answers)</span></span>
-<span id="cb69-834"><a href="#cb69-834" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: !expr (! params$skip_answers)</span></span>
-<span id="cb69-835"><a href="#cb69-835" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-836"><a href="#cb69-836" aria-hidden="true" tabindex="-1"></a><span class="co"># predictions</span></span>
-<span id="cb69-837"><a href="#cb69-837" aria-hidden="true" tabindex="-1"></a>preds_1se <span class="ot">&lt;-</span> <span class="fu">predict</span>(</span>
-<span id="cb69-838"><a href="#cb69-838" aria-hidden="true" tabindex="-1"></a>  glmfit,</span>
-<span id="cb69-839"><a href="#cb69-839" aria-hidden="true" tabindex="-1"></a>  <span class="at">newx =</span> <span class="fu">t</span>(<span class="fu">exprs</span>(zellerNC)),</span>
-<span id="cb69-840"><a href="#cb69-840" aria-hidden="true" tabindex="-1"></a>  <span class="at">s =</span> cvglmfit<span class="sc">$</span>lambda<span class="fl">.1</span>se,</span>
-<span id="cb69-841"><a href="#cb69-841" aria-hidden="true" tabindex="-1"></a>  <span class="at">type =</span> <span class="st">&quot;class&quot;</span></span>
-<span id="cb69-842"><a href="#cb69-842" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb69-843"><a href="#cb69-843" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-844"><a href="#cb69-844" aria-hidden="true" tabindex="-1"></a><span class="co"># confusion table</span></span>
-<span id="cb69-845"><a href="#cb69-845" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(<span class="at">predicted =</span> preds_1se, <span class="at">truth =</span> zellerNC<span class="sc">$</span>disease)</span>
-<span id="cb69-846"><a href="#cb69-846" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb69-847"><a href="#cb69-847" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-848"><a href="#cb69-848" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb69-849"><a href="#cb69-849" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-850"><a href="#cb69-850" aria-hidden="true" tabindex="-1"></a>::: {.callout-note collapse=&quot;false&quot;}</span>
-<span id="cb69-851"><a href="#cb69-851" aria-hidden="true" tabindex="-1"></a><span class="fu">## Question</span></span>
-<span id="cb69-852"><a href="#cb69-852" aria-hidden="true" tabindex="-1"></a>What features drive the classification (at $\lambda$ = <span class="in">`lambda.1se`</span> chosen by cross-validation with the 1 standard error rule)?</span>
-<span id="cb69-853"><a href="#cb69-853" aria-hidden="true" tabindex="-1"></a>Report the top one (the one with the largest absolute value of its coefficient).</span>
-<span id="cb69-854"><a href="#cb69-854" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-857"><a href="#cb69-857" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb69-858"><a href="#cb69-858" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: idx_largest_beta</span></span>
-<span id="cb69-859"><a href="#cb69-859" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: !expr (! params$skip_execution &amp; ! params$skip_answers)</span></span>
-<span id="cb69-860"><a href="#cb69-860" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: !expr (! params$skip_answers)</span></span>
-<span id="cb69-861"><a href="#cb69-861" aria-hidden="true" tabindex="-1"></a><span class="co">#| results: &#39;asis&#39;</span></span>
-<span id="cb69-862"><a href="#cb69-862" aria-hidden="true" tabindex="-1"></a><span class="co"># coefficients with selected beta</span></span>
-<span id="cb69-863"><a href="#cb69-863" aria-hidden="true" tabindex="-1"></a>coeffs <span class="ot">&lt;-</span> <span class="fu">coef</span>(glmfit, <span class="at">s=</span>cvglmfit<span class="sc">$</span>lambda<span class="fl">.1</span>se)</span>
-<span id="cb69-864"><a href="#cb69-864" aria-hidden="true" tabindex="-1"></a><span class="co"># top coefficient</span></span>
-<span id="cb69-865"><a href="#cb69-865" aria-hidden="true" tabindex="-1"></a>idx_largest_beta <span class="ot">&lt;-</span> <span class="fu">which.max</span>(<span class="fu">abs</span>(<span class="fu">as.numeric</span>(coeffs)))</span>
-<span id="cb69-866"><a href="#cb69-866" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(<span class="fu">coef</span>(glmfit))[idx_largest_beta]</span>
-<span id="cb69-867"><a href="#cb69-867" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb69-868"><a href="#cb69-868" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-869"><a href="#cb69-869" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb69-870"><a href="#cb69-870" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-871"><a href="#cb69-871" aria-hidden="true" tabindex="-1"></a><span class="fu">## Method hacking</span></span>
-<span id="cb69-872"><a href="#cb69-872" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-873"><a href="#cb69-873" aria-hidden="true" tabindex="-1"></a>We encountered p-value hacking. A similar phenomenon exists in statistical </span>
-<span id="cb69-874"><a href="#cb69-874" aria-hidden="true" tabindex="-1"></a>learning: given a dataset, we explore various different methods of preprocessing </span>
-<span id="cb69-875"><a href="#cb69-875" aria-hidden="true" tabindex="-1"></a>(such as normalization, outlier detection, transformation, feature selection), </span>
-<span id="cb69-876"><a href="#cb69-876" aria-hidden="true" tabindex="-1"></a>try out different machine learning algorithms and tune their parameters until </span>
-<span id="cb69-877"><a href="#cb69-877" aria-hidden="true" tabindex="-1"></a>we are content with the result. The measured accuracy is likely to be too </span>
-<span id="cb69-878"><a href="#cb69-878" aria-hidden="true" tabindex="-1"></a>optimistic, i.e., will not generalize to a new dataset. Embedding as many of </span>
-<span id="cb69-879"><a href="#cb69-879" aria-hidden="true" tabindex="-1"></a>our methodical choices into a computational formalism and having an outer </span>
-<span id="cb69-880"><a href="#cb69-880" aria-hidden="true" tabindex="-1"></a>cross-validation loop (not to be confused with the inner loop that does the </span>
-<span id="cb69-881"><a href="#cb69-881" aria-hidden="true" tabindex="-1"></a>parameter tuning) will ameliorate the problem. But is unlikely to address it </span>
-<span id="cb69-882"><a href="#cb69-882" aria-hidden="true" tabindex="-1"></a>completely, since not all our choices can be formalized.</span>
-<span id="cb69-883"><a href="#cb69-883" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-884"><a href="#cb69-884" aria-hidden="true" tabindex="-1"></a>The gold standard remains validation on truly unseen data. In addition, it is</span>
-<span id="cb69-885"><a href="#cb69-885" aria-hidden="true" tabindex="-1"></a>never a bad thing if the classifier is not a black box but can be interpreted </span>
-<span id="cb69-886"><a href="#cb69-886" aria-hidden="true" tabindex="-1"></a>in terms of domain knowledge. Finally, report not just summary statistics, </span>
-<span id="cb69-887"><a href="#cb69-887" aria-hidden="true" tabindex="-1"></a>such as misclassification rates, but lay open the complete computational </span>
-<span id="cb69-888"><a href="#cb69-888" aria-hidden="true" tabindex="-1"></a>workflow, so that anyone (including your future self) can convince themselves</span>
-<span id="cb69-889"><a href="#cb69-889" aria-hidden="true" tabindex="-1"></a>of the robustness of the result or of the influence of the preprocessing, </span>
-<span id="cb69-890"><a href="#cb69-890" aria-hidden="true" tabindex="-1"></a>model selection and tuning choices.</span>
-<span id="cb69-891"><a href="#cb69-891" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-892"><a href="#cb69-892" aria-hidden="true" tabindex="-1"></a>After this word of caution, have a look at the <span class="in">`caret`</span> package. It contains </span>
-<span id="cb69-893"><a href="#cb69-893" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">a large number of machine learning methods</span><span class="co">](https://topepo.github.io/caret/available-models.html)</span></span>
-<span id="cb69-894"><a href="#cb69-894" aria-hidden="true" tabindex="-1"></a>with an common interface. </span>
-<span id="cb69-895"><a href="#cb69-895" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-898"><a href="#cb69-898" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb69-899"><a href="#cb69-899" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: caret1</span></span>
-<span id="cb69-900"><a href="#cb69-900" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: !expr (! isTRUE(params$skip_execution))</span></span>
-<span id="cb69-901"><a href="#cb69-901" aria-hidden="true" tabindex="-1"></a><span class="co">#| message: FALSE</span></span>
-<span id="cb69-902"><a href="#cb69-902" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;caret&quot;</span>)</span>
-<span id="cb69-903"><a href="#cb69-903" aria-hidden="true" tabindex="-1"></a>caretMethods <span class="ot">=</span> <span class="fu">names</span>(<span class="fu">getModelInfo</span>())</span>
-<span id="cb69-904"><a href="#cb69-904" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(caretMethods, <span class="dv">8</span>)</span>
-<span id="cb69-905"><a href="#cb69-905" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb69-906"><a href="#cb69-906" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-907"><a href="#cb69-907" aria-hidden="true" tabindex="-1"></a>::: {.callout-note collapse=&quot;false&quot;}</span>
-<span id="cb69-908"><a href="#cb69-908" aria-hidden="true" tabindex="-1"></a><span class="fu">## Question</span></span>
-<span id="cb69-909"><a href="#cb69-909" aria-hidden="true" tabindex="-1"></a>How many methods does <span class="in">`caret`</span> currently include?</span>
-<span id="cb69-910"><a href="#cb69-910" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-913"><a href="#cb69-913" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb69-914"><a href="#cb69-914" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: caretMethods</span></span>
-<span id="cb69-915"><a href="#cb69-915" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: !expr (! params$skip_execution &amp; ! params$skip_answers)</span></span>
-<span id="cb69-916"><a href="#cb69-916" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: !expr (! params$skip_answers)</span></span>
-<span id="cb69-917"><a href="#cb69-917" aria-hidden="true" tabindex="-1"></a><span class="co">#| results: &#39;asis&#39;</span></span>
-<span id="cb69-918"><a href="#cb69-918" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(caretMethods)</span>
-<span id="cb69-919"><a href="#cb69-919" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb69-920"><a href="#cb69-920" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-921"><a href="#cb69-921" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb69-922"><a href="#cb69-922" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-923"><a href="#cb69-923" aria-hidden="true" tabindex="-1"></a><span class="fu">## Session info</span></span>
-<span id="cb69-924"><a href="#cb69-924" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-927"><a href="#cb69-927" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb69-928"><a href="#cb69-928" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: sessionInfo</span></span>
-<span id="cb69-929"><a href="#cb69-929" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: !expr (! isTRUE(params$skip_execution))</span></span>
-<span id="cb69-930"><a href="#cb69-930" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span>
-<span id="cb69-931"><a href="#cb69-931" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div></div></div></div></div>
+</script>
 </div> <!-- /content -->
 
 
