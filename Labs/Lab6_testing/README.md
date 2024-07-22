@@ -2,5 +2,7 @@
 #
 
 quarto render Lab6_testing.qmd -P skip_answers:false
+
 mv Lab6_testing.html Lab6_testing_answers.html
+
 quarto render Lab6_testing.qmd -P skip_answers:true
