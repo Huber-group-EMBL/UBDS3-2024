@@ -12,7 +12,7 @@ format:
     code-line-numbers: false 
 params:
   skip_execution: false
-  skip_answers: false
+  skip_answers: true
 ---
 
 ```{r}
@@ -28,22 +28,33 @@ include hierarchical clustering, K means and density clustering.
 
 # Packages
 
-Install and load packages.
+Install packages.
 
 ```{r}
 #| label: install_packages
 #| output: false
 #| eval: FALSE
 pkgs_needed = c(
-  "tidyverse",
-  "dbscan", "GGally", "pheatmap",
-  "flowCore","flowViz","flowPeaks", "ggcyto"
+  "tidyverse", "pheatmap", "ggfortify"
 )
 letsinstall = setdiff(pkgs_needed, installed.packages()) 
 if (length(letsinstall) > 0) {
   for (pkg in letsinstall)
     BiocManager::install(pkg)
 }
+```
+
+Load packages.
+
+```{r}
+#| label: load_packages
+#| output: FALSE
+#| warning: FALSE
+#| message: FALSE
+#| eval: !expr (! isTRUE(params$skip_execution))
+library("tidyverse")
+library("pheatmap")
+library("ggfortify")
 ```
 
 # Hierarchical clustering
@@ -72,7 +83,7 @@ If you downloaded the file before, you can load it from the local directory.
 load("Morder.RData")
 ```
 
-::: {.callout-note collapse="true"}
+::: {.callout-note collapse="false"}
 ## Question
 Inspect the data. How many samples of each T cell type (naïve, effector, memory) are there in the data?
 
@@ -81,13 +92,12 @@ Inspect the data. How many samples of each T cell type (naïve, effector, memory
 #| eval: !expr (! params$skip_execution & ! params$skip_answers)
 #| echo: !expr (! params$skip_answers)
 rownames(Morder) |> 
-  strsplit(split = "_") |> 
-  sapply(function(x) x[2]) |> 
+  stringr::str_split_i("_", 2) |>
   table()
 ```
 :::
 
-In base R the function to perform hierarchical clustering is `hclust()`.
+In base R the function to perform hierarchical clustering is `hclust`.
 To cluster the genes with hierarchical clustering you first need
 to compute a distance matrix storing all pairwise (gene-to-gene)
 dissimilarities. This is how to do it:
@@ -95,19 +105,19 @@ dissimilarities. This is how to do it:
 ```{r}
 #| label: hclust_genes
 #| eval: !expr (! isTRUE(params$skip_execution))
-#| fig.width: 15
+#| fig.width: 18
 #| fig.height: 8
 # distance calculation
-D <- dist(t(Morder))
+D = dist(t(Morder))
 # clustering
-gene_clust <- hclust(d = D)
-# plot dendogram
+gene_clust = hclust(d = D)
+# plot dendrogram
 plot(gene_clust)
 ```
 
-::: {.callout-note collapse="true"}
+::: {.callout-note collapse="false"}
 ## Question
-Why in the provided code the input to `dist()` function is `t(Morder)`? 
+Why in the provided code the input to `dist` function is `t(Morder)`? 
 
 ```{r}
 #| label: question_transpose
@@ -115,18 +125,18 @@ Why in the provided code the input to `dist()` function is `t(Morder)`?
 #| echo: false
 #| results: 'asis'
 cat(
-  "Because dist() cmputes distances between rows, we need to use t() to transposes the expression matrix Morder, so that we cluster genes, and not samples."
+  "Because `dist` computes distances between rows, we need to use `t` to transposes the expression matrix Morder, so that we cluster genes, and not samples."
 )
 ```
 :::
 
 In hierarchical clustering one needs to choose the method for agglomerating the 
-clusters. By default `hclust()` uses a "complete" linkage method (see `?hclust()` 
+clusters. By default `hclust` uses a "complete" linkage method (see `?hclust` 
 for info). 
 
-::: {.callout-note collapse="true"}
+::: {.callout-note collapse="false"}
 ## Question
-Redo hierarchical clustering with "ward.D2" method and plot the dendogram.
+Redo hierarchical clustering with the `ward.D2` method and plot the dendrogram.
 
 ```{r}
 #| label: hclust_genes_ward.D2
@@ -134,11 +144,11 @@ Redo hierarchical clustering with "ward.D2" method and plot the dendogram.
 #| echo: !expr (! params$skip_answers)
 #| fig.width: 15
 #| fig.height: 8
-gene_clust_wd2 <- hclust(d = dist(t(Morder)), method = "ward.D2")
+gene_clust_wd2 = hclust(d = dist(t(Morder)), method = "ward.D2")
 plot(gene_clust_wd2)
 ```
 
-Notice that the values on the y axis of hclust dendogram changed.
+Notice that the values on the y axis of hclust dendrogram changed.
 What do they correspond to?
 
 ```{r}
@@ -152,13 +162,13 @@ cat(
 ```
 :::
 
-Note that in the `hclust()` there are "ward.D" and "ward.D2" methods available. 
+Note that in the `hclust` there are the `ward.D` and `ward.D2` methods available. 
 Please call `?hclust` to read about the difference between the two methods.
 
 Next, instead of clustering genes, we will apply hierarchical clustering for 
 samples (observations)
 
-::: {.callout-note collapse="true"}
+::: {.callout-note collapse="false"}
 ## Question
 Use dist and hclust (with default linkage method) to cluster samples.
 
@@ -169,12 +179,12 @@ Use dist and hclust (with default linkage method) to cluster samples.
 #| fig.width: 15
 #| fig.height: 8
 # we don't transpose the matrix now (samples are rows)
-D_samples <- dist(Morder)
-sample_clust <- hclust(d = D_samples)
+D_samples = dist(Morder)
+sample_clust = hclust(d = D_samples)
 ```
 
 How many clusters of samples are there at the dendrogram height of 12? Hint: 
-the `abline()` function might be helpful.
+the `abline()` and `cutree()` functions might be helpful.
 
 ```{r}
 #| label: hclust_samples_abline
@@ -184,6 +194,10 @@ the `abline()` function might be helpful.
 #| fig.height: 8
 plot(sample_clust)
 abline(a=12, b=0, col="blue")
+
+clusts <- cutree(sample_clust, h = 12)
+table(clusts)
+
 ```
 ```{r}
 #| label: hclust_samples_abline_answer
@@ -198,24 +212,26 @@ cat(sprintf(
 :::
 
 Now that you know how to perform hierarchical clustering, use `pheatmap`
-to generate a heatmap with clustered rows and columns. 
+to generate a heatmap with clustered rows and columns. Below, we do some extra work compared 
+to the default parameters to make sure that 0 is in the center of the color scale, and 
+use beautiful colors.
 
 ```{r}
 #| label: pheatmap
 #| eval: !expr (! isTRUE(params$skip_execution))
-#| fig.height: 8
-#| fig.width: 8
+#| fig.height: 6
+#| fig.width: 10
 library("pheatmap")
 mycolors = colorRampPalette(c("#FFD800", "#0056B9"))(100)
 pheatmap(
   mat = Morder,
-  fontsize_col = 6, fontsize_row = 10, 
+  fontsize_col = 5, fontsize_row = 10, 
   color = mycolors, 
   breaks = max(abs(Morder)) * seq(-1, +1, length.out = length(mycolors) + 1)
 ) 
 ```
 
-::: {.callout-note collapse="true"}
+::: {.callout-note collapse="false"}
 ## Question
 What type of distance and which clustering method does `pheatmap` use by default
 for clustering rows and columns?
@@ -230,7 +246,7 @@ cat(
 )
 ```
 
-Note that these are default values for `dist()` and `hclust()`, too. Look at how
+Note that these are default values for `dist` and `hclust`, too. Look at how
 clustering heatmap changes if you use different distance and clustering methods 
 (e.g. 'ward.D2').
 
@@ -238,472 +254,394 @@ clustering heatmap changes if you use different distance and clustering methods
 #| label: pheatmap_wd2
 #| eval: !expr (! params$skip_execution & ! params$skip_answers)
 #| echo: !expr (! params$skip_answers)
+#| fig.height: 6
+#| fig.width: 10
 # cluster genes
-gene_clust_wd2 <- hclust(d = dist(t(Morder)), method = "ward.D2")
+gene_clust_wd2 = hclust(d = dist(t(Morder)), method = "ward.D2")
 
 # cluster samples
-sample_clust_wd2 <- hclust(d = dist(Morder), method = "ward.D2")
+sample_clust_wd2 = hclust(d = dist(Morder), method = "ward.D2")
 
 # order expression matrix by clustering results
-Morder_clustered <- Morder[sample_clust_wd2$order, gene_clust_wd2$order]
+Morder_clustered = Morder[sample_clust_wd2$order, gene_clust_wd2$order]
 
 # we use pre-computed clustering, so we need to specify that pheatmap should not
 # re-cluster the input data
 pheatmap(
   mat = Morder_clustered,
   cluster_rows = FALSE, cluster_cols = FALSE,
-  fontsize_col = 6, fontsize_row = 10
+  fontsize_col = 5, fontsize_row = 10,
+  color = mycolors, 
+  breaks = max(abs(Morder)) * seq(-1, +1, length.out = length(mycolors) + 1)
 ) 
 ```
 
 :::
 
-# Mass cytometry (CyTOF)
+# K means
 
-Cytometry is a biophysical technology that allows you to measure
-physical and chemical characteristics of cells. Modern flow and mass 
-cytometry allows for simultaneous multiparametric analysis of thousands of 
-particles per second.
-
-[Flow cytometry](https://en.wikipedia.org/wiki/Flow_cytometry) enables the 
-simultaneous measurement of 15, whereas 
-[mass cytometry (CyTOF)](https://en.wikipedia.org/wiki/Mass_cytometry) of as 
-many as 40 proteins per single cell.
-
-We will be working with the CyTOF dataset from a single-cell mass cytometry 
-study by [Bendall et al.](http://science.sciencemag.org/content/332/6030/687.full)
-on differential immune drug responses across human hematopoietic cells over time.
-
-First we load the necessary packages.
+Next we will do k-means clustering on the same dataset.
+First thing we need to do is select the number of clusters. In this dataset, we 
+expect to have three clusters (naïve, effector, memory T cells). 
+We will use the `kmeans` function to cluster the data into 3 groups.
 
 ```{r}
-#| label: load_packages
-#| output: false
+#| label: kmeans
 #| eval: !expr (! isTRUE(params$skip_execution))
-library("tidyverse")
-library("flowCore")
-library("flowViz")
-library("flowPeaks")
-library("ggcyto")
+
+# convert to data.frame
+Morder_df <- as.data.frame(Morder)
+
+# add cell type  column - wee will use this for plotting
+Morder_df$cell_type <- stringr::str_extract(rownames(Morder), "EFF|MEM|NAI")
+Morder_df$condition <- stringr::str_extract(rownames(Morder), "HEA|MEL")
+
+# k means
+set.seed(1234)
+km <- kmeans(x = Morder[, -match(c("cell_type","condition"), colnames(Morder_df))], centers = 3)
+
+# we can visualize the results
+autoplot(km, Morder_df, frame = TRUE, size = 4, alpha = 0.6) + coord_equal()
 ```
 
-Here we download the data.
-
-```{r}
-#| label: cytometry_download
-#| eval: FALSE
-
-# download file from web (14.3 Mb)
-download.file(
-  url = "http://web.stanford.edu/class/bios221/data/Bendall_2011.fcs",
-  destfile = "Bendall_2011.fcs",
-  mode = "wb"
-)
-# if download fails with timeout error, try increasing it
-# options(timeout = 1000)
-```
-
-Load this data in R using flowCore package.
-
-```{r}
-#| label: cytometry_load
-#| eval: !expr (! isTRUE(params$skip_execution))
-#| message: FALSE
-#| warning: FALSE
-# load file in R - here we use a function from flowCore package
-fcsB <- flowCore::read.FCS("Bendall_2011.fcs")
-```
-
-::: {.callout-note collapse="true"}
+::: {.callout-note collapse="false"}
 ## Question
-Look at the structure of the `fcsB` object. How many variables and how many 
-cells were measured? 
+Check how different cell types are distributed in the three clusters, i.e. are 
+the samples clustering by the cell types?
+Hint: use "shape" argument of the `autoplot` function to indicate cell types.
 
 ```{r}
-#| label: fcB_vars
+#| label: kmeans_cell_types
 #| eval: !expr (! params$skip_execution & ! params$skip_answers)
 #| echo: !expr (! params$skip_answers)
-fcsB
 
-# variables
-length(colnames(fcsB))
-
-# cells
-nrow(exprs(fcsB))
+autoplot(km, Morder_df, frame = TRUE,  shape = "cell_type", size = 4, alpha = 0.6) + coord_equal()
 ```
 :::
 
-Inspect slots of the flowFrame object:
-
-```{r}
-#| label: fcB_slots
-#| eval: !expr (! params$skip_execution)
-slotNames(fcsB)
-```
-
-Different slots of the `flowFrame` objects can be accessed with `exprs(fcsB)`, `parameters(fcsB)` and `description(fcsB)` functions.
-
-## Data preprocessing
-
-First we get the data table that reports the mapping between isotopes and 
-markers (antibodies).
-
-Here we download the table.
-
-```{r}
-#| label: fcB_markers_download
-#| eval: FALSE
-#| message: FALSE
-#| warning: FALSE
-#| 
-# download data from the web
-markersB = read_csv(url("http://web.stanford.edu/class/bios221/data/Bendall_2011_markers.csv"))
-```
-
-If you already downloaded the data you can load it locally.
-
-```{r}
-#| label: fcB_markers_local
-#| eval: !expr (! isTRUE(params$skip_execution))
-#| message: FALSE
-#| warning: FALSE
-
-# load data
-markersB = read_csv("Bendall_2011_markers.csv")
-```
-
-Now we replace the isotope names in the column names of `fcsB` with the marker 
-names. This is simply to make the subsequent analysis and plotting code more 
-readable.
-
-```{r}
-#| label: fcB_markers
-#| eval: !expr (! isTRUE(params$skip_execution))
-#| message: FALSE
-#| warning: FALSE
-# match isotope names to marker names
-mt = match(markersB$isotope, colnames(fcsB))
-
-# check that all isotope names were matched
-stopifnot(!any(is.na(mt)))
-
-# replace isotope names with marker names
-colnames(fcsB)[mt] = markersB$marker
-```
-
-Below, we show how to plot the joint distribution of the cell lengths and 
-the `DNA191` (this variable indicates the activity of the cell, i.e. whether the
-cell is dead or alive):
-
-```{r}
-#| label: flowPlot
-#| eval: !expr (! isTRUE(params$skip_execution))
-#| fig.width: 6
-#| fig.height: 6
-flowPlot(fcsB, plotParameters = c("Cell_length", "DNA191"), logy = TRUE)
-```
-
-It is standard to transform both flow and mass cytometry data using one of 
-several special functions, we take the example of the inverse hyperbolic sine 
-(arcsinh), which serves as a variance stabilizing transformation.  
-
-First, we show the distribution on untransformed raw data:
-
-```{r}
-#| label: densityplot
-#| eval: !expr (! isTRUE(params$skip_execution))
-#| fig.width: 6
-#| fig.height: 5
-densityplot(~`CD3all`, fcsB)
-```
-
-To apply the transformation and to plot the data you can use functions
-from the `flowCore` package. After the transformation the cells seem to 
-form two clusters. Based solely on one dimension (CD3all) we see two cell
-subsets (the two modes).
-
-```{r}
-#| label: fcsB_transform
-#| eval: !expr (! isTRUE(params$skip_execution))
-#| fig.width: 6
-#| fig.height: 5
-asinhT = arcsinhTransform(a = 0.1, b = 1)
-cols_to_transform <- setdiff(colnames(fcsB), c("Time", "Cell_length", "absoluteEventNumber"))
-trans1 = transformList(cols_to_transform, asinhT)
-fcsBT = transform(fcsB, trans1)
-densityplot(~`CD3all`, fcsBT)
-```
-
-# K-means
-
-Let's cluster cells into two groups using one-dimensional k-means filter.
-To learn more about the arguments of the functions type `?kmeansFilter`
-and `?flowCore::filter`
-
-```{r}
-#| label: kmeansFilter
-#| eval: !expr (! isTRUE(params$skip_execution))
-kf = kmeansFilter("CD3all"=c("Pop1","Pop2"), filterId="myKmFilter")
-fres = flowCore::filter(fcsBT, kf)
-summary(fres)
-```
-
-Split two data clusters into two separate flowFrame objects:
-
-```{r}
-#| label: flowFrame_split
-#| eval: !expr (! isTRUE(params$skip_execution))
-fcsBT1 = split(fcsBT, fres, population="Pop1")
-fcsBT2 = split(fcsBT, fres, population="Pop2")
-```
-
-We can also cluster cells using k-means with the `flowPeaks()` function from 
-`flowPeaks` package. The algorithm for this clustering algorithm is specified
-in detail in a paper by
-[Ge Y. et al (2012)](https://academic.oup.com/bioinformatics/article/28/15/2052/236255).
-
-
-```{r}
-#| label: flowPeaks
-#| eval: !expr (! isTRUE(params$skip_execution))
-#| fig.width: 6
-#| fig.height: 6
-dat = data.frame(exprs(fcsBT)[ , c("CD56", "CD3all")])
-fp = flowPeaks(dat)
-plot(fp)
-```
-
-::: {.callout-note collapse="true"}
+::: {.callout-note collapse="false"}
 ## Question
-How many dimensions (markers) does the above code use to split the data into 
-4 cell subsets using kmeans?
+Notice that one cluster contains samples from different cell types. If you repeat k means
+with k=4, do they separate?
 
 ```{r}
-#| label: flowpeaks_kmeans
-#| eval: !expr (! params$skip_execution & ! params$skip_answers)
-#| echo: false
-#| results: 'asis'
-cat("2 dimensions, based on `CD56` and `CD3all`")
-```
-:::
-
-Note that here `fcsB` or `fcsBT` are not 'data.frames' but objects of class 'flowFrame'. This meansthat  you cannot use `fcsB` and `fcsBT`  (without conversion to data.frame) as inputs to `ggplot()`.
-However, 'flowFrame' objects hold marker expression data together with sample information data, so you could access any variables you need for plotting directly from these objects (and this would be lost by converting them to 'data.frames')
-This is why for plottimg now we use a Bioconductor package ``ggcyto``, built on top of ``ggplot2``. This package includes functions for generating visualizations specifically for cytometry data, starting from 'flowFrame' objects.
-
-We can look at distributions of measured markers, e.g CD4, by plotting the histogram:
-
-```{r}
-#| label: ggcyto_CD4CD8__transform_hist
-#| eval: !expr (! isTRUE(params$skip_execution))
-#| fig.width: 8
-#| fig.height: 6
-library("ggcyto")
-# Untransformed data
-ggcyto(fcsB,aes(x = CD4)) + geom_histogram(bins = 90) 
-# Transformed data
-ggcyto(fcsBT, aes(x = CD4)) + geom_histogram(bins = 90) 
-```
-
-`autoplot()` function plots the density of selected markers.
-
-```{r}
-#| label: ggcyto_autoplot_cd4
-#| eval: !expr (! isTRUE(params$skip_execution))
-#| fig.width: 8
-#| fig.height: 6
-# ggcyto automatic plotting
-autoplot(fcsBT, "CD4")
-```
-
-We can compare the distributions of two markers, e.g. CD4 and CD8.
-
-```{r}
-#| label: ggcyto_density2d
-#| eval: !expr (! isTRUE(params$skip_execution))
-#| fig.width: 6
-#| fig.height: 6
-# 2d density plot
-ggcyto(fcsBT, aes(x = CD4, y = CD8)) + geom_density2d(colour="black") 
-# hexbin plot
-ggcyto(fcsBT, aes(x = CD4, y = CD8)) + geom_hex(bins = 50) 
-```
-
-The same can be achieved with `autoplot()` for two variables.
-
-```{r}
-#| label: ggcyto_autoplot_cd4_cd8
-#| eval: !expr (! isTRUE(params$skip_execution))
-#| fig.width: 6
-#| fig.height: 6
-# ggcyto automatic plotting
-autoplot(fcsBT, "CD4", "CD8", bins = 50)
-```
-
-For more details on capabilities of `ggcyto` refer to the following
-[link](https://bioconductor.org/packages/release/bioc/vignettes/ggcyto/inst/doc/autoplot.html)
-
-# Density based clustering
-
-Data sets such as flow cytometry containing only a few variables (markers) and a 
-large number of observations (cells) are amenable to density clustering. 
-DBSCAN algorithm looks for regions of high density separated by sparse emptier 
-regions. This method has the advantage of being able to cope with clusters that 
-are not necessarily convex (i.e. not blob-shaped). One implementation of such a
-method is called ``dbscan``, let us look at an example by running the code below.
-
-```{r dbscanfcs5}
-#| label: dbscan
-#| eval: !expr (! isTRUE(params$skip_execution))
-#| warning: FALSE
-#| message: FALSE
-library("dbscan")
-# Select a small subset of 5 protein markers
-mc5 = exprs(fcsBT)[, c("CD4", "CD8", "CD20", "CD3all", "CD56")]
-res5 = dbscan::dbscan(mc5, eps = .65, minPts = 30)
-mc5df = data.frame(mc5)
-mc5df$cluster = as.factor(res5$cluster)
-```
-
-::: {.callout-note collapse="true"}
-## Question
-How many clusters did `dbscan()` find?
-
-```{r}
-#| label: dbscan_clusters
+#| label: kmeans_4
 #| eval: !expr (! params$skip_execution & ! params$skip_answers)
 #| echo: !expr (! params$skip_answers)
-table(mc5df$cluster)
-```
-```{r}
-#| label: dbscan_clusters_num
-#| eval: !expr (! params$skip_execution & ! params$skip_answers)
-#| echo: false
-#| results: 'asis'
-cat(
-  table(mc5df$cluster) |> length()-1,
-  " clusters were found (0 are unclustered observations)."
-)
+# k means
+set.seed(1234)
+km <- kmeans(x = Morder_df[, -match(c("cell_type","condition"), colnames(Morder_df))], centers = 4)
+# plot
+autoplot(km, Morder_df, frame = TRUE, shape = "cell_type", size = 4, alpha = 0.6)
 ```
 :::
 
-Note that we do not count the `0` as a cluster, since it contains all cells that 
-were not assigned to any cluster. Looking up the documentation  of `dbscan` 
-(`?dbscan`) we find that "Points which cannot be assigned to a cluster will be 
-reported as members of the noise cluster 0."
-
-::: {.callout-note collapse="true"}
+::: {.callout-note collapse="false"}
 ## Question
-How many cells were clustered into cluster 3 by `dbscan()`?
+The data are coming from two conditions: healthy and melanoma. Repeat k-menas 
+clustering with k=2 and see if the clusters now correspond to these conditions?
 
 ```{r}
-#| label: dbscan_count
+#| label: kmeans_2
 #| eval: !expr (! params$skip_execution & ! params$skip_answers)
 #| echo: !expr (! params$skip_answers)
-sum(mc5df$cluster == 3)
+# k means
+set.seed(1234)
+km <- kmeans(x = Morder[, -match(c("cell_type","condition"), colnames(Morder_df))], centers = 2)
+# plot
+autoplot(km, Morder_df, frame = TRUE, shape = "condition", size = 4, alpha = 0.6)
 ```
 :::
 
-We can now generate a CD8-vs-CD4 2d-density plot for the cells colored
-by their assigned cluster labels, computed by `dbscan()`:
+Choosing the number of clusters for k-means is important and at the same time 
+not trivial, because usually we don't know the number of clusters in the data 
+_a priori_.  
 
-```{r}
-#| label: cd8_cd4_density
-#| eval: !expr (! isTRUE(params$skip_execution))
-#| fig.width: 8
-#| fig.height: 8
-#| warning: FALSE
-ggplot(mc5df, aes(x = CD4, y = CD8, colour = cluster)) + geom_density2d()
-```
+How can we choose appropriate value of 'k'?  
+One way to choose the number of clusters is to use of the "wss" 
+(within sum of squares) statistic.
 
-And do the same for CD3all and CD20 markers:
-
-```{r}
-#| label: cd3all_cd20_density
-#| eval: !expr (! isTRUE(params$skip_execution))
-#| fig.width: 8
-#| fig.height: 8
-#| warning: FALSE
-ggplot(mc5df,aes(x = CD3all, y = CD20, colour = cluster))+ geom_density2d()
-```
-
-Observe that **the nature nature of the clustering is multidimensional**,
-as the projections into two dimensions show overlapping clusters.
-
-# Validating and choosing the number of clusters
-
-The clustering methods we have described are tailored to deliver the best 
-grouping of the data under various constrains, however they will always deliver 
-groups, even if there are none. This is important, e.g. when performing
-kmeans clustering, as we have to set the 'k' parameter (for the number
-of clusters to group observations into) ahead of time. What choice of 'k'
-is valid though?
-
-Here we want to illustate the use of the "wss" (within sum of squares) statistic 
-to evaluate the quality of a clustering. Note that as $k$ (number of cluster for 
-k-means algorithm) increases, wss will also decrease. We simulate data coming 
-from 4 groups. In particular, we generate 2-dimensional observations
-(as if there were only 2 proteins measured for each cell). The four groups
-are generated from 2-d multivariate normals with centers at
-$\mu_1 = (0, 0)$, $\mu_2 = (0, 8)$, $\mu_3 = (8, 0)$, $\mu_4 = (8, 8)$.
-In this simulation, we know the ground truth (4 groups), but we will
-try to cluster the data using the `kmeans` argorithm with different choices for
-the `k` parameter. We will see how the wss statistic varies as we vary `k`.
-
-We have  used the `|>` operator (if you do not understand the code, try to see
-what `simul4` contains and repeat the same using code that does not use the `|>`
-operator).
-
-```{r Fake4}
-#| label: wss
-#| eval: !expr (! isTRUE(params$skip_execution))
-#| fig.width: 8
-#| fig.height: 8
-simul4 = lapply(c(0,8), function(x){
-  lapply(c(0,8), function(y){
-    data.frame(x = rnorm(100, x, 2),
-               y = rnorm(100, y, 2), 
-               class = paste(x, y, sep = "")
-    )
-  }) |> do.call(what = rbind)
-}) |> do.call(what = rbind)
-```
-
-```{r}
-#| label: wss_point
-#| eval: !expr (! isTRUE(params$skip_execution))
-#| fig.width: 6
-#| fig.height: 6
-ggplot(simul4, aes(x = x, y = y)) +
-  geom_point(aes(color = class), size = 2)
-```
+`kmeans()` function reports wss for every cluster in the results (check 
+`km$withinss`). Here we implement the function that computes the wss statistic 
+for different number of clusters in kmeans.
 
 ```{r}
 #| label: wss_plot
 #| eval: !expr (! isTRUE(params$skip_execution))
 #| fig.width: 6
 #| fig.height: 6
-# Compute the kmeans within group wss for k=1 to 12
-wss = rep(0,8)
-# for a single cluster the WSS statistic is just sum of squares of centered data
-wss[1] = sum(apply(scale(simul4[,1:2], scale = F), 2, function(x){ x^2 }))
-# for k = 2, 3, ... we perform kmeans clustering and compute the associated WSS statistic
-for (k in 2:8) {
-  km4 <- kmeans(simul4[,1:2],k)
-    wss[k] =  sum(km4$withinss)
+
+wssplot <- function(data, nc=10, seed=1234){
+  wss <- (nrow(data)-1)*sum(apply(data,2,var))
+  print(wss)
+  for (i in 2:nc){
+    set.seed(seed)
+    wss[i] <- sum(kmeans(data, centers=i)$withinss)}
+  plot(1:nc, wss, type="b", xlab="Number of Clusters",
+       ylab="Within groups sum of squares")
+  wss
 }
-# Now, we are ready to plot the computed statistic:
-ggplot(data.frame(k = 1:length(wss), wss = wss)) +
-  geom_point(aes(x = k, y = wss), color = "blue", size= 3) +
-  xlab('k') + ylab('WSS(k)')
+```
+
+Inspect how wss looks for different number of clusters in our `Morder` data.
+
+```{r}
+wssplot(Morder)
 ```
 
 Within sum of squares (wss) statistic, we see that the last substantial decrease
-of the statistic occurres before $k=4$, and for values $k = 5, 6, \dots$
-the quantity 'levels-off'. In practice, we would choose $k=4$, a value
-happening at the 'elbow' of the plot (elbow-rul). Of course this choice is 
-still somewhat subjective. The book chapter describes additional ways of
-choosing `k` (e.g. the gap statistic).
+of the statistic occurres before $k=3$, and for values $k = 4, 5, 6, \dots$
+the quantity 'levels-off'. In practice, we would choose $k=3$, a value
+happening at the 'elbow' of the plot (elbow-rule).
+
+# scRNA-seq analysis
+
+## Preamble
+
+### Dependencies
+
+```{r load-libs, message=FALSE, warning=FALSE}
+library(dplyr)
+library(scran)
+library(scater)
+library(ggplot2)
+library(ExperimentHub)
+```
+
+### Data retrieval
+
+```{r load-data}
+eh <- ExperimentHub()
+q <- query(eh, "Kang18")
+(sce <- eh[[q$ah_id]])
+```
+
+### Quality control
+
+```{r qc}
+sce <- sce[rowSums(counts(sce) > 0) > 0, ]
+sce <- addPerCellQC(sce)
+sce <- sce[, !isOutlier(sce$detected, nmads=2, log=TRUE)]
+sce <- sce[rowSums(counts(sce) > 1) >= 10, ]
+```
+
+## Analysis continued
+
+### Feature selection
+
+For each gene, we compute the variance and mean of the log-expression values. A trend is fitted to the variance against the mean for all genes. The fitted value for each gene is used as a proxy for the technical component of variation for each gene, under the assumption that most genes exhibit a low baseline level of variation that is not biologically interesting. The biological component of variation for each gene is defined as the the residual from the trend. (see `?modelGeneVar`)
+
+```{r sel}
+# log-library size normalization
+sce <- logNormCounts(sce) 
+# model gene expr. mean vs. var.
+df <- modelGeneVar(sce) 
+head(df)
+```
+
+> Use `dplyr` to filter the above gene-level statistics (`df`) for genes the 2,000 genes with the highest `bio`logical variance component.
+
+```{r fil, echo=FALSE}
+fd <- df |>
+    data.frame() |>
+    arrange(bio) |>
+    tail(n=2e3)
+# or...
+fd <- df |>
+    data.frame() |>
+    arrange(desc(bio)) |>
+    head(n=2e3)
+# or...
+fd <- df |>
+    data.frame() |>
+    slice_max(bio, n=2e3)
+```
+
+> Reproduce the below scatter plot (`geom_point()`) of gene expression `mean`s vs. `total` variance estimates. You will need a 2nd layer to highlight the top-2,000 genes selected above (red points), and a 3rd layer to add the `tech`nical variance estimate (blue dashed line).
+
+```{r mv-tot, echo=FALSE, fig.width=4, fig.height=4}
+ggplot(df, aes(x=mean, y=total)) +
+    geom_point() +
+    geom_point(data=fd, col="red") +
+    geom_line(aes(y=tech), col="blue", lty=2)
+```
+
+The genes selected above correspond to genes with a large deviation from the baseline level of (technical) variation, i.e., they tend to have a large biological variance component:
+
+```{r mv-var, echo=FALSE, fig.width=4, fig.height=4}
+ggplot(df, aes(x=mean, y=bio)) +
+    geom_point() +
+    geom_point(data=fd, col="red") +
+    geom_hline(yintercept=0, col="blue", lty=2)
+```
+
+### Dimension reduction
+
+In standard scRNA-seq data anlysis pipelines, these "highly variable features" are subjected to principal component analysis (PCA) in order to identify major axes of variation. We can perform PCA on a `SingleCellExperiment` using `runPCA()` (`scater` package), where we specify the subset of features to use via argument `subset_row`:
+
+```{r pca-calc}
+# get selected features
+length(sel <- rownames(fd))
+# perform principal component analysis
+sce <- runPCA(sce, subset_row=sel)
+```
+
+By default, `runPCA()` computes 50 PCs that are stored in the input object as a `reducedDim()` slot:
+
+```{r pca-show}
+# rows=cells, columns=PCs
+pcs <- reducedDim(sce, "PCA")
+pcs[1:5, 1:5]
+dim(pcs) 
+```
+
+> Construct a `data.frame` that includes both, PCs and cell-level metdata (`colData`). Generate a scatter plot of PCs 1 and 2 as shown below, with cells colored by experimental condition and `cell` subpopulation, respectively; x and y axes should have a fixed aspect ratio! 
+
+```{r plt-pca-stim, echo=FALSE, fig.width=5, fig.height=4}
+df <- data.frame(pcs, colData(sce))
+ggplot(df, aes(PC1, PC2, col=stim)) +
+    geom_point(size=0.2) + coord_equal() +
+    guides(col=guide_legend(override.aes=list(size=2))) 
+```
+
+```{r plt-pca-cell, echo=FALSE, fig.width=6, fig.height=4}
+ggplot(df, aes(PC1, PC2, col=cell)) + 
+    geom_point(size=0.2) + coord_equal() +
+    guides(col=guide_legend(override.aes=list(size=2)))
+```
+
+It's pretty clear from the plots above that experimental condition (`stim`) and `cell` subpopulations seem to be considerable drivers of gene expression variability. But what is driving these differences? We can explore this visually by coloring cells by other cell metadata, e.g., library size (total sum of counts). 
+
+> Generate a scatter plot of PCs 1 and 2 with cells colored by log-library size. Taking into consideration the plots generated above, what is the main driver of gene expression variation (PC1)?
+
+```{r echo=FALSE, eval=FALSE, plt-pcs-ls}
+ggplot(df, aes(PC1, PC2, col=log10(sum))) +
+    geom_point(size=0.2) + coord_equal() +
+    scale_color_viridis_c()
+```
+
+Finally, note that the dataset retrieved from `ExperimentHub` already contains a non-linear embedding, t-SNE, that has been pre-computed by the original authors. We can access this representation as follows, and you are welcomed to explore visually exploring the data on your own, e.g., 
+
+- color cells by gene expression (`logcounts()`)
+- plot PCs (linear) again t-SNE dimensions (non-linear)
+- `facet_wrap()` by `stim/ind/cell` to split plots according to some metadata variable
+
+```{r eval=FALSE}
+map <- reducedDim(sce, "TSNE")
+df <- cbind(df, map)
+ggplot(df, ...)
+```
+
+### Dependencies
+
+```{r load-deps, message=FALSE, warning=FALSE}
+library(scran)
+library(igraph)
+library(pheatmap)
+```
+
+```{r load-patchwork, echo=FALSE, message=FALSE, warning=FALSE}
+library(patchwork)
+```
+
+### Clustering scRNA-seq data
+
+A standard approach to cluster scRNA-seq data is to (i) construct a graph where nodes = cells and edges = neighbors based on distances in, e.g., PCA space; and, (ii) finding communities of cells that are highly inter-connected. In other words: we want to link cells with each other based on their PCs to find *clusters* of transcriptionally similar cells.
+
+```{r snn-louvain, message=FALSE, warning=FALSE}
+# construct shared nearest neighbor (SNN) graph of cells
+# using principal components 1-3 & based on Jaccard similarity 
+# (see ?makeSNNGraph if you're interested in more details!)
+g <- buildSNNGraph(sce, use.dimred="PCA", k=30, type="jaccard")
+# use the Louvain algorithm to identify communities
+# based on optimization of modularity (see ?cluster_louvain)
+k <- cluster_louvain(g, resolution=0.5)$membership
+```
+
+We can visualize the resulting cellular graph as follows (for computational reasons, we'll use a representative subset of cells):
+
+```{r plt-snn, fig.width=8, fig.height=8}
+# sample at most 100 cells per cluster
+i <- split(seq(ncol(sce)), k)
+i <- lapply(i, \(.) sample(., min(50, length(.))))
+# subset SNN graph & plot it
+g_sub <- subgraph(g, unlist(i))
+plot(g_sub, vertex.size=5, vertex.color="white") 
+```
+
+Now, we'll run the community detection step, which will return cluster assignments of each cell (accessible via `$membership` in the output object):
+
+> **Q1:** How many *unique* clusters did we identify with the code above?  
+> **Q2:** How does the number of clusters change when you decrease/increase the `resolution` parameter?  
+> **Q3:** Compare the cluster assignments you get with available `cell` types using `table(old_cluster_IDs, new_cluster_IDs)`; can you guess, i.e., which cluster(s) correspond to B cells, CD4/8 T cells, etc.?
+
+Let's visualize the clustering results we obtain above, and compare them to previous results. To do this, we'll first construct a table (`data.frame`) containing all cell-information available to us at this point, i.e., cell metadata (`colData`), low-dimensional embeddings (`reducedDims`), and clustering results (`k` from the code above):
+
+```{r prep-df-1}
+df <- data.frame(
+    k=factor(k),
+    colData(sce), 
+    reducedDim(sce, "PCA"),
+    reducedDim(sce, "TSNE"))
+```
+
+> **Q4:** Using the `data.frame` constructed above, visualize the t-SNE with cells colored by cluster assignment (`k`) and annotations (`cell`) using `ggplot`.
+
+```{r plt-tsne-ks, echo=FALSE, eval=FALSE, fig.width=8, fig.height=3}
+nk <- max(nlevels(df$k), nlevels(df$cell))
+ggplot(df, aes(col=k)) + 
+ggplot(df, aes(col=cell)) + 
+plot_layout(nrow=1) &
+    geom_point(aes(tsne1, tsne2), size=0.2) &
+    guides(col=guide_legend(override.aes=list(size=2))) &
+    scale_color_manual(values=hcl.colors(nk, "Spectral")) &
+    theme_void() & theme(aspect.ratio=1, legend.key.size=unit(0.5, "lines"))
+```
+
+In addition, we will add the expression (`logcounts`) of a few genes. Because `assay`s are stored with rows = genes and columns = cells, we need to transpose the expression matrix so that rows = cells using `t()`:
+
+```{r prep-df-2}
+gs <- c("MS4A1", "ISG15", "CD14")
+es <- logcounts(sce)[gs, ]
+es <- as.matrix(t(es))
+df <- data.frame(df, es)
+```
+
+We can repeat the trick above, coloring cell by their expression of a given gene instead, e.g.:
+
+```{r plt-tsne-es, echo=FALSE, fig.width=10, fig.height=3}
+ggplot(df, aes(col=MS4A1)) + 
+ggplot(df, aes(col=ISG15)) + 
+ggplot(df, aes(col=CD14)) + 
+plot_layout(nrow=1) &
+    scale_color_gradientn(colors=c("navy", "red", "gold", "ivory")) &
+    geom_point(aes(tsne1, tsne2), size=0.2) &
+    theme(aspect.ratio=1) &
+    theme_void() 
+```
+
+These type of visualizations are not ideal for many reasons (e.g., t-SNE is a non-linear embedding so that cell-cell distances are misleading, plots are too spacious when considering 100s of genes...). We could instead use, say, boxplots or heatmaps to understand different clusters' expression profiles. For the latter, we would first have to aggregate expression by each cluster, e.g., by computing the average:
+
+```{r}
+# split cell indices by cluster assignment
+cs <- split(seq_len(ncol(sce)), k)
+# count number of cells in each group
+sapply(cs, length) 
+# for each group of cells, subset 
+# -> get exprs. (logcounts) 
+# -> compute gene (row) means 
+mu <- sapply(cs, \(.) rowMeans(logcounts(sce[, .])))
+# rows = genes, columns = clusters
+dim(mu)
+```
+
+We can visualize the results average expression by cluster using `pheatmap()`. Because genes can be expressed at very different levels of expression, we set `scale="row"` in order to scale each genes average expression to have zero mean and unit standard deviation across clusters: 
+
+```{r fig.width=5, fig.height=3}
+pheatmap(mu[gs, ], scale="row")
+```
+
+> **Q5:** Based on the `table()` output comparing your and previous cluster assignments, and visualizing some genes you might know, can you annotated a few clusters (e.g., 1 = X cells, 2 = Y cells, 3 = Zocytes)?
 
 # Session info
 
