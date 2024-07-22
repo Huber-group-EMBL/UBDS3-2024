@@ -1,0 +1,128 @@
+---
+title: 'Extra - Hypothsis testing'
+author: ""
+date: today
+format: 
+  html:
+    code-fold: false
+    code-tools: true
+    embed-resources: true
+    highlight-style: github
+    toc: true 
+    code-line-numbers: false 
+params:
+  skip_execution: false
+  skip_answers: true
+---
+```{r}
+#| eval: true
+#| echo: false
+
+library(genefilter)
+library(ggplot2)
+library(tibble)
+```
+
+## Extra activity 1: multiple testing correction
+
+When we test the same hypothesis multiple times, for example if we have 10.000 genes and we ask which have a difference in expression in one condition or the other, we can find some significant hits by chance; because we are testing multiple times. With a higher number of tests, the probability of finding a significant hit by chance increases. <br>
+
+We can use the p-value histogram plot for diagnostic purposes. <br>
+
+1. We create a dataset with 4 samples, two controls and two treatment, simulated using `rnorm`. Each one with sample size 10.000, mean 0 and sd 1. <br>
+The alternative hypothesis states that mean and variance in the two conditions are different - 
+the genes are differentially expressed.<br>
+We can use a function that computes t-test for rows in a matrix, that is called `rowttests`; and we extract the pvalues and we plot them. The result should look like this <br>
+
+Try yourself first! And if you struggle, you can look at the code   
+
+```{r }
+#| label: runiform
+#| eval: true
+#| echo: true
+#| code-fold: true
+
+set.seed(300) 
+
+# rnorm is a function that simulates a normal distribution, 
+# sampling 10000 numbers, from a distribution of mean 0 and variance 1
+# All 4 samples (2 Controls and 2 Treated) have the same mean
+y = cbind(Control = rnorm(10000, 0, 1),
+          Control = rnorm(10000, 0, 1),
+          Treatment = rnorm(10000, 0, 1),
+          Treatment = rnorm(10000, 0, 1))
+
+pvalue = rowttests(y, factor(c("Control","Control","Treatment","Treatment")))$p.value
+
+#hist(pvalue, breaks = 50, col= "#0056B9")
+ggplot(tibble(pvalue), aes(x = pvalue)) +
+  geom_histogram(binwidth = 0.01, fill = "#0056B9", boundary = 0)
+```
+
+How many pvalues are < 0.05?
+```{r}
+#| eval: !expr (! params$skip_execution & ! params$skip_answers)
+#| echo: !expr (! params$skip_answers)
+table(pvalue < 0.05)
+```
+```{r}
+#| eval: false
+#| echo: !expr (params$skip_answers)
+# TODO
+```
+
+In this case all pvalues are background because there is not difference between control and treatment.
+
+#### Understanding the batch effect:
+Now let's assume that two samples were processed on the same day 
+separately from the others. That day, something happened and the means in both 
+samples were shifted. In that case, the histogram is skewed to the right. 
+
+  1. Imagine that one control and one treatment were processed on the same day and for some
+  reason their mean are shifted to the right, even though there should be no difference <br>
+  2. run the t-test again
+  3. plot, how does it look like?
+
+```{r solution12, fig.width = 4.5, fig.height = 4.5}
+#| eval: !expr (! params$skip_execution & ! params$skip_answers)
+#| echo: !expr (! params$skip_answers)
+
+set.seed(300) 
+y = cbind(Control = rnorm(10000, 0, 1),
+          Control = rnorm(10000, 2, 1),
+          Treatment = rnorm(10000, 0, 1),
+          Treatment = rnorm(10000, 2, 1))
+
+pvalue = rowttests(y, factor(c("Control","Control","Treatment","Treatment")))$p.value
+ggplot(tibble(pvalue), aes(x = pvalue)) +
+  geom_histogram(binwidth = 0.01, fill = "#0056B9", boundary = 0)
+```
+
+One way to take such batch effects into account is by adding the batch factor 
+(e.g. the run day) in our model as covariate. 
+
+#### Simulating differentially expressed 
+Now let's simulate and look at how it would be if they were really differentially expressed.
+
+  1. Repeat the lines above and simulate so that there is a difference in the means between the 2 controls and the 2 treated samples are differentially expressed:<br>
+  2. run the t-test again
+  3. plot, how does it look like?
+  
+```{r solution11, fig.width = 4.5, fig.height = 4.5}
+#| eval: !expr (! params$skip_execution & ! params$skip_answers)
+#| echo: !expr (! params$skip_answers)
+
+set.seed(300) 
+library(genefilter)
+
+y = cbind(Control = rnorm(10000, 0, 1),
+          Control = rnorm(10000, 0, 1),
+          Treatment = rnorm(10000, 2, 1),
+          Treatment = rnorm(10000, 2, 1))
+
+pvalue = rowttests(y, factor(c("Control","Control","Treatment","Treatment")))$p.value
+
+#hist(pvalue, breaks = 50, col= "#0056B9")
+ggplot(tibble(pvalue), aes(x = pvalue)) +
+  geom_histogram(binwidth = 0.01, fill = "#0056B9", boundary = 0)
+```

@@ -1,0 +1,635 @@
+---
+title: 'Hypothsis testing'
+author: ""
+date: today
+format: 
+  html:
+    code-fold: false
+    code-tools: true
+    embed-resources: true
+    highlight-style: github
+    toc: true 
+    code-line-numbers: false 
+params:
+  skip_execution: false
+  skip_answers: true
+---
+
+```{r}
+#| label: initialize
+#| echo: FALSE
+#| include: FALSE
+options("scipen"=100, "digits"=4)
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE, fig.pos = 'h',
+                      fig.width=7, fig.height=5, fig.align="center") 
+```
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, warning=FALSE, message=FALSE, fig.pos = 'h',
+                      fig.width=6, fig.height=4, fig.align="center", eval = F)
+library(knitr)
+options("scipen"=100, "digits"=4)
+set.seed(533)
+```
+
+
+# Inference and Parameter estimation
+
+We have data on the genome size (measured in picograms of DNA per haploid cell, data from http://www.biostathandbook.com/) in two large groups of crustaceans. The cause of variation in genome size has been a puzzle for a long time; we will use these data to answer the biological question: <br>
+**do some groups of crustaceans have different genome sizes than others?**<br>
+
+## Observe at the data 
+First we should observe the data, load the file into R and graphically explore the dispersion and normality of the whole dataset. 
+
+```{r, echo=TRUE, eval=TRUE}
+# We create a variable (genome_size) to store the data contained in 
+# genome_size_long_format.txt. We import these data with the read.table() function.
+# The newly created variable is a `data.frame`.
+genome_size <- read.table("genome_size_long_format.txt")
+colnames(genome_size) = c("group","size")
+```
+
+::: {.callout-note collapse="false"}
+## Look at the data
+1. print the first rows to have an idea of how it looks like
+```{r }
+#| label: headData
+#| eval: !expr (! params$skip_execution & ! params$skip_answers)
+#| echo: !expr (! params$skip_answers)
+# Head returns the first parts of the genome_size data.frame. By default it 
+# returns the first six elements but you can change it via n argument
+# e.g., head(genome_size, n = 10) to display the first ten elements
+head(genome_size)
+```
+
+2. How many groups do we have? What is the sample size for each group?
+```{r }
+#| label: goupsInData
+#| eval: !expr (! params$skip_execution & ! params$skip_answers)
+#| echo: !expr (! params$skip_answers)
+
+table(genome_size$group)
+```
+
+3. To look at the dispersion and the distribution of the data plot them using in a boxplot and then with a histogram 
+```{r }
+#| label: plotsDistr
+#| eval: !expr (! params$skip_execution & ! params$skip_answers)
+#| echo: !expr (! params$skip_answers)
+
+boxplot(genome_size[,2])
+
+# Same as for the boxplot but to create a histogram
+hist(genome_size[,2])
+```
+Looking at the plots, do you think the data is normal?
+:::
+
+A better graphical way to look at data normality is to perform a QQ plot. A histogram shows the frequencies of different values in the variable (counts). Depending on how the histogram looks it can be misleading. It's better to use the QQ plot. A Q-Q plot shows the mapping between the distribution of the data and the ideal distribution (the normal distribution in this case). Usually a line is plotted through the quartiles (if you are not familiar with the concepts of quartiles and qqplot, you can look at the first paragraph of the wikipedia pages: [quartiles](https://en.wikipedia.org/wiki/Quartile) and (QQ plot)[https://en.wikipedia.org/wiki/Q–Q_plot]). When the dots follow the line closely, the data has a normal distribution. 
+
+```{r}
+#| label: qqplot
+#| eval: true
+#| echo: true
+
+# with `qqnorm()` we make a QQ plot. `main == "QQ plot"` creates the title of the graph with text "QQ plot"
+qqnorm(genome_size[,2], main = "QQ plot") 
+# with `qqline()` we add a QQ line to the QQ plot with red color (col = 2). You also can specify `col = 'red'`
+qqline(genome_size[,2], col=2) 
+```
+
+## Calculate mean and variance of each group. 
+Now let's compare the mean and the variance for each group. 
+
+::: {.callout-note collapse="false"}
+## Hands-on
+Calculate the mean and the variance for each group of crustaceans
+```{r }
+#| label: meanNvar
+#| eval: !expr (! params$skip_execution & ! params$skip_answers)
+#| echo: !expr (! params$skip_answers)
+
+# Function mean() computes the arithmetic mean of a vector.
+# Here, we divide our data.frame into the two groups of crustaceans
+# For that we select the rows in which the 1st column matches (==)
+# either "Decapods" or "Isopods" (i.e., genome_size[,1] == "TypeOfCrustacean").
+# Then we compute the mean in the 2nd column, which contains the values of genome_size
+mean(genome_size[genome_size[,1]=="Decapods",2])
+mean(genome_size[genome_size[,1]=="Isopods",2])
+
+# Same but using var() function.
+var(genome_size[genome_size[,1]=="Decapods",2])
+var(genome_size[genome_size[,1]=="Isopods",2])
+```
+What to you observe?
+```{r }
+#| label: questionMeanNvar
+#| eval: !expr (! params$skip_execution & ! params$skip_answers)
+#| echo: false
+cat("Both measures are very different\n")
+```
+:::
+
+
+Before trying to analyze the data, let's use this data set to explore together how the sampling process may affect the estimation results.
+
+## Sampling from the normal distribution of genome size
+
+To simulate the process of sampling from a population with a normal distribution, we need to recreate the population. We are going to recreate the population of "genome size" using our data. Then we are going to sample from that distribution multiple times. Finally we will see how **sample size** and **number of samples** can affect the sampling distribution. 
+
+### Normalize our data
+First given we want to simulate a sampling from a normal distribution we will apply the log10 transformation to our data. Use the `log10()` function. 
+```{r }
+#| label: logData
+#| eval: true
+#| echo: true
+# Here we compute the log10 of genome_size and we store it in a new column (log10)
+# that we create in genome_size. We also can create it using brackets notation
+# e.g., genome_size[,"log10"] <- log10(genome_size[,2])
+genome_size$log10 <- log10(genome_size[,2])
+```
+
+::: {.callout-note collapse="false"}
+## Hands-on
+1. Calculate the mean and the variance of the newly transformed data. 
+```{r }
+#| label: meanNvarlog10
+#| eval: !expr (! params$skip_execution & ! params$skip_answers)
+#| echo: !expr (! params$skip_answers)
+# We compute the mean of this new column as before 
+# Note that here we are selecting the 3rd column (i.e., the newly created log10 column)
+mean(genome_size[genome_size[,1]=="Decapods",3])
+mean(genome_size[genome_size[,1]=="Isopods",3])
+
+# Same but using var() function
+var(genome_size[genome_size[,1]=="Decapods",3])
+var(genome_size[genome_size[,1]=="Isopods",3])
+```
+Are the mean more similar now? What about the variances? 
+```{r }
+#| label: questionMeanNvarlog10
+#| eval: !expr (! params$skip_execution & ! params$skip_answers)
+#| echo: false
+cat("the means are different but the variances are more similar \n")
+```
+
+2. Now plot the histogram and the Q-Q plot of the transformed data. Do they look nearly normal?
+```{r }
+#| label: qqplotlog10
+#| eval: !expr (! params$skip_execution & ! params$skip_answers)
+#| echo: !expr (! params$skip_answers)
+
+# We repeat the previous code but using the 3rd column
+hist(genome_size[,3])
+
+qqnorm(genome_size[,3])
+qqline(genome_size[,3], col=2) 
+```
+:::
+
+
+### Recreate the normal distribution of "genome size" 
+Now we recreate a sample coming from the same normal distribution of "genome size" (simulating the distribution our samples are coming from). We'll use the function **rnorm()** to create a random normal distribution with mean = 0.1477 and sd = 0.5976.
+
+::: {.callout-note collapse="false"}
+## Question
+1. Can you tell why we use this mean and standard deviation come from? Can you calculate them again?
+```{r }
+#| label: meanNsdPop
+#| eval: !expr (! params$skip_execution & ! params$skip_answers)
+#| echo: !expr (! params$skip_answers)
+mean(genome_size[,"log10"])
+sd(genome_size[,"log10"])
+```
+:::
+
+```{r }
+#| label: simulation
+#| eval: true
+#| echo: true
+
+# **to have reproducible results we create a seed using `set.seed()`.**
+# The number inside the function could be any number
+# as long as you use always the same number if you want to obtain the same results.
+# If you don't set the seed, different sessions will give different simulation results
+set.seed(533)
+
+# **create a million genome size values.**
+# We use the rnorm function to create n = 1e6 values coming from a normal distribution
+# with mean = mean of log10 transformed genome size values and 
+# sd = standard deviation of log10 transformed genome size values.
+# We store these values into a vector called GS_sim
+GS_sim <- rnorm(n = 1e6, 
+                mean = mean(genome_size[,3]), 
+                sd = sd(genome_size[,3]))
+
+# **plot the values in a histogram**
+hist(GS_sim, main = "Histogram of genome size",
+     xlab = "Genome size (log10, picograms DNA")
+
+```
+
+### Let's sample
+Finally, we sample two times from our simulated distribution of genome sizes `GS_sim`. 
+
+::: {.callout-note collapse="false"}
+## Hands-on
+1. Create two samples of size 27 sampling from `GS_sim` (tip: checkout the `sample()` function)
+```{r }
+#| label: sample
+#| eval: !expr (! params$skip_execution & ! params$skip_answers)
+#| echo: !expr (! params$skip_answers)
+
+# sizeSamples = size of the sample (number)
+sizeSamples = 27
+
+# replace = TRUE indicates that you can sample the same values several times
+sample1 <- sample(GS_sim, size = sizeSamples, replace = TRUE)
+sample2 <- sample(GS_sim, size = sizeSamples, replace = TRUE)
+```
+
+2. How do you expect their mean and sd deviation? Are they the same?
+```{r }
+#| label: sampleMean
+#| eval: !expr (! params$skip_execution & ! params$skip_answers)
+#| echo: !expr (! params$skip_answers)
+
+mean(sample1)
+mean(sample2)
+
+sd(sample1)
+sd(sample2)
+
+cat("Are they the same? Probably your answer is going to be different from that of your neighbour\n")
+```
+:::
+
+We want to sample 1000 times, calculate the mean of each sample and look at the distribution of the mean of the samples (also called the sampling distribution).<br>
+When we have to repeat the same set of commands for many times, we can create a function that execute them and return the final result. 
+
+### Create a sampling function
+
+A small exercise: we are now going to see how to create a function in R. It is useful when we have to execute the a set of commands again and again, modifying just a few parameters. <br>
+We define the name of the function and the arguments using **function()**:
+```{r}
+#| eval: false
+my_function = function(<ARGLIST>){
+  <COMMAND1>
+  <COMMAND2>
+  ...;
+  result <- <LAST_COMMAND>
+  return(result)
+}
+```
+
+::: {.callout-note collapse="false"}
+## Hands-on 
+For example, try to create a function that sums two numbers.<br>
+  
+  1. Create a function that we call `doSum` using `function()`.
+  2. Inside the parenthesis `()` you specify the arguments that you want to give to your function.
+  3. Here we specify two arguments: `number1` and `number2`.
+  4. The operations/actions performed by the function are defined inside `{}`
+  5. Try it out! Is the result of `doSum(2,3)` correct?
+
+```{r}
+#| label: doSum 
+#| eval: !expr (! params$skip_execution & ! params$skip_answers)
+#| echo: !expr (! params$skip_answers)
+
+# We create a function that we call doSum using function().
+# Inside the parenthesis you specify the arguments that you want to give to your function.
+# Here we specify two arguments: number1 and number2
+# The operations/actions performed by the function are defined inside {}
+doSum <- function(number1, number2){
+    # do the operation and save it to a variable 
+    result <- number1+number2
+    # output to return. If not explicit it'll return the last command run
+    return(result)
+}
+
+# Once created we execute the function with specific values of the arguments
+doSum(number1 = 2, number2 = 3)
+
+# we can save the output of the function into a variable
+# You don't need to explicitly write the name of the arguments. You can give them
+# in the order they are defined
+result1_6 <- doSum(1,6)
+result1_6
+
+```
+
+<details>
+<summary><b> click here when you are done </b></summary>
+Of course, R has the built-in function **sum()** to do this:
+
+```{r}
+#| label: sum 
+#| eval: true
+#| echo: true
+
+sum(2,3)
+```
+</details>
+
+:::
+
+
+Now let's complicate a bit and create our function called **doSampling()** that calculates a sampling distribution of the mean, where we can modify the following parameters (these will be our arguments):
+
+  + `dat` = data to sample from (numeric vector)
+  + `numSamples` = number of times you want to sample (number)
+  + `sizeSamples` = size of the sample (number)
+  
+And that returns a numeric vector with the values of the samples' mean (each element is the mean of one sample)
+
+::: {.callout-note collapse="false" }
+## Hand-on 
+Create the function `doSampling`.
+
+<details>
+<summary><b> Tip - steps in the function </b></summary>
+1. get a sample, 
+2. calculate the mean of that sample, 
+3. return all the mean values for each sample
+</details>
+
+<details>
+<summary><b> Tip - some ideas </b></summary>
+Here is a possible skeleton for the structure, fill in the `...` <br>
+```{r }
+#| label: doSamplingske
+#| eval: false
+#| echo: true
+
+doSampling <- function(..., ..., ...){
+  # We initialize an empty numeric vector (out) to store the means of the samples
+  out <- numeric(numSamples) # you can always run this line only and take a look at how this looks 
+  
+  # Since we want to take several samples we use a for loop
+  for (i in 1:numSamples){
+      # in each execution we want to 
+      # take a sample from "dat" of size "sizeSamples"
+      ... # TODO
+      # calculate mean and store it in the numeric vector "out" that we created at the beginning
+      # a hint: we want the result from the 1st round (i = 1) to be stored in the 1st position of "out" (out[i])
+      ... # TODO
+  }
+  
+  # Output of the function is out vector
+  # IMPORTANT: Since we want the final output generated by the loop, 
+  # return is performed OUTSIDE the for loop.
+  return(out)
+}
+```
+
+The structure of a for loop is the following: `for (item in sequence){ execute x,y,z actions }`. Here our sequence is the number of samples we want to take (1, 2, 3,... numSamples) and the item represents one number of this sequence, one at a time. We call the item i but you can refer to it as you want (e.g., samp, sample, iteration). 
+
+</details>
+
+```{r }
+#| label: doSampling
+#| eval: true
+#| echo: !expr (! params$skip_answers)
+
+doSampling <- function(dat, numSamples, sizeSamples){
+  # We initialize an empty numeric vector (out) to store the means of the samples
+  out <- numeric(numSamples)
+
+  for (i in 1:numSamples){
+      # take a sample from "dat" of size "sizeSamples"
+      get_sample <- sample(dat, size = sizeSamples,replace = TRUE)
+      # calculate mean and store it in the numeric vector
+      out[i] <- mean(get_sample)
+  }
+  # return the result at the end of the loop
+  return(out)
+}
+
+
+# A less intuitive but better approach is to use the set of function of "apply", in this case we use "sapply", instead of the for loop
+doSampling <- function(dat, numSamples, sizeSamples){
+  
+  # First we define a function to take a sample and calculate its mean
+  get_samples_mean <- function(dat, sizeSamples) {
+    sample_data <- sample(dat, size = sizeSamples, replace = TRUE)
+    mean(sample_data)
+  }
+  
+  # Use sapply to apply the function over numSamples iterations
+  out <- sapply(1:numSamples, function(x) get_samples_mean(dat, sizeSamples))
+  
+  # Return the result
+  return(out)
+}
+```
+:::
+
+## The sampling distribution
+Our goal is to look at the sample distribution of the means and see how it changes depending on the number of samples and the sample size.
+
+
+::: {.callout-note collapse="false"}
+## Hands-on
+1. We sample from the distribution of genome sizes `GS_sim` a thousand samples of sample size = 27. We store the results in a variable called `samples_mean`, and plot it, that is we plot the sampling distribution of the mean. 
+```{r }
+#| label: samplingDistr
+#| eval: !expr (! params$skip_execution & ! params$skip_answers)
+#| echo: !expr (! params$skip_answers)
+
+# We execute our function with the requested values and store them in samples_mean
+samples_mean <- doSampling(dat = GS_sim, numSamples = 1000, sizeSamples = 27)
+hist(samples_mean)
+
+# We will use our doSampling function for illustrative purposes but you can do
+# this easily in R with the replicate function:
+# replicate(1000, mean(sample(x = GS_sim, size = 27, replace = TRUE)))
+```
+
+2. Calculate the mean of the population (i.e. the simulated distribution of genome sizes) and the mean of the sampling distribution of the mean. Are they similar? 
+```{r}
+#| label: means
+#| eval: !expr (! params$skip_execution & ! params$skip_answers)
+#| echo: !expr (! params$skip_answers)
+
+pop_mean <- mean(GS_sim) # population mean
+sampling_mean <- mean(samples_mean) # sample mean
+
+cat("both means are very similar\n")
+```
+
+3. What happens when you change the number of times that you sample? Try sampling 10 times, 100 times, and so on; and look at the distribution. Add to the plot as lines, the mean of the sampling distribution and the mean of the population, how do they compare?
+
+```{r}
+#| label: increase sampling
+#| eval: !expr (! params$skip_execution & ! params$skip_answers)
+#| echo: !expr (! params$skip_answers)
+
+# As the number of times that you sample increases, 
+# the sampling distribution has a more normal-looking shape.
+t10 <- doSampling(GS_sim,10,27)
+t50 <- doSampling(GS_sim,50,27)
+t100 <- doSampling(GS_sim,100,27)
+
+xlimi = range(c(t10,t50,t100))
+xlimi[1] = xlimi[1] - 0.1 
+xlimi[2] = xlimi[2] + 0.1 
+
+hist(t10, xlim = xlimi); abline(v=mean(t10), col="#FFD800"); abline(v=pop_mean, col="#0056B9")
+
+hist(t50, xlim = xlimi); abline(v=mean(t50), col="#FFD800"); abline(v=pop_mean, col="#0056B9")
+
+hist(t100, xlim = xlimi); abline(v=mean(t100), col="#FFD800"); abline(v=pop_mean, col="#0056B9")
+
+```
+
+4. What happens to the width of the sampling distribution when we increase the size of the sample that we take? And what can you say about the mean comparing to the population mean? Try sampling 3 values, 10, 50, 100, and so on. 
+
+```{r}
+#| label: increase sample size
+#| eval: !expr (! params$skip_execution & ! params$skip_answers)
+#| echo: !expr (! params$skip_answers)
+samples_mean3 <- doSampling(GS_sim,100,3)
+samples_mean10 <- doSampling(GS_sim,100,25)
+samples_mean100 <- doSampling(GS_sim,100,100)
+xlimi = range(c(samples_mean3,samples_mean10,samples_mean100))
+xlimi[1] = xlimi[1] - 0.1 
+xlimi[2] = xlimi[2] + 0.1 
+
+hist(samples_mean3, xlim=xlimi); abline(v=mean(samples_mean3), col="#FFD800"); abline(v=pop_mean, col="#0056B9")
+
+hist(samples_mean10, xlim=xlimi); abline(v=mean(samples_mean10), col="#FFD800"); abline(v=pop_mean, col="#0056B9")
+
+hist(samples_mean100, xlim=xlimi); abline(v=mean(samples_mean100), col="#FFD800"); abline(v=pop_mean, col="#0056B9")
+
+# As sample size (n) increases, 
+# the width of the sampling distribution of the mean decreases.
+```
+:::
+
+
+# Student t-test
+
+Going back to our dataset. <br>
+Remember we want to know whether the mean of the genome size is dependent on the type of crustaceans. The dependent variable is continuous, the independent variable is categorical and we have 2 groups. The appropriate statistical test is a t-test. <br>
+However, given the dependent variable is not normally distributed, and the variances are not similar between the groups, we cannot use the Student t test directly. To do it we have transformed the data to fit it into a normal distribution. We already did that, do you remember how and where are the results?<br>
+
+::: {.callout-note collapse="false"}
+## Hands-on
+Do a t-test, you can use the R function `t.test()` (look at the help to know how it works). Store the results in a variable called `result_StudentT`<br>
+
+<details>
+<summary><b> Tip </b></summary>
+Look at the argument `var.equal`. Given our data, do you set it to `TRUE` or `FALSE`?
+```{r}
+#| label: t-test unsolved
+#| eval: false
+#| echo: true
+
+# t.test() function with three arguments
+result_StudentT <- t.test(...,
+                          ..., var.equal = TRUE)
+
+```
+</details>
+
+```{r}
+#| label: t-test solved
+#| eval: !expr (! params$skip_execution & ! params$skip_answers)
+#| echo: !expr (! params$skip_answers)
+
+# t.test() function with three arguments
+# group1 = genome size values of decapods  (log10 transformed)
+# group2 = genome size values of isopods  (log10 transformed)
+# var.equal = TRUE. To specify that we want to treat the two variances as being equal
+result_StudentT <- t.test(genome_size[genome_size[,1]=="Decapods",3],
+                          genome_size[genome_size[,1]=="Isopods",3],var.equal = TRUE)
+
+```
+
+:::
+
+Let's look at the results
+```{r}
+#| label: t-test result 
+#| eval: !expr (! params$skip_execution & ! params$skip_answers)
+#| echo: true
+
+# Output includes t-statistic, degrees of freedom, p-value, 95%CI and sample estimates
+result_StudentT
+
+# We access t and p-value with the $ operator 
+tvalue <- result_StudentT$statistic
+pvalue <- result_StudentT$p.value
+```
+Which is the null hypothesis? And the alternative hypothesis? 
+What can we conclude? Is the difference of the mean between the two groups statistically significant?
+
+
+
+# Extra activity 1: Paired t-test
+
+To investigate the effects of lighting conditions on the orb-spinning spider webs, researchers measured the horizontal (width) and vertical (height) dimensions of the webs made by 17 spiders under light and dim conditions. Accepting that the webs of individual spiders vary considerably, they employed a paired design in which each individual spider acts as its own control. A paired t-test performs a one sample t-test on the differences between dimensions under light and dim conditions.
+
+You can find the data in the *spider_web.txt* file. Note the format of this data set. Rather than organizing the data into the usual long format in which variables are represented in columns and rows represent individual replicates, these data have been organized in wide format. Wide format is often used for data containing repeated measures from individual or other sampling units. Even though this is not necessary (as paired t-tests can be performed on long format data), traditionally it did allow more compact data management as well as making it easier to calculate the differences between repeated measurements on each individual.<br>
+
+Before conducting the paired t-test, the assumption that the **paired differences** are normally distributed must be satisfied. This can be tested by looking at a histogram or QQ plot. Normality goodness of fit tests such as the Shapiro-Wilk can be used to test for normality but these are sensitive to sample size and outliers (see Checking normality in R resource for more details) so use a plot as well.
+
+```{r}
+#| eval: true
+#| echo: true
+
+# header = TRUE indicates that the first line of the file contains the column names
+spider <- read.table("spider_web.txt",header=TRUE)
+
+# normality for difference of horizontal measures
+hist(spider$HORIZLIG - spider$HORIZDIM)
+qqnorm(spider$HORIZLIG - spider$HORIZDIM)
+qqline(spider$HORIZLIG - spider$HORIZDIM, col=2)
+
+# There is also a test to do this 
+shapiro.test(spider$HORIZLIG - spider$HORIZDIM)
+```
+
+Can you do it for the vertical measurements?
+```{r}
+#| eval: true
+#| echo: true
+
+# TODO: normality for difference of vertical measures
+```
+```{r}
+# normality for difference of vertical measures
+#| eval: !expr (! params$skip_execution & ! params$skip_answers)
+#| echo: !expr (! params$skip_answers)
+
+hist(spider$VERTLIGH - spider$VERTDIM)
+qqnorm(spider$VERTLIGH - spider$VERTDIM)
+qqline(spider$VERTLIGH - spider$VERTDIM, col=2)
+
+# There is also a test to do this 
+shapiro.test(spider$HORIZLIG - spider$HORIZDIM)
+```
+
+Are the differences normally distributed?<br>
+
+
+Perform two separate paired t-tests to test the following null hypotheses:
+
+- No effect of lighting on web width
+- No effect of lighting on web height
+
+```{r}
+#| eval: !expr (! params$skip_execution & ! params$skip_answers)
+#| echo: !expr (! params$skip_answers)
+
+# paired = TRUE to indicate that we want a paired t-test
+t.test(spider$HORIZLIG, spider$HORIZDIM, paired=TRUE)
+t.test(spider$VERTLIGH, spider$VERTDIM,paired =TRUE)  #No effect on web height
+
+
+cat("Conclusions: Orb-spinning spider webs were found to be significantly \n
+wider (t = 2.148,df = 16, P = 0.047) under dim lighting conditions than \n
+light conditions, yet were not found to differ (t = 0.965, df = 16, P = 0.349) in height.")
+```
+
